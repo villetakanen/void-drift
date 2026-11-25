@@ -1,16 +1,12 @@
 ---
-title: "Spec: Practice"
-status: draft
 generated:
   by: "openai/gpt-6.1-sol"
   at: "2026-11-20T06:37:04+02:00"
 verified:
-  - by: "openai/gpt-6.1-sol"
-    at: "2026-11-20T06:33:14+02:00"
-  - by: "openai/gpt-6.1-sol"
-    at: "2026-11-20T06:37:04+02:00"
   - by: "human:ville-takanen"
     at: "2026-11-20T06:37:49+02:00"
+  - by: "human:ville-takanen"
+    at: "2026-11-25T09:16:37+02:00"
 ---
 
 # Practice
@@ -69,7 +65,8 @@ let the player fly until they choose to leave.
   derelicts or other encounters, score, result or submission.
 - Session state is discarded on exit; the ship and its saved fitting remain
   unchanged. A later entry starts fresh rather than resuming the session.
-- Practice uses shared flight pause behaviour. The session offers no reset action.
+- Practice uses shared flight pause behaviour and the
+  [automatic weapons command](../controls/spec.md#automatic-weapons-command). The session offers no reset action.
 
 ## Contract
 

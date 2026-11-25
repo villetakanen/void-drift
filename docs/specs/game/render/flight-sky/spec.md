@@ -1,7 +1,7 @@
 ---
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-19T19:21:23+02:00"
+  by: "openai/gpt-6.1-terra"
+  at: "2026-11-24T14:37:17+02:00"
 verified:
   - by: "human:ville-takanen"
     at: "2026-11-23"
@@ -27,7 +27,7 @@ Practice ships a 1536² tile at a 3072-logical-pixel period. The browser decodes
 
 The shared [game field backdrop](../../../factory/design-system/game-field-backdrop/spec.md)
 uses the sky selected for its separate generated system and a stationary camera
-pose on the Title Screen, Settings, Top Scores and Credits. Survival, Derelicts
+pose on the Title Screen, Settings and Top Scores. Survival, Derelicts
 and Gauntlet take the final arrival seed and prepare one tile off the main
 thread. Flight can start over the void. A completed decode supplies only its
 own active run. Leaving or replacing that run releases its pending work and

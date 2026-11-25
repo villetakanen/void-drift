@@ -54,7 +54,7 @@ A challenge name is changed only by a release to production; there are no develo
 
 ## Documentation
 
-Write [roadmap](./docs/roadmap.md) feature outcomes as draft player-facing release notes, with possible issues and ideas alongside them.
+The [roadmap](./docs/roadmap.md) is a short list of what we might do and what’s done for the next release.
 
 - [Documentation index](./docs/README.md)
 - [Roadmap — 0.8.0](./docs/roadmap.md)

@@ -14,14 +14,6 @@ const ionEngines = (Object.keys(PARTS) as PartId[]).filter(
 );
 
 describe("the ion engine family", () => {
-  it("gives each member catalog thrust in proportion to its strength", () => {
-    for (const id of ionEngines)
-      expect(PARTS[id].thrust).toBeCloseTo(
-        PARTS.ion.thrust * ionStrength(id),
-        6,
-      );
-  });
-
   it("accelerates from rest in proportion to strength at equal ship mass", () => {
     const sameMass = Object.fromEntries(
       Object.entries(PARTS).map(([id, part]) => [

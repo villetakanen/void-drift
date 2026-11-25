@@ -2,15 +2,6 @@ import { expect, it } from "vitest";
 import { parseEngineMaster } from "../../../../scripts/engine-art-from-svg.mjs";
 import { ENGINE_ART, ENGINE_MARKINGS } from "./engine-art";
 
-// Vite's glob, declared here: the packages' type check has no Vite client types.
-declare global {
-  interface ImportMeta {
-    glob(
-      pattern: string,
-      options: { query: string; import: string; eager: true },
-    ): Record<string, unknown>;
-  }
-}
 const files = import.meta.glob("./art/engines/*.svg", {
   query: "?raw",
   import: "default",

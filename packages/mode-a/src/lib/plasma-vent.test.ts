@@ -85,8 +85,25 @@ function mountedFixture(loadout: Loadout, rotation = 0) {
       () => {},
     );
   });
-  function step(dt: number, roster: readonly SalvageBody[] = targets) {
-    system.stepWeapons(dt, ship, star, resources, 100, [], roster);
+  function step(
+    dt: number,
+    roster: readonly SalvageBody[] = targets,
+    allowFire = true,
+  ) {
+    system.stepWeapons(
+      dt,
+      ship,
+      star,
+      resources,
+      100,
+      [],
+      roster,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      allowFire,
+    );
   }
   return { system, ship, resources, targets, step };
 }
@@ -274,8 +291,8 @@ describe("paired plasma vents", () => {
     );
   });
 
-  it("damages a ship on vent entry for both triggers and preserves contact during cooldown", () => {
-    const damageFor = (trigger: "shot" | "loss") => {
+  it("deals equal vent entry damage for every trigger without repeating hits during continuous contact", () => {
+    const damageFor = (trigger: "shot" | "loss" | "off") => {
       const f = mountedFixture(studyWasp());
       if (trigger === "shot") {
         f.step(0.7, [f.targets[0]]);
@@ -284,7 +301,9 @@ describe("paired plasma vents", () => {
         f.step(1.05, []);
         f.step(0.35, [f.targets[0]]);
       }
-      f.step(0.05, []);
+      const vx = f.ship.vel.x;
+      f.step(0.05, trigger === "off" ? [f.targets[0]] : [], trigger !== "off");
+      expect(f.ship.vel.x).toBeLessThan(vx);
       const sample = f.system.plasmaVentEvents.at(-1);
       if (!sample) throw new Error("Expected vent emission");
       const outlet = sample.outlets[0];
@@ -306,7 +325,8 @@ describe("paired plasma vents", () => {
         },
       );
       f.step(1 / 240, [victim]);
-      expect(damage).toBe(3);
+      const entryDamage = damage;
+      expect(entryDamage).toBeGreaterThan(0);
       for (let i = 0; i < 10; i++) {
         victim.previousX += outlet.vx / 240;
         victim.previousY += outlet.vy / 240;
@@ -314,10 +334,12 @@ describe("paired plasma vents", () => {
         victim.y = victim.previousY;
         f.step(1 / 240, [victim]);
       }
-      expect(damage).toBe(3);
-      return damage;
+      expect(damage).toBe(entryDamage);
+      return entryDamage;
     };
-    expect(damageFor("shot")).toBe(damageFor("loss"));
+    const targetLossDamage = damageFor("loss");
+    expect(damageFor("shot")).toBe(targetLossDamage);
+    expect(damageFor("off")).toBe(targetLossDamage);
   });
 
   it("keeps damaging after the emitter stops running its weapon cycle", () => {

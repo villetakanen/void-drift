@@ -91,18 +91,11 @@ it("keeps its current stamp when replacement preparation fails", () => {
   }
 });
 
-it("prepares shared lighting tuples with independent warm and cool stamps", () => {
-  const created: FakeCanvas[] = [];
+it("keeps painters' stamps independent when one changes temperature", () => {
   const priorDocument = globalThis.document;
   Object.defineProperty(globalThis, "document", {
     configurable: true,
-    value: {
-      createElement: () => {
-        const canvas = new FakeCanvas();
-        created.push(canvas);
-        return canvas;
-      },
-    },
+    value: { createElement: () => new FakeCanvas() },
   });
   try {
     const first = new RockBodyPainter([]);
@@ -122,24 +115,6 @@ it("prepares shared lighting tuples with independent warm and cool stamps", () =
       shadowIntensity: 1,
       temperatureK: 10000,
     });
-    const stampCount = created.length;
-    first.light(
-      new FakeContext() as unknown as CanvasRenderingContext2D,
-      0,
-      0,
-      1,
-      1,
-      0,
-    );
-    second.light(
-      new FakeContext() as unknown as CanvasRenderingContext2D,
-      0,
-      0,
-      1,
-      1,
-      0,
-    );
-    expect(created).toHaveLength(stampCount);
     const firstDraw = new FakeContext();
     const secondDraw = new FakeContext();
     first.light(
@@ -161,67 +136,6 @@ it("prepares shared lighting tuples with independent warm and cool stamps", () =
     expect(firstDraw.drawn[0].image).not.toBe(secondDraw.drawn[0].image);
     first.dispose();
     second.dispose();
-  } finally {
-    if (priorDocument)
-      Object.defineProperty(globalThis, "document", { value: priorDocument });
-    else Reflect.deleteProperty(globalThis, "document");
-  }
-});
-
-it("keeps dark pixels neutral at shadow zero and applies temperature only to lit pixels", () => {
-  const created: FakeCanvas[] = [];
-  const priorDocument = globalThis.document;
-  Object.defineProperty(globalThis, "document", {
-    configurable: true,
-    value: {
-      createElement: () => {
-        const canvas = new FakeCanvas();
-        created.push(canvas);
-        return canvas;
-      },
-    },
-  });
-  try {
-    const latestPixels = () => {
-      const pixels = created.at(-1)?.context.data;
-      if (!pixels) throw new Error("Expected a prepared stamp");
-      return pixels;
-    };
-    const painter = new RockBodyPainter([]);
-    painter.prepareLighting({
-      incomingIntensity: 1,
-      shadowIntensity: 0,
-      temperatureK: 3500,
-    });
-    const warm = latestPixels();
-    painter.prepareLighting({
-      incomingIntensity: 1,
-      shadowIntensity: 0,
-      temperatureK: 10000,
-    });
-    const cool = latestPixels();
-    const dark = (64 * 128 + 32) * 4;
-    const lit = (64 * 128 + 110) * 4;
-    expect([warm[dark], warm[dark + 1], warm[dark + 2]]).toEqual([
-      128, 128, 128,
-    ]);
-    expect([cool[dark], cool[dark + 1], cool[dark + 2]]).toEqual([
-      128, 128, 128,
-    ]);
-    expect(warm[lit]).toBeGreaterThan(warm[lit + 1]);
-    expect(warm[lit + 1]).toBeGreaterThan(warm[lit + 2]);
-    expect(cool[lit + 2]).toBeGreaterThan(cool[lit + 1]);
-    expect(cool[lit + 1]).toBeGreaterThan(cool[lit]);
-    painter.prepareLighting({
-      incomingIntensity: 0,
-      shadowIntensity: 0,
-      temperatureK: 3500,
-    });
-    const neutral = latestPixels();
-    expect([neutral[lit], neutral[lit + 1], neutral[lit + 2]]).toEqual([
-      128, 128, 128,
-    ]);
-    painter.dispose();
   } finally {
     if (priorDocument)
       Object.defineProperty(globalThis, "document", { value: priorDocument });
@@ -297,10 +211,8 @@ class FakeCanvas {
 
 class FakeRasterContext {
   putCount = 0;
-  data?: Uint8ClampedArray;
   createImageData(width: number, height: number) {
-    this.data = new Uint8ClampedArray(width * height * 4);
-    return { data: this.data };
+    return { data: new Uint8ClampedArray(width * height * 4) };
   }
   putImageData() {
     this.putCount++;

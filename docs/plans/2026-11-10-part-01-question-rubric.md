@@ -1,7 +1,7 @@
 # Planned rubric: is the design question ready for part 02?
 
 Adopted 11 November 2026: the procedure now lives in the design-study skill's
-[question test](../../.agents/skills/design-study/references/question-test.md)
+former question test (`.agents/skills/design-study/references/question-test.md`, retained in Git history)
 and the study spec allows its stamp on section 01. That file is the rule; this
 plan keeps the runs and the reasoning. Decided with it: a fail is heard and
 does not block; a corrected section need not be re-tested but says whether it

@@ -1,17 +1,6 @@
 import { chooseShip, enablePreviewContent } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 
-test("shared weapon fitting and turret geometry", async ({ page }, info) => {
-  await page.goto("/lab/entities/ship");
-  await page.getByLabel("Show railgun and laser").check();
-  const slider = page.getByRole("slider", { name: /Laser rotation/ });
-  await slider.press("End");
-  await expect(slider).toHaveValue("180");
-  const path = info.outputPath("weapon-fittings.png");
-  await page.screenshot({ path });
-  await info.attach("weapon-fittings", { path, contentType: "image/png" });
-});
-
 for (const width of [1280, 844]) {
   test(`armed practice review at ${width}`, async ({ page }, info) => {
     const time = new Date("2026-11-03T00:00:00Z");

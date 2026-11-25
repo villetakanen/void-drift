@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-11-24T160006-action-group",
+  "recorded_at": "2026-11-24T16:00:06.004229+00:00",
+  "work_ref": "docs/specs/factory/design-system/actions/spec.md#action-group-navigation",
+  "intent": "User decision: action groups contain native command buttons and navigation links; standalone links occupy button-sized slots while appearing as links. Apply to the title Credits action.",
+  "result": "ActionGroup.svelte replaces ButtonGroup.svelte; buttons.css defines action-link geometry and visible focus; TitleScreen.svelte uses an underlined Credits link; LabActions.svelte demonstrates it; Actions spec records the rule.",
+  "verification": "Observed in this session: lint, Astro diagnostics (zero errors/warnings), affected spec checks and check:repo (23 tests) passed. Browser verification timed out while the preview served stale content. Subsequent pnpm dev:restart and dev:status succeeded with PID 91148 and ready port 4321. No completed browser geometry, focus-navigation or visual inspection after restart. Whole-checkout verify:changed selected check:repo, lint, check:types and test: all passed in artifacts/verification/2026-11-24T15-59-53.598Z-EqRhZC/, but the overall run rejected source mutation because this closeout was added during verification. A fresh run is required for the final snapshot. Other concurrent Field Guide and typography edits are included at the user request and are outside this closeout intent.",
+  "findings": [
+    {
+      "classification": "unverifiable_claim",
+      "summary": "Rendered action-link parity and arrow navigation remain unverified after the successful preview restart. Source implementation and static checks do not establish browser behaviour.",
+      "evidence": [
+        {
+          "locator": "apps/web/src/components/inputs/ActionGroup.svelte",
+          "supports": "Observed selector includes action links in directional navigation.",
+          "kind": "observed"
+        },
+        {
+          "locator": "packages/core/src/lib/styles/buttons.css",
+          "supports": "Observed action-link sizing and focus styles.",
+          "kind": "observed"
+        },
+        {
+          "locator": "artifacts/shared-preview/astro.log",
+          "supports": "Post-restart browser verification capture and interaction transcript are missing.",
+          "kind": "missing"
+        }
+      ],
+      "prior_reports": [],
+      "evidence_status": "unresolved"
+    }
+  ]
+}

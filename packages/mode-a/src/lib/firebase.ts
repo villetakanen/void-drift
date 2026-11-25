@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { FirebaseError, initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth, signInAnonymously } from "firebase/auth";
 import {
   collection,
@@ -67,13 +67,15 @@ export async function ensureAnonymousSession() {
   await auth.authStateReady();
   return auth.currentUser ?? (await signInAnonymously(auth)).user;
 }
+class ScoreTimeout extends Error {}
+
 function withTimeout<T>(promise: Promise<T>): Promise<T> {
   let timer: ReturnType<typeof setTimeout>;
   return Promise.race([
     promise,
     new Promise<never>((_, reject) => {
       timer = setTimeout(
-        () => reject(new Error("Shared scores timed out. Please retry.")),
+        () => reject(new ScoreTimeout("Shared scores timed out.")),
         10000,
       );
     }),
@@ -107,8 +109,6 @@ function scoreReference(userId: string, shipId: string) {
     `${CHALLENGE}_${userId}_${shipId}`,
   );
 }
-const message = (error: unknown, fallback: string) =>
-  error instanceof Error && error.message ? error.message : fallback;
 /**
  * Reads the player's own stored best for a ship on the client's board, from
  * the server, wherever it ranks. A failed, timed-out or unreadable read is
@@ -125,25 +125,20 @@ export async function loadPersonalBest(
         return readPersonalBest(row.exists() ? row.data() : undefined);
       })(),
     );
-    return (
-      best ?? { status: "unavailable", error: "Your saved best is unreadable." }
-    );
-  } catch (error) {
-    return {
-      status: "unavailable",
-      error: message(error, "Unable to check your best."),
-    };
+    return best ?? { status: "unavailable" };
+  } catch {
+    return { status: "unavailable" };
   }
 }
 /**
  * Saves a run as the player's best for its ship. The transaction rechecks
  * the stored row, so an equal or higher best stays and is reported as kept.
- * After a timeout, a retry finds a row this run already wrote and reports it
- * as saved.
+ * A matching best stays too, without assuming which attempt wrote it.
  */
 export async function submitHighScore(
   submission: HighScoreSubmission,
 ): Promise<SaveOutcome> {
+  let transactionStarted = false;
   try {
     const valid = HighScoreSubmissionSchema.parse(submission);
     return await withTimeout(
@@ -152,6 +147,7 @@ export async function submitHighScore(
         const { db } = getServices();
         const score = HighScoreSchema.parse({ ...valid, userId: user.uid });
         const reference = scoreReference(user.uid, score.shipId);
+        transactionStarted = true;
         const settled = await runTransaction(db, async (transaction) => {
           const previous = await transaction.get(reference);
           const decision = settleScore(
@@ -161,15 +157,19 @@ export async function submitHighScore(
           if (decision.write) transaction.set(reference, score);
           return decision;
         });
-        return settled.write || settled.outcome === "saved"
-          ? { outcome: "saved", scoreId: reference.id }
-          : { outcome: "kept", best: settled.best };
+        if (settled.write) return { outcome: "saved", scoreId: reference.id };
+        if (settled.outcome === "matching") return { outcome: "matching" };
+        return { outcome: "kept", best: settled.best };
       })(),
     );
   } catch (error) {
-    return {
-      outcome: "failed",
-      error: message(error, "Unable to submit score."),
-    };
+    // A deadline does not cancel the transaction or establish its result.
+    if (error instanceof ScoreTimeout) return { outcome: "unconfirmed" };
+    if (
+      !transactionStarted ||
+      (error instanceof FirebaseError && error.code === "permission-denied")
+    )
+      return { outcome: "failed" };
+    return { outcome: "unconfirmed" };
   }
 }

@@ -398,3 +398,32 @@
     transparent 2px 6px
   );
 }
+
+/* Standalone links occupy the same action slot as framed buttons. */
+.action-link {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--button-min-height);
+  padding: var(--button-padding-y) var(--button-padding-x);
+  font-family: inherit;
+  font-size: var(--button-font-size);
+  font-weight: var(--button-font-weight);
+  line-height: 1;
+}
+.action-link:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset-inset);
+}
+.button-group--vertical .action-link {
+  min-width: 0;
+  width: 100%;
+}
+
+@container (max-width: 580px) {
+  .button-group--strip .action-link {
+    width: 100%;
+    min-width: 0;
+  }
+}

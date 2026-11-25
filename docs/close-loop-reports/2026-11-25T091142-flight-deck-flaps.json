@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-11-25T091142-flight-deck-flaps",
+  "recorded_at": "2026-11-25T09:11:42Z",
+  "work_ref": "docs/specs/game/controls/spec.md#automatic-weapons-command",
+  "intent": "Adopt the paired Pause and Weapons flaps from the Flight Deck study's adoption map, then address the external review. Controls owns the run-local Auto/Off command: Practice and post-entry Derelicts/Gauntlet, passive Survival and arrival, one activation per click, tap or standalone Shift release, and no queued command during interruptions or energy emergency. Game Screen owns the readout and Pause behavior; Parts owns reserve and weapon operation, including suppressing new fire without dropping targets or cancelling funded effects.",
+  "result": "Inspected the current working tree at HEAD 5478d768. FlightDeck.svelte uses the shared DeckFlap.svelte, also shown at apps/web/src/pages/lab/ds/flight-controls.astro. The historical review's Shift-plus-click double-toggle and stale non-Shift held-key dependency are addressed in source: a captured pointerdown cancels pending Shift, and live modifier flags plus Shift-only tracking replace the general held-key set. Controls now specifies release and chords; Derelicts documents the arrival lock without disabling tracking. The design-system Inputs spec and canonical Lab example replace the study as the flap contract and reference. Simulation owns availability and choice; the inspected unit suites cover reserve equality, choice preservation, Derelicts/Gauntlet gating and plasma transitions. Practice's flap test establishes the choice change, not live combat there. Replay still excludes the command by the current Controls contract. The review's emergency swapping risk is not closed by the spec clarification: reserve recovery is immediate and DeckFlap still replaces the button with an alert. The earlier study closeout (docs/close-loop-reports/2026-11-24T222000-designer-led-studies.json) treated adoption as separate; its captures establish the study visuals, not production behavior. No prior closeout for the Controls anchor was found.",
+  "verification": "Reported in the coordinating session: the parent directly reran pnpm test (387 passed in 78 files), pnpm lint and git diff --check (both passed); workers reported six focused Chromium tests and passing type checks. This closeout inspected the retained test source, not those executions. Directly observed here: git diff --check passed; node scripts/spec-lint/check.mjs on the edited spec directories emitted no findings against edited files, including the three editor-introduced provenance failures named in the review. The recursive Game and Design system scans still reported 27 and 4 findings respectively, outside edited files. docs/reviews/2026-11-25-flight-deck-flaps.md is pre-fix evidence; its 386-test, build and contract results are not post-fix reruns. The coordinator reports that the user verified 13 specs before the clarifications. The existing verified entries are present; they do not establish user confirmation of the later wording. No current full browser run, physical iPad Safari, live reserve-recovery browser journey or screen-reader result was supplied.",
+  "findings": [
+    {
+      "classification": "one_off_issue",
+      "summary": "The earlier absence of browser coverage is partly closed: the retained test covers the operable flap and two-finger activation, but not the reviewed standalone Shift interactions or the passive and emergency transitions. This is a coverage gap, not evidence that those behaviors fail.",
+      "evidence": [
+        {
+          "locator": "tests/browser/flight-deck.spec.ts",
+          "supports": "Checks a single tap, a second-finger tap while thrust stays active, mouse click and focused Space in Practice; no Shift, passive or emergency assertion.",
+          "kind": "observed"
+        },
+        {
+          "locator": "packages/mode-a/src/lib/weapons-choice.test.ts",
+          "supports": "Tests passive Survival and choice restoration by assigning power across the reserve; does not exercise either readout in a browser.",
+          "kind": "observed"
+        },
+        {
+          "locator": "docs/reviews/2026-11-25-flight-deck-flaps.md#defects",
+          "supports": "Records the pre-fix keyboard defects, not the behavior of the revised handler.",
+          "kind": "observed"
+        }
+      ],
+      "prior_reports": [],
+      "evidence_status": "new"
+    },
+    {
+      "classification": "unverifiable_claim",
+      "summary": "Second-finger operation on physical iPad Safari and usable emergency recovery with assistive technology remain unverified. Chromium touch emulation and a unit-level reserve transition do not establish device event delivery, focus continuity or announcement behavior near the reserve.",
+      "evidence": [
+        {
+          "locator": "tests/browser/flight-deck.spec.ts",
+          "supports": "The retained multitouch test uses Chromium CDP, not Safari on hardware.",
+          "kind": "observed"
+        },
+        {
+          "locator": "apps/web/src/components/inputs/DeckFlap.svelte",
+          "supports": "Emergency replaces the focusable button with a noninteractive alert; source semantics do not establish what gets announced during live recovery.",
+          "kind": "observed"
+        },
+        {
+          "locator": "Expected: physical iPad Safari second-finger tap; live reserve crossing and recovery with focus and screen-reader observation",
+          "supports": "No result was supplied for these checks; neither a pass nor the frequency of visible or audible flicker is established.",
+          "kind": "missing"
+        }
+      ],
+      "prior_reports": [
+        "docs/close-loop-reports/2026-11-24T115440-mount-planner.json",
+        "docs/close-loop-reports/2026-11-24T142000-title-stray-clicks.json"
+      ],
+      "evidence_status": "unresolved"
+    }
+  ]
+}

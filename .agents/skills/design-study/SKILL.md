@@ -1,196 +1,100 @@
 ---
 name: design-study
-description: Develop a four-part design study (problem, exploration, readiness, scope) and end it as accepted, ruled out, or stopped, preserving the designer's decisions.
+description: Support a designer-led study through problem development, exploration, game-design alignment and an adoption map. Build tools and preserve discoveries under the designer’s direction.
 ---
 
 # Design study
 
-Read the [design principles](../../../docs/design.md).
-A topic or uncertainty is enough to begin; developing the problem is part of the work.
+The designer directs the inquiry and judges the design. The agent contributes
+reasoning, investigates relevant facts, builds tools and examples, and preserves
+what is learned. A topic or an unsatisfactory experience is enough to begin.
 
-Write the study so another designer or agent can pick up the question later, and a
-product engineer can understand what the exploration suggests for the game. What
-seemed promising, and why? What did the example reveal? What changed your thinking,
-and what’s still open? When a conversation changes the design, preserve the reason.
-Leave the coordination in the conversation.
+Read the [design principles](../../../docs/design.md) and the existing study,
+if any. Check relevant product behaviour and specs as needed to inform the
+conversation. Distinguish current implementation, intended behaviour, proposed
+changes and assumptions.
 
-If the study suggests a change, describe what it would mean in play. A designer can
-propose where it might fit and explain why that fit matters. The project decides
-whether and where to adopt it. The product engineer works out how to incorporate it.
-A study can also end with a clearer understanding of the design and no proposed change.
+## Working together
 
-## Start from established reality
+Develop a shared understanding of the next design move. A clear request is enough
+to act: build and verify the requested step without repeated permission questions.
+When the designer delegates creative choices, exercise judgment within that scope.
+When direction is unclear, contribute reasoning and a recommendation for discussion.
 
-Before proposing an example, inspect the relevant current product behaviour,
-visual language and guidance. Explain in the study's existing reasoning how they
-inform the question and proposal, and distinguish an observed gap from a
-hypothesised need. When the need is unestablished, an example may investigate
-whether it exists; delivering a concrete step need not mean proposing a solution.
-Grounding informs design without requiring reuse: shared tokens or production
-drawing functions alone do not establish it.
+Feedback may invite refinement, a different instrument, further discussion or a
+change of question. Understand it before acting. Preserve accepted qualities and
+their reasons; acceptance of one quality does not settle the whole design. Offer
+alternatives and challenge assumptions when useful, while leaving design direction
+with the designer.
 
-Use history only
-for a specific research question, rather than routinely loading earlier studies or
-factory reports. Earlier studies supply evidence. Carry a prior decision forward as settled only when
-the project has adopted it.
-Create a cycle-specific slug; if reusing a URL is necessary, archive the old page first.
-
-## Moving between parts
-
-Read the page and say which part is active before working.
-
-| Move | Needs |
-|---|---|
-| 01 to 02 | The question test heard; the designer agrees the question or says to explore. |
-| 02 to 03 | The designer accepts a conclusion that answers section 01’s question, or selects a result for independent delivery. |
-| 02 to 01 | The designer accepts an example built on an amended question. |
-| 03 to 04 | Every blocker to the intended delivery named. |
-| 03 to 02 | A named question that needs more design evidence. |
-| 04 to 03 | A slice that cannot be sized without a readiness answer. |
-| Any to an end state | The designer's decision. |
-
-When an independently usable result has gone through 03 and 04, return to 02 for
-the rest of the scope.
-
-### Amend the question
-
-Explore an amendment to section 01 when either of these occurs:
-
-- a retained observation contradicts something section 01 holds fixed
-- the designer changes what they want the study to settle.
-
-Build the next example on the question as it would become. Say in one line what
-it sets aside from section 01 and what the question becomes. Leave section 01 as
-it is until the designer accepts the example. If the designer rejects it, discard
-it like any rejected proposal and continue on the question as written.
-
-Consider whether a narrower question would help when either of these occurs:
-
-- two replacements in a row are rejected and no observation is retained
-- an open item cannot be shown in a built example and judged from it
-
-If narrowing would help, suggest the narrower question and explain what it would
-let the designer judge. Otherwise, continue exploring the current question.
-
-One rejected proposal is neither case.
-
-A question belongs in a separate study when it would settle a design decision
-outside section 01. Wait for the designer’s decision before building an example for the
-new question. Ask whether the designer wants to open a separate study for the new
-question.
-
-When the designer accepts an example built on an amended question:
-
-1. Rewrite section 01 with the current question, within its length target.
-2. Have the question test run again and stamp the new result.
-3. Mark each retained exploration step as evidence for the new question or as
-   outside it.
-4. Open that example's step with one dated line: what changed in the question and
-   why.
+The designer steers movement between the four parts. Follow explicit instructions
+and substantive agreements without a separate approval ritual. Return to earlier
+questions when useful. Do not advance merely because an artifact is finished or
+the designer has not replied.
 
 ## 01 / Develop the problem
 
-Synthesize supplied intent and relevant knowledge into a provisional purpose,
-principles, design tension and important unknowns. Express established intent as design requirements, proposed explanations as hypotheses,
-and observations with their supporting evidence. Synthesize discussion into design
-reasoning for the document’s readers; keep conversational attribution in chat. Contribute reasoning
-before asking focused questions about creative intent or boundaries. Unknown mechanics
-are investigation items, not homework the designer must finish before work can begin.
-State what the question holds fixed (accepted mechanics, established intent) and what it
-leaves open; exploration varies only the open part. A mechanic already settled in the
-game is fixed, not an unknown.
+Give the designer room to explain the situation. Discuss and synthesize the
+unsatisfactory experience, intended qualities, relevant context, constraints and
+important unknowns. A question can introduce this account; it must not replace it.
+Use enough context for another reader to understand why the problem matters.
 
-A study answers a question that concerns one object or decision.
-A reader can name what part of the game or Lab the question concerns and explain what answering it would help the designer decide.
-With more than one object or decision, propose the one this cycle settles and
-name the rest as adjacent questions outside it. A change that needs several together is
-a version of the game, not a study; say so instead of exploring it. When section 01 is
-drafted, have the [question test](references/question-test.md) run by a clean-context
-reviewer, answer its findings in the section and stamp the result. Current implementation supplies available means and feasibility, not desired
-intent. Research missing knowledge when useful and distinguish it from game observations.
+Help find a manageable inquiry without forcing a premature single-sentence brief.
+Unknowns can become exploration material. Revise the framing as shared understanding
+changes, preserving the reason for consequential changes. Begin exploration when
+the designer directs it or the conversation establishes what to investigate next.
 
-When drafting or revising study prose, read the annotated
-[writing examples](references/writing.md). Edit the title, question, section heading
-and opening together so each contributes useful information. Aim for 150–250 words
-in the opening, with the concrete situation and design tension up front.
+## 02 / Explore together
 
-Create the early page using StudyLayout and validated metadata in
-`apps/web/src/data/studies.ts`. Use [Studies](../../../docs/specs/studies/spec.md)
-for page construction and publication. Inspect the rendered reading width, spacing
-and section progression before presenting it.
+Work in useful increments, numbered 02.1, 02.2 and so on. A step may develop the
+apparatus, compare possibilities, tune a selected direction or investigate behaviour.
+Choose the means around what the designer needs to judge or manipulate. Use
+[lab-instruments](../lab-instruments/SKILL.md) when choosing or building tools.
+A static specimen, editable instrument, simulation or discussion may each be right.
 
-Update the page with useful reasoning and feedback in the same round. Advance when
-the question test has run and been heard, and conversation establishes shared
-purpose/scope and resolves framing objections; substantive agreement or a clear
-instruction to explore suffices for the conversation. The designer may proceed after a
-failed test; record it as overridden. Unknown mechanics
-can remain for exploration. Avoid a generic approval interview; silence is not agreement.
+Inspect what you build before presenting it. Preserve the relevant game context
+and identify substitutions. Let the designer’s response guide the next step.
+Record useful findings, selected values or variants, reasons and remaining uncertainty.
+An unsuccessful experiment can be worth retaining when it taught something useful;
+there is no obligation to archive every attempt or immediately replace a rejection.
 
-## 02 / Explore
+Keep live examples in the active step. Before changing or moving an instrument,
+capture useful results in the previous step, with conditions needed to interpret
+them. Use recordings when motion matters. Keep older steps compact and accessible.
+A later reconstruction must be identified as such. Preserve reusable instruments;
+remove obsolete experimental code after checking its consumers.
 
-Read [references/exploration.md](references/exploration.md) when entering or resuming
-part 02. Continue with the same agent and conversation. Carry in the shared question,
-established references and useful current-cycle agreements; carry out supported
-conclusions and remaining uncertainties. The guide owns concrete proposals, feedback,
-retention and focus protection.
+## 03 / Fit the game
 
-Choose an example that lets the designer judge the question at hand. Preserve the
-conditions that matter to that judgment. Record what the example revealed and what
-remains uncertain.
+Discuss how the emerging design belongs in the game: player understanding and
+choices, visual language, surrounding interactions, modes and consequences.
+Contribute game-design reasoning and surface tensions for the designer to resolve.
+Record the intended scope of each choice and label assumptions explicitly.
 
-For recorded findings, retain written conclusions and suitable static or recorded
-evidence of the observed results. Instruments use current production simulation code;
-later production changes may alter or invalidate old examples. The exploration
-guide replaces each earlier step's live example with a capture when the study advances;
-the closing procedure below retires what is still live at the end.
+Technical constraints matter when they affect the design possibilities. Keep this
+part focused on design fit; return to exploration when a question needs an example.
 
-## 03 / Assess readiness
+## 04 / Map the implications
 
-Inspect current implementation against the accepted conclusion. Identify reusable
-systems, required adaptations, dependencies, unresolved choices and the changes
-the proposal would require in the owning specs. Assess the intended
-delivery: for an alpha trial, explain concrete blockers while allowing tuning and
-configurability to remain provisional. Return a named question to exploration when
-more design evidence is needed. Readiness assesses feasibility, not study quality.
+Survey what adoption would touch: existing or missing specs, features, shared
+components, design-system pages and Lab instruments. Check their current contracts
+so the map names concrete owners, gaps and unresolved decisions. Investigate code
+when needed to understand behaviour without a spec.
 
-## 04 / Size the work
+Keep this a useful adoption map. Detailed engineering design, estimates and delivery
+breakdowns belong to subsequent work. Study choices remain proposals to the project:
+adoption must settle whether the change is wanted and where it applies, then record
+that intent in owning specs before changing shared implementation.
 
-Trace the accepted conclusion through its shared definitions, game systems, Lab pages
-and owning specs. Cut the work into independently deliverable slices with dependencies,
-rough size and checks for correctness and fidelity. Keep provisional choices explicit.
-If a proposal would change a principle in `docs/design.md`, flag it before the
-slices and in the handoff for explicit design discussion.
-Writing scope does not start implementation; use the existing authorization boundary.
+## Keep the record useful
 
-## Finish and verify
+Update the page as understanding develops. Preserve reasons and the extent of
+decisions in readable prose, separating observations from interpretations. Use
+[Studies](../../../docs/specs/studies/spec.md) for publication, metadata and closure
+contracts; use its supported metadata source without duplicating it.
 
-The designer may park a study as blocked on a named dependency and state what
-would allow it to resume. The designer may accept after scope, rule a direction
-out during exploration or readiness, or stop at any part. Set the
-registry status only then; use close-loop for a stopped study. Retain the designer's
-assessment of the study, including failure, separately from the value of ending it
-for the project.
-
-When ending a study, consolidate its decisions, reasons, useful observations and
-remaining uncertainty into a document understandable without operating its
-experimental tools. Read the [closure example](references/writing.md#close-the-study-by-preserving-its-findings-and-retiring-its-apparatus).
-Capture useful visual evidence as static images with captions; use a recorded clip
-or sequence when a still image would lose the relevant motion. Retain the conditions
-needed to interpret the evidence and store retained media in versioned study assets.
-State evidence gaps explicitly; a new capture is not proof of an earlier observation.
-
-Replace temporary interactive examples with those records before removing their code.
-Check consumers, then remove study-specific components, scripts and fixtures that
-have no continuing use. Preserve shared production systems and reusable Lab
-instruments. Publish the closed page as static MDX with its retained media.
-Verify the resulting page and retained media, and check affected consumers
-after cleanup. Useful evidence survives independently of the retired apparatus.
-
-Reuse production systems in interactive examples and scope experiments. Check keyboard,
-the narrowest supported window (1280px; the Lab is never checked below that) and relevant states, along with affected repository gates and rendering.
-Report automated correctness, visual inspection and human judgment separately; provide
-the review URL. One lead owns synthesis; delegate only when authorized and useful.
-
-Ordinary studies retain their design reasoning, readiness, scope and human judgment.
-Do not generate a separate ratings report by default. New interpretations of factory evidence still need
-review before becoming standing guidance.
+The designer decides whether to accept, rule out, stop or park the study. At closure,
+retain conclusions, uncertainty and useful versioned captures so the record stands
+without its temporary apparatus. Verify the rendered page, media and affected
+consumers. Report automated checks, visual inspection and designer judgment
+separately, with the review URL. A study can end usefully without proposing a change.

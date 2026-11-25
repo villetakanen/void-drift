@@ -1,12 +1,23 @@
+---
+generated:
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-25T08:37:38Z"
+verified:
+  - by: "human:ville-takanen"
+    at: "2026-11-25T09:16:37+02:00"
+---
+
 # Light Ion Cannon
 
-## Context
+## Blueprint
+
+### Context
 
 A baseline automatic directional weapon implements the accepted
 [Light Ion Cannon study](../../../../apps/web/src/pages/lab/studies/light-ion-cannon-2026-11-08.astro).
 The accepted form, mounting and firing identity remain fixed during integration.
 
-## Architecture
+### Architecture
 
 `packages/mode-a/src/lib/schemas/loadout.ts` validates the genuine
 `light-ion-cannon` part and version-2 saved fittings. Existing compatible weapon,
@@ -23,7 +34,7 @@ in play, the equipment encounter and the mixed-effects Lab. Presentation cannot
 apply damage. Existing Hangar persistence and launch handoff carry the new part
 without a storage migration.
 
-## Contract
+### Constraints
 
 - An instant 300-unit ray fires at three shots/s from each ready cannon's own
   channel-tip muzzle along its fixed mount direction. There is no tracking or recoil.
@@ -45,11 +56,10 @@ without a storage migration.
   even if an earlier shot destroys the trigger; each then queries its own first
   contact in the resulting world. A side cannon can miss and still pays.
 - Allocation follows stable build-mount order. Each actual discharge debits 0.2p,
-  including misses, and starts its own 1/3-second cooldown. The shared weapon energy
-  floor gates every discharge: below 10% of the ship's energy capacity no cannon
-  fires, takes power or starts a cooldown; it also requires more than 10 power. A shot the
-  remaining power cannot fund is refused the same way, and stops funding the
-  remaining ready cannons.
+  including misses, and starts its own 1/3-second cooldown. Every discharge is
+  subject to [shared weapon operation, reserve and affordability](../parts/spec.md#weapon-operation).
+  If the remaining power cannot pay for a shot, funding stops for the rest
+  of the ready cannons.
   Guns draw power after defence weapons, as the
   [point defence contract](../ion-point-defence/spec.md) orders it.
 - First contact stops the ray, applies integer damage once, and starts the existing
@@ -62,6 +72,8 @@ without a storage migration.
   into persistent FX. The complete blue profile retains its transparent 300-unit
   tip; a hit clips it rather than stretching it. Cached profiles avoid per-frame
   gradient creation. Existing shared decay, pause, camera and reset semantics apply.
+
+## Contract
 
 ### Definition of Done
 

@@ -1,6 +1,6 @@
 ---
 import PageHeader from "../components/PageHeader.svelte";
-import { type Study, studies } from "../data/studies";
+import { type Study, studies, studySchema } from "../data/studies";
 import "@void-drift/core/styles/reset.css";
 import "@void-drift/core/styles/tokens.css";
 import "@void-drift/core/styles/typography.css";
@@ -9,9 +9,13 @@ import "@void-drift/core/styles/surfaces.css";
 
 interface Props {
   study?: Study;
+  frontmatter?: Record<string, unknown>;
 }
 const slug = Astro.url.pathname.replace(/\/$/, "").split("/").pop();
-const study = Astro.props.study ?? studies.find((entry) => entry.slug === slug);
+const frontmatter = Astro.props.frontmatter;
+const study = frontmatter?.title
+  ? studySchema.parse({ ...frontmatter, slug })
+  : (Astro.props.study ?? studies.find((entry) => entry.slug === slug));
 ---
 
 <!doctype html>

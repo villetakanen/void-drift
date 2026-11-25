@@ -1,8 +1,8 @@
 ---
 
 generated:
-  by: "openai-codex/gpt-6.2"
-  at: "2026-11-23T08:40:39+02:00"
+  by: "openai/gpt-6.1-terra"
+  at: "2026-11-24T14:37:17+02:00"
 verified: []
 
 ---
@@ -46,7 +46,7 @@ for game design and is not shown to players.
   flew.
 - **Presentation.** Top Scores uses the shared
   [game field backdrop](../../factory/design-system/game-field-backdrop/spec.md)
-  unchanged from the Title Screen, Settings and Credits. The backdrop owns its
+  unchanged from the Title Screen and Settings. The backdrop owns its
   decorative system and scrim; this page owns the score board.
 
 ### Constraints
@@ -114,13 +114,13 @@ for game design and is not shown to players.
   semantics, defaults to score, and reorders only the already loaded rows.
 - C9: The board shows no fitting and neither ship choice.
 - C10: Two anonymous players can each save a run and see both on the board.
-- C11: With Firebase unconfigured, the board explains that shared scores are
-  unavailable and offers Retry.
+- C11: If the board cannot load, including with Firebase unconfigured, it says
+  “Couldn’t load Top Scores.” and offers Retry.
 - C12: Firestore rules accept a write only for a ruleset they name, and a
   raised score keeps its ruleset; rows of a ruleset the rules do not name
   remain stored and readable.
 - C13: Top Scores renders the same shared game field backdrop as the Title
-  Screen, Settings and Credits.
+  Screen and Settings.
 
 ### Regression guardrails
 
@@ -187,8 +187,8 @@ Feature: Scores
     When I select By score
     Then the original score order returns
 
-  Scenario: Firebase is absent
-    Given Firebase is not configured
+  Scenario: Top Scores cannot load
+    Given shared scores are unavailable
     When I open Top Scores
-    Then it explains that shared scores are unavailable
+    Then it says "Couldn’t load Top Scores." and offers Retry
 ```

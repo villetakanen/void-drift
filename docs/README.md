@@ -15,7 +15,7 @@ consideration.
 | A focused approach or session handoff | [Dated plans](plans/), [briefs](briefs/) |
 | Design explorations | [Lab studies](../apps/web/src/pages/lab/studies/) |
 | Findings and investigations | [Reviews](reviews/), [reports](reports/), [audits](audits/) |
-| What changed and how it was checked | [Loop evidence](loop-evidence/) |
+| What changed and how it was checked | [Loop evidence (previous cycle)](https://github.com/villetakanen/void-drift/tree/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence) |
 | What shipped | [Release records](releases/) |
 | Earlier thinking | [History](history/), [archive](archive/), [earlier project vision](project-vision.md) |
 

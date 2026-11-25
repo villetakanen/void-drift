@@ -26,6 +26,6 @@ that all factory acceptance criteria or human experience checks are complete.
   [built-site smoke](../../scripts/release-smoke.mjs) and
   [documented commands](../development.md#release).
   Verification: [regression cases](../../scripts/release.test.mjs) and
-  [run outcomes and limitations](../loop-evidence/2026-11-03-factory-harness-amendments.md#verification).
+  [run outcomes and limitations](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-11-03-factory-harness-amendments.md#verification).
   Done means the tool is implemented and locally checked; it does not mean a release
   was published or that live backend availability was verified.

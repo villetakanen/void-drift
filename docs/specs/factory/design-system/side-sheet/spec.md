@@ -1,7 +1,7 @@
 ---
 generated:
   by: "codex/gpt-6.2"
-  at: "2026-11-21T19:26:34+00:00"
+  at: "2026-11-24T19:44:00+00:00"
 verified:
   - by: "human:ville-takanen"
     at: "2026-11-21T19:28:33+00:00"
@@ -22,7 +22,7 @@ full preview. `/lab/ds/instrument-parts` demonstrates the shared component.
 
 [SideSheet.svelte](../../../../../apps/web/src/components/lab/instrument/SideSheet.svelte)
 owns its open state, trigger, backdrop, named pane, scrolling and focus return.
-Hosts supply the visible title, accessible label and child controls, and own
+Hosts supply the visible title, accessible label, optional side and child controls, and own
 parameter values, validation and effects on the instrument. Each host provides a
 positioned container with a defined height and places the sheet outside any
 scaled drawing.
@@ -34,8 +34,9 @@ that control's interaction.
 
 ### Constraints
 
-- The sheet starts closed, with its menu button at the host's upper-right corner.
-- The open sheet overlays the host's right edge at full height. Its width,
+- The sheet starts closed. Its side defaults to right; a host may explicitly choose left.
+  The menu and close button share the upper corner on that side.
+- The open sheet overlays the chosen edge of the host at full height. Its width,
   including padding, is the smaller golden-ratio share (`1 / φ² ≈ 38.1966%`).
 - The backdrop covers the host behind the sheet. Overflow scrolls inside the pane.
 - Opening focuses the close button. Closing returns focus to the menu button.
@@ -60,6 +61,13 @@ that control's interaction.
 ### Scenarios
 
 ```gherkin
+Scenario: Choose the left edge
+  Given a study hosts the sheet with side set to left
+  When I open its upper-left menu button
+  Then the sheet overlays the left edge and leaves the right side visible
+  And closing returns focus to the upper-left menu button
+  And hosts without an explicit side retain the right-hand sheet
+
 Scenario: Open and close the parameter pane
   Given an instrument with its parameter sheet closed
   When I activate its upper-right menu button

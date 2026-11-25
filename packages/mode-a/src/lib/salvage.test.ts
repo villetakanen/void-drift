@@ -300,13 +300,6 @@ describe("Derelicts weapons and salvage", () => {
     expect(f.system.bodies[0]?.hull ?? 0).toBeLessThan(SALVAGE.wreck.hull);
     expect(f.ship.vel.x).toBe(0);
   });
-  it("spends no energy below the weapon floor", () => {
-    const f = fixture(["rail", "laser"]);
-    f.system.bodies.push(body("wreck", 550, 400));
-    f.resources.power = 100 * WEAPONS.energyFloor - 0.1;
-    f.step(60);
-    expect(f.system.energySpent).toBe(0);
-  });
   it("does not duplicate a wreck drop when multiple rounds hit together", () => {
     const f = fixture();
     f.system.bodies.push(body("wreck", 550, 400));

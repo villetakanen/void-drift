@@ -5,6 +5,14 @@ import DesignSystemLayout from "../../layouts/DesignSystemLayout.astro";
 ---
 
 <DesignSystemLayout title="Typography">
+  <section class="link-example">
+    <h2>Ordinary links</h2>
+    <p>
+      Links outside prose use the shared action role, including after a visit.
+      Tab to the link to inspect its shared focus ring.
+    </p>
+    <a href="/field-guide">Field Guide</a>
+  </section>
   <LabTypographyMain client:only="svelte" />
 
   <Controls slot="inspector" title="Details">
@@ -18,6 +26,10 @@ import DesignSystemLayout from "../../layouts/DesignSystemLayout.astro";
 </DesignSystemLayout>
 
 <style>
+.link-example {
+  padding: var(--spacing-md);
+}
+
 .details {
   color: var(--color-text-muted);
   font-size: var(--font-size-caption);

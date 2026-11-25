@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-11-24T115440-mount-planner",
+  "recorded_at": "2026-11-24T11:54:40Z",
+  "work_ref": "docs/specs/game/hangar/mount-planner/spec.md",
+  "intent": "Move Mount planner into Design tools (docs/specs/lab/workbench/spec.md), separate selecting from moving, and let designers select and deliberately drag an existing linked-slot crossbar by its midpoint. Crossbar offsets are signed half units from the ship origin along ship-local X, with no change to mount geometry or fitting coupling. The Mount planner spec also defines undo and draft handoff, including legacy imports.",
+  "result": "Observed in the working tree based on 47c68fe6: apps/web/src/data/lab-pages.ts puts Mount planner in Design tools for the Tray and index. apps/web/src/components/lab/mount-planner/MountPlanner.svelte implements select-first mount and crossbar editing. packages/mode-a/src/lib/mount-planner.ts validates and exports v2 with baseline and draft routing, and handles legacy imports. packages/mode-a/src/lib/build-renderer.ts shares crossbar paths with the planner while keeping the catalog default for production consumers.",
+  "verification": "Observed locator and current-link assertions against local preview HTML for the Lab index and Mount planner after the navigation change. Inspected committed-test candidates: packages/mode-a/src/lib/mount-planner.test.ts covers half-unit validation, route geometry, drift and migration; tests/browser/mount-planner.spec.ts covers keyboard routing handoff and stale legacy preservation. Delivery workers reported successful targeted checks and Chromium mouse, keyboard and emulated-touch runs at supported widths. Those temporary gesture runs were not retained as repeatable tests. Physical touch, Safari and deployment were not verified.",
+  "findings": [
+    {
+      "classification": "one_off_issue",
+      "summary": "Retained browser coverage does not exercise the select-first canvas gestures. This is a coverage limitation, not evidence that the gestures fail.",
+      "evidence": [
+        {
+          "locator": "tests/browser/mount-planner.spec.ts",
+          "supports": "The retained tests edit through fields and controls, not through a pointer gesture on a mount or a crossbar midpoint.",
+          "kind": "observed"
+        },
+        {
+          "locator": "docs/specs/game/hangar/mount-planner/spec.md (canvas selection and crossbar scenarios)",
+          "supports": "Delivery workers reported passing Chromium gesture checks for mouse and emulated touch against these behaviors; no durable transcript was retained.",
+          "kind": "reported"
+        }
+      ],
+      "prior_reports": [],
+      "evidence_status": "new"
+    }
+  ]
+}

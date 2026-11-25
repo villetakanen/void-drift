@@ -1,7 +1,7 @@
 ---
 generated:
   by: "openai-codex/gpt-6.2-sol"
-  at: "2026-11-22T07:28:15Z"
+  at: "2026-11-24T15:56:39+00:00"
 verified: []
 ---
 
@@ -11,11 +11,11 @@ verified: []
 
 ### Context
 
-Tray is a quiet navigation column beneath the Design system page header.
-It adopts Option A (base surface, neutral resting links), selected in the
-original `/lab/ds/tray` design reference. Adoption covers the Design system
-layout and its canonical demo; Lab, Design studies and game layouts retain their
-own navigation.
+Tray is a quiet navigation column beneath the page header. It uses the base
+surface and neutral resting links selected in the original `/lab/ds/tray`
+design reference. The Design system and Lab layouts use it; Design studies
+retain their own navigation. Field Guide also uses Tray for its index,
+article destinations and title-screen return link.
 
 ### Architecture
 
@@ -28,7 +28,8 @@ own navigation.
   group from the Design system registry in `apps/web/src/data/lab-pages.ts`
   (excluding Overview), then the footer links: Lab (`/lab`), Design studies
   (`/lab/studies`) and Back to Game (`/`). It selects the deepest registered
-  Design system destination covering the current path.
+  Design system destination covering the current path. The [Lab](../../../lab/spec.md)
+  supplies its own destinations and selection.
 - `apps/web/src/pages/lab/ds/tray.mdx` owns the canonical page at `/lab/ds/tray`.
   It uses the same Tray in a [Component frame](../component-frame/spec.md).
   Its Structure and Controls groups illustrate anatomy, not live taxonomy.
@@ -46,14 +47,14 @@ own navigation.
   `--focus-ring-width` and `--focus-ring-offset-inset`. Links follow native
   tab order and Enter activation; group headings are noninteractive.
 - The [Page header](../page-header/spec.md) and logo retain their geometry above
-  the tray. The live rail stays 250px wide and scrolls independently of the main
+  the tray. Live rails stay 250px wide and scroll independently of the main
   stage; the demo remains 256px wide within the available frame width.
 
 ## Contract
 
 ### Definition of Done
 
-- The live Design system rail and framed demo render the same Tray component.
+- The live Design system and Lab rails and the framed demo render the same Tray component.
 - The canonical page explains anatomy, states, accessibility, consumed tokens
   and their source values, and the component's inputs and host responsibilities.
 
@@ -61,7 +62,6 @@ own navigation.
 
 - The Components group retains its existing entries and relative registry order
   when Tray is added; the existing footer destinations and order are preserved.
-- Shared Tray adoption stays within the Design system.
 
 ### Scenarios
 
@@ -75,8 +75,8 @@ Scenario: Browse the live Design system tray
   When I open Tray or a component at an earlier address such as /lab/tokens
   Then only the link for that component has aria-current="page"
 
-Scenario: Read and operate either tray
-  Given the live Design system rail or the framed Tray demo at a viewport of at least 1280px
+Scenario: Read and operate Tray
+  Given a live rail or the framed Tray demo at a viewport of at least 1280px
   When I inspect the link rows and group headings
   Then the links use sentence-case UI type and have a minimum height of 44px
   And the smaller muted group headings are separated from preceding links by extra space
@@ -89,11 +89,11 @@ Scenario: Read and operate either tray
   And Enter activates the focused native link
 
 Scenario: Preserve layout and adoption boundaries
-  Given a Design system page at a viewport of at least 1280px with overflowing rail and main content
+  Given a Design system or Lab page at a viewport of at least 1280px with overflowing rail and main content
   When I scroll the rail and then scroll the main content
   Then each scrolls independently and the rail remains 250px wide
   And the full-width header and logo stay above both with unchanged geometry
-  When I open Lab, Design studies or the game
+  When I open Design studies or the game
   Then those layouts retain their own navigation without adopting Tray
 
 Scenario: Inspect the canonical example

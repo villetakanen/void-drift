@@ -1,72 +1,18 @@
 # Roadmap
 
-Updated 22 November 2026.
-
-Write each feature's intended outcome as a draft player-facing release note:
-what a player will be able to do or experience once it is done. These are the
-items we would later put in the release notes. Until delivered, they describe
-an intended result, not something already shipped.
-
-Keep ideas to consider alongside that outcome, so we can discuss a direction
-without turning every possibility into a task or a release promise.
-
-Each feature has an intended outcome, a release decision (candidate or selected),
-and links to relevant context. Mark it delivered only with links to its final
-spec and delivery evidence; link the release record when it ships. Implementation
-steps belong in focused [plans](plans/), and agreed behaviour belongs in
-[specs](specs/). Adding a candidate here opens a discussion; it does not authorize
-implementation.
-
-## 0.7.2 — Game over
-
-### Retry a run
-
-**Decision:** Selected; delivered.
-
-**Draft release note:** Choose Retry after a run to start fresh with a new random
-seed and the same ship, fittings, mode, and Playground setting. Choose Return
-for the title screen or Hangar if you launched from there. Saving a score still
-opens Top Scores.
-
-**Context:** [Game-over spec](specs/game/game-over/spec.md) and
-[Retry regression coverage](../tests/browser/launch-navigation.spec.ts).
-
-### See and save your ranked result
-
-**Decision:** Selected; delivered.
-
-**Draft release note:** See your final score and what ended your run at a glance.
-If you set a new ranked personal best, sign it with three initials and save it
-to the existing Fires in the Sky leaderboard. If your best stands, the game
-shows it without asking you to submit again.
-
-**Context:** [Ranked result spec](specs/game/game-over/ranked-result/spec.md) and
-[competition coverage](../tests/firebase/competition.spec.ts). See the
-[0.7.2 release record](releases/0.7.2.md) for both game-over changes.
+One short bullet per item. Keep details in linked specs or plans, and use Done
+as the starting point for release notes.
 
 ## 0.8.0
 
-Release direction is being formed. No release theme or complete scope has been
-chosen.
+### Maybe
 
-### Revamp score-table and how scores are collected
+- [Article metadata](specs/game/field-guide/spec.md) — Make article authorship and verification easy to read through a shared design-system treatment.
 
-**Decision:** Candidate.
+- [Ranked results survive rotation](specs/game/game-screen/rotate-findings.md) — Keep typed initials and save confirmation when the screen turns. (Known regression.)
 
-**Draft release note:** A revamped score-table makes it clearer how you rank
-against other pilots. After submitting a run, you can see whether it was saved
-and which of your results stays on the board.
+### Done
 
-The ranking and retention choices remain to be decided.
-
-**Ideas to consider:**
-
-- Explain when an equal or lower submission keeps the pilot's existing best: today it silently succeeds and opens the score-table, even though the new run and initials were not saved. One possibility is to show “Your best stands: 420” with a link to the table.
-
-**Context:** The [scores contract](specs/game/scores/spec.md) currently retains
-one best score per pilot and ship, replacing it only for a higher score. The
-[initials study](../apps/web/src/pages/lab/studies/ranked-initials-2026-11-20.mdx)
-explores signing a run; its proposals have not been adopted by this roadmap.
-The example above comes from the
-[submission transaction](../packages/mode-a/src/lib/firebase.ts) and
-[run-complete save flow](../apps/web/src/components/FlightDeck.svelte).
+- [Field Guide](specs/game/field-guide/spec.md) — Browse a Void Drift reference without launching the game. Old Credits links still work.
+- [Click-safe title screen](specs/game/landing-page/spec.md) — Clicking outside the menu no longer selects text or takes focus from the menu.
+- [Switch automatic weapons on or off](specs/game/controls/spec.md#automatic-weapons-command) — Tap or click Weapons, or press and release Shift on its own, in Practice or after reaching the arena in Derelicts and Gauntlet.

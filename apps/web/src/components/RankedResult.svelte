@@ -20,16 +20,17 @@ let {
   onsaved,
 }: {
   run: RankedRun;
-  /** Called once this run is the stored best. */
+  /** Called after this submission writes a new best. */
   onsaved: () => void;
 } = $props();
 
 type View =
   | { step: "offline" }
   | { step: "checking" }
-  | { step: "unavailable"; error: string }
+  | { step: "unavailable" }
   | { step: "stands"; best: number; raced?: boolean }
-  | { step: "entry"; error?: string }
+  | { step: "matching" }
+  | { step: "entry"; upload?: "failed" | "unconfirmed" }
   | { step: "saving" }
   | { step: "saved" };
 let view = $state<View>(
@@ -46,8 +47,7 @@ async function check() {
   const best = await loadPersonalBest(run.shipId);
   checking = false;
   if (!current) return;
-  if (best.status === "unavailable")
-    view = { step: "unavailable", error: best.error };
+  if (best.status === "unavailable") view = { step: "unavailable" };
   else if (best.status === "found" && !isNewPersonalBest(best, run.score))
     view = { step: "stands", best: best.score };
   else view = { step: "entry" };
@@ -64,9 +64,10 @@ async function submit() {
     rememberInitials(signed);
     view = { step: "saved" };
     onsaved();
-  } else if (result.outcome === "kept")
+  } else if (result.outcome === "matching") view = { step: "matching" };
+  else if (result.outcome === "kept")
     view = { step: "stands", best: result.best, raced: true };
-  else view = { step: "entry", error: result.error };
+  else view = { step: "entry", upload: result.outcome };
 }
 
 onMount(() => {
@@ -84,15 +85,17 @@ const status = $derived.by(() => {
     case "checking":
       return "Checking your best with this ship…";
     case "unavailable":
-      return `Your best could not be checked. ${view.error}`;
+      return "Couldn’t load your best with this ship.";
     case "stands":
       return view.raced
         ? `Your best with this ship is already ${view.best}. This run was not saved.`
         : `Your best with this ship stands at ${view.best}.`;
+    case "matching":
+      return `Best with this ship: ${run.score}`;
     case "entry":
-      return view.error
-        ? `Score not saved. ${view.error} Your initials are kept; save again.`
-        : "New best with this ship. Sign it with your initials.";
+      if (view.upload === "failed") return "Score upload failed.";
+      if (view.upload === "unconfirmed") return "Score upload not confirmed.";
+      return "New best with this ship. Sign it with your initials.";
     case "saving":
       return "Saving score…";
     case "saved":

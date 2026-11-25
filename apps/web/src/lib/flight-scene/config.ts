@@ -65,8 +65,17 @@ export const FlightSceneDocumentSchema = z
       )
       .max(16)
       .default([]),
+    /** Hold thrusters for the opening ticks. */
+    encounter: z
+      .object({
+        restTicks: z.number().int().min(0).max(TOTAL_TICKS).default(0),
+      })
+      .strict()
+      .optional(),
     /** Where the ship starts, at rest; absent means where a run starts. */
     start: StagedStartSchema.optional(),
+    /** Placed wreck spin in radians per second. */
+    wreckSpin: z.number().finite().min(0).max(2).default(0.3),
     /** Wrecks placed in the arena, in world units. */
     targets: z.array(Point).max(16).default([]),
     /** A wreck held ahead of the ship, replaced when it breaks; absent offers none. */

@@ -12,9 +12,13 @@ const verificationPort = process.env.VOID_DRIFT_VERIFY_PORT;
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://void-drift-alpha.web.app",
   devToolbar: { enabled: false },
   envDir: "../../",
   integrations: [svelte(), mdx()],
+  redirects: {
+    "/lab/entities/ship": { destination: "/lab/mount-planner", status: 302 },
+  },
   vite: {
     // Verification owns a stable candidate; other local servers must not reload it.
     cacheDir: verificationPort

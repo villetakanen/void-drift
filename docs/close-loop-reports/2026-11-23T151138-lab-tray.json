@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-11-23T151138-lab-tray",
+  "recorded_at": "2026-11-23T15:11:38+02:00",
+  "work_ref": "docs/specs/lab/spec.md#scenario-navigate-lab-tools",
+  "intent": "Use the Design system's existing Tray in the Lab and move the Lab header across the full width, as requested in the preceding brief. The corresponding Lab and Page header spec scenarios cover navigation order and selection, independent tray scrolling, and placement above the main stage and optional inspector at supported widths.",
+  "result": "Observed in the working tree based on 6fc436ff: apps/web/src/layouts/LabLayout.astro (blob aa585221c8458578454b34d586d05eadf16385ed) composes the existing Tray with Lab registry groups, Index and Back to Game. The shared PageHeader spans the full grid above the rail, stage and optional inspector; the separate sidebar logo is gone. docs/specs/lab/spec.md and the Tray, Page header and Colour roles specs under docs/specs/factory/design-system/ describe that scope. The earlier DS-only rollout in fdc1772f:docs/loop-evidence/2026-11-22-design-system-tray-rollout.md intentionally excluded Lab; this brief extends adoption rather than correcting that rollout.",
+  "verification": "Observed during implementation: an ephemeral Chromium run on the shared preview at 1280×800 passed geometry, single current link per live tray, independent rail scrolling and inspector placement or absence on /lab, /lab/entities/ship and /lab/ds/tray; Enter activated the focused Ships link from the Lab index. The index capture was visually inspected (/tmp/void-drift-lab-preview.png, local and temporary); it establishes appearance, not interaction. The retained local pnpm check:repo log (/tmp/void-drift-lab-repo.log) records 23 passing factory tests. The three affected Design system spec directories each had zero findings; Lab subtree lint reported 44 findings, all outside the edited root spec. git diff --check passed. No durable browser transcript, committed delivery revision, deployed verification or human visual acceptance is recorded. Full type, release smoke and backend checks were not run in this loop.",
+  "findings": [
+    {
+      "classification": "reusable_improvement",
+      "summary": "Recursive spec lint measures both the edited spec and inherited migration debt. The Lab adoption's subtree failure was entirely in unchanged child specs; distinguish the edited files' result from the subtree exit status when interpreting the check.",
+      "evidence": [
+        {
+          "locator": "docs/specs/lab/ (pnpm check:specs docs/specs/lab; working tree based on 6fc436ff)",
+          "supports": "Session output listed 44 findings in child specs and none in docs/specs/lab/spec.md; the scoped diff changes only that root spec in the subtree.",
+          "kind": "observed"
+        },
+        {
+          "locator": "fdc1772f:docs/loop-evidence/2026-11-21-shared-page-header.md",
+          "supports": "The prior header adoption reported the same separation: legacy Lab subtree findings, none on its edited root spec. The earlier raw output was not independently verified here.",
+          "kind": "reported"
+        },
+        {
+          "locator": "fdc1772f:docs/loop-evidence/2026-11-22-design-system-tray-rollout.md",
+          "supports": "The prior Tray rollout reported clean individual Tray and Colour checks and a non-clean parent Design system subtree due to pre-existing provenance findings.",
+          "kind": "reported"
+        }
+      ],
+      "prior_reports": [
+        "fdc1772f:docs/loop-evidence/2026-11-21-shared-page-header.md",
+        "fdc1772f:docs/loop-evidence/2026-11-22-design-system-tray-rollout.md"
+      ],
+      "evidence_status": "supports"
+    }
+  ]
+}

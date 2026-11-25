@@ -35,7 +35,8 @@ prescribe other engines or weapons.
 
 ## Inspect in flight
 
-Use the shared Flight scene to inspect activation, movement, sustained emission
+Use the shared Flight scene through [lab-instruments](../lab-instruments/SKILL.md)
+to inspect activation, movement, sustained emission
 where relevant, and cessation at flight scale. Inspect the source separately
 when diagnosing how accumulation, blending or filtering changes it.
 

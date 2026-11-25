@@ -1,7 +1,7 @@
 ---
 generated:
-  by: "openai-codex/gpt-6.2-sol"
-  at: "2026-11-22T18:15:15+02:00"
+  by: "openai/gpt-6.1-terra"
+  at: "2026-11-24T14:39:47+02:00"
 verified: []
 ---
 
@@ -13,7 +13,7 @@ verified: []
 
 Give players an immediate arcade invitation to fly, with the ship prepared in
 the Hangar, the [active ship](../active-ship/spec.md), ready to launch. Provide access to Hangar, Top Scores,
-Settings and Credits within the game's title-screen composition. Return interrupted
+Settings within the game's title-screen composition, and a direct shortcut to Credits. Return interrupted
 or completed runs to the screen from which they launched.
 
 The experience takes its cue from 1990s arcade games. The title screen is the
@@ -37,7 +37,7 @@ game's home and Hangar is an alternative launch point.
   That design-system component owns the generated decorative system, its
   composition and its scrim; this spec owns the title content and its
   placement above the backdrop.
-- Settings, Top Scores and Credits use the same backdrop composition. The Title
+- Settings and Top Scores use the same backdrop composition. The Title
   Screen remains the target for the component's fixed outermost-orbit framing.
 - The [Title-screen hints spec](hints.md) defines the hint area's content and
   behavior; this spec owns its placement in the title-screen composition.
@@ -48,6 +48,9 @@ game's home and Hangar is an alternative launch point.
 - The shared backdrop fills the viewport beneath the title content. The menu
   remains a normal game screen, not a modal dialog; focus is not trapped inside
   the panel, and the hints outside it remain accessible.
+- Only the menu controls respond to the pointer. A click, tap or drag elsewhere
+  on the title screen keeps keyboard focus where it was, selects no text, drags
+  nothing and opens no callout or context menu.
 - The identity and game menu sit inside a visible panel above the scrim, following
   the current start-and-ship panel treatment. The panel contains PRESS START and
   the secondary destinations; ship selection remains in Hangar.
@@ -96,15 +99,17 @@ game's home and Hangar is an alternative launch point.
   associated with PRESS START and HANGAR. Ordinary transition-time disabling
   has no alert tint and does not promote HANGAR. Restoring eligibility restores
   PRESS START as the filled call to action and HANGAR as a normal action.
-- The menu uses the directional vertical ButtonGroup defined by the shared
-  [Actions contract](../../factory/design-system/actions/spec.md#button-group-navigation),
+- The menu uses the directional vertical ActionGroup defined by the shared
+  [Actions contract](../../factory/design-system/actions/spec.md#action-group-navigation),
   with wrapping enabled. Up/Down and Home/End move focus; native Tab navigation
   and button/link activation remain available.
 - PRESS START receives initial keyboard focus when available; when launch is
   blocked, Hangar receives focus instead. The menu focus order is PRESS START,
   Hangar, Top Scores, Settings, Credits, skipping unavailable actions.
 - Hangar provides training/test flight, start game and return to title screen.
-- Top Scores and Credits provide return to title screen. Settings opened from
+- Credits is an external-to-game shortcut to the Credits article in the
+  [Field Guide](../field-guide/spec.md), which owns its return behavior.
+- Top Scores provides return to title screen. Settings opened from
   the title screen or Pause also returns to title screen; its explicit Hangar
   context returns to Hangar as defined by [Options](../options/spec.md).
 - Pause provides Abort, returning to the run's launch source.
@@ -128,6 +133,8 @@ game's home and Hangar is an alternative launch point.
   when the slot scales to iPad-sized and larger views.
 - Keyboard users can launch and reach each menu destination in the specified
   order, starting with focus on PRESS START and without a modal focus trap.
+- Clicking outside the menu controls keeps keyboard focus in place and selects
+  no text.
 - The title screen presents the content and behavior defined by
   [Title-screen hints](hints.md).
 - The Playground status slot appears below the menu panel, above the decorative
@@ -171,6 +178,20 @@ Scenario: Navigate the title menu with arrows
   When I press Up twice
   Then Credits receives focus by wrapping past PRESS START
   And Tab can leave the menu without a focus trap
+
+Scenario: Open Credits from the title menu
+  Given the title screen menu
+  When I activate Credits
+  Then the Credits article in the Field Guide opens outside the game
+
+Scenario: Stray clicks leave the menu in place
+  Given the title screen with PRESS START focused
+  When I click the heading, the hint and empty space
+  And double-click the heading
+  Then PRESS START keeps keyboard focus
+  And no text is selected
+  When I press Down
+  Then Hangar receives focus
 
 Scenario: Immediate flight
   Given a fresh device

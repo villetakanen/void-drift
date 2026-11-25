@@ -1,7 +1,7 @@
 ---
 generated:
   by: "openai-codex/gpt-6.2-sol"
-  at: "2026-11-22T08:00:02Z"
+  at: "2026-11-24T15:56:39+00:00"
 verified: []
 ---
 
@@ -56,6 +56,10 @@ there. Deprecated aliases remain until their last consumer migrates: `--font-fli
   prose styles. Headings, paragraphs, lists, blockquotes and other authored prose, including inline
   links, use the shared reading treatment. Live examples and nested component UI keep their own
   typography. The shell and Astro-authored Design system pages retain their existing typography.
+- Ordinary anchors, including visited links outside prose, use `--color-action`
+  through a zero-specificity default in `typography.css`. Keyboard focus uses
+  the shared ring tokens. Component definitions override this default for their
+  owned states, including Tray, Page header and buttons.
 - `.prose` is global: family, line height, measure on section paragraphs, heading rhythm and link
   colour. Its descendant rules have zero specificity, so local component styles win.
 - Components name role tokens. Literal families are not allowed in shared CSS, layouts or canvas.
@@ -88,6 +92,14 @@ there. Deprecated aliases remain until their last consumer migrates: `--font-fli
 ### Scenarios
 
 ```gherkin
+Scenario: Follow an ordinary link outside prose
+  Given an ordinary anchor outside a prose container
+  When it renders before or after a visit
+  Then it uses the shared action colour rather than browser-default blue or purple
+  When it receives keyboard focus
+  Then it shows the shared focus ring
+  And component-owned navigation and button links retain their own styles
+
 Scenario: Read a shared interface
   Given a game or Lab interface
   When its text renders

@@ -28,7 +28,9 @@ their data, content and placement.
 readouts. It is shared by the Motion and Planet inspectors, the Flight Scene
 instrument, and study instruments. The host chooses what appears inside it.
 
-The sheet sits at the upper-right edge of a positioned instrument host. It
+The sheet defaults to the upper-right edge of a positioned instrument host.
+A host may choose the left edge to keep a right-hand subject visible, as in the
+[weapons flap study](/lab/studies/flight-deck-weapons-2026-11-24#weapons-instrument). It
 covers the full height and 38.2% of the host width, above an 11% scrim. Its
 corner button opens it; the close button or Escape dismisses it and returns
 focus to the opener.
@@ -41,6 +43,7 @@ focus to the opener.
 | --- | --- |
 | `title` | Visible heading and the text used by the open and close buttons. |
 | `label` | Accessible name of the side sheet. |
+| `side` | Optional `left` or `right`; defaults to `right`. |
 | children | Parameters, controls and readouts supplied by the host. |
 
 The host must be positioned. The side sheet owns opening, dismissal and focus

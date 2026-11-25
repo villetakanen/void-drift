@@ -71,18 +71,24 @@ export interface BuildMount {
   width: number;
   height: number;
 }
-/** Schematic paths in ship-local units; shared by drawing and preview bounds. */
+/** Schematic paths in ship-local units; shared by drawing and preview bounds.
+ * An explicit override replaces the catalog map; omitted keys draw no path.
+ */
 export function buildSlotLinks(
   chassis: Loadout["chassis"],
   mounts: readonly BuildMount[],
+  slotLinkLinesOverride?: Readonly<Record<string, number>>,
 ) {
+  const lines = slotLinkLinesOverride ?? CHASSIS[chassis].slotLinkLines;
   return mounts.flatMap((secondary) => {
     if (!secondary.linkedTo) return [];
     const primary = mounts.find((mount) => mount.key === secondary.linkedTo);
     if (!primary) return [];
-    const lineX = CHASSIS[chassis].slotLinkLines[secondary.key];
-    if (lineX === undefined)
+    if (!Object.hasOwn(lines, secondary.key)) {
+      if (slotLinkLinesOverride) return [];
       throw new Error(`Missing slot link line for ${chassis}:${secondary.key}`);
+    }
+    const lineX = lines[secondary.key];
     const points: [number, number][] = [
       [primary.x, primary.y],
       [lineX, primary.y],
@@ -377,6 +383,7 @@ export function drawBuild(
     mount: BuildMount,
   ) => boolean,
   hullVariant?: BuildHullVariant,
+  slotLinkLinesOverride?: Readonly<Record<string, number>>,
 ) {
   ctx.save();
   ctx.translate(x, y);
@@ -475,7 +482,11 @@ export function drawBuild(
     drawStabilizerSlits(ctx, lhi.rear);
   }
   if (slots) {
-    for (const { primary, points } of buildSlotLinks(build.chassis, mounts)) {
+    for (const { primary, points } of buildSlotLinks(
+      build.chassis,
+      mounts,
+      slotLinkLinesOverride,
+    )) {
       ctx.save();
       ctx.strokeStyle = primary.part ? slots.lime : slots.dark;
       ctx.lineWidth = 1 / 7;

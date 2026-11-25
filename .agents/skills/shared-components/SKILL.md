@@ -8,6 +8,8 @@ description: Build or change interfaces and game visuals through shared primitiv
 Screens compose shared parts. Put a part’s appearance and behavior in its owner,
 not in whichever screen first needs the change.
 
+Use [lab-instruments](../lab-instruments/SKILL.md) when choosing or composing a Lab or study instrument.
+
 ## Establish ownership
 
 - Read the relevant feature spec, docs/design.md and current design-system rules.
