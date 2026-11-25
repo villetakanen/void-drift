@@ -62,12 +62,54 @@ function getServices() {
 export function scoresAvailable() {
   return config.success;
 }
+
+export const ScoreFailureOperationSchema = z.enum([
+  "load-high-scores",
+  "load-personal-best",
+  "submit-high-score",
+]);
+type ScoreFailureOperation = z.infer<typeof ScoreFailureOperationSchema>;
+type ScoreFailureReporter = (
+  operation: ScoreFailureOperation,
+  error: unknown,
+) => void;
+let scoreFailureReporter: ScoreFailureReporter | undefined;
+
+export function installScoreFailureReporter(report: ScoreFailureReporter) {
+  scoreFailureReporter = report;
+}
+
 export async function ensureAnonymousSession() {
   const { auth } = getServices();
   await auth.authStateReady();
   return auth.currentUser ?? (await signInAnonymously(auth)).user;
 }
 class ScoreTimeout extends Error {}
+
+function reportScoreFailure(operation: ScoreFailureOperation, error: unknown) {
+  try {
+    if (
+      !scoreFailureReporter ||
+      !config.success ||
+      error instanceof ScoreTimeout
+    )
+      return;
+    if (typeof navigator !== "undefined" && navigator.onLine === false) return;
+    if (
+      error instanceof FirebaseError &&
+      [
+        "unavailable",
+        "deadline-exceeded",
+        "auth/network-request-failed",
+        "auth/timeout",
+      ].includes(error.code)
+    )
+      return;
+    scoreFailureReporter(operation, error);
+  } catch {
+    // Reporting must preserve the score operation's result.
+  }
+}
 
 function withTimeout<T>(promise: Promise<T>): Promise<T> {
   let timer: ReturnType<typeof setTimeout>;
@@ -96,7 +138,10 @@ export async function loadHighScores(): Promise<HighScore[]> {
       );
       return parseHighScores(rows.docs.map((row) => row.data()));
     })(),
-  );
+  ).catch((error: unknown) => {
+    reportScoreFailure("load-high-scores", error);
+    throw error;
+  });
 }
 /** The one row a player keeps for a ship on the client's board. */
 function scoreReference(userId: string, shipId: string) {
@@ -126,7 +171,8 @@ export async function loadPersonalBest(
       })(),
     );
     return best ?? { status: "unavailable" };
-  } catch {
+  } catch (error) {
+    reportScoreFailure("load-personal-best", error);
     return { status: "unavailable" };
   }
 }
@@ -163,6 +209,7 @@ export async function submitHighScore(
       })(),
     );
   } catch (error) {
+    reportScoreFailure("submit-high-score", error);
     // A deadline does not cancel the transaction or establish its result.
     if (error instanceof ScoreTimeout) return { outcome: "unconfirmed" };
     if (

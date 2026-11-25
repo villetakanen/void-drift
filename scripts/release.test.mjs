@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import {
   chmodSync,
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readdirSync,
@@ -13,6 +14,14 @@ import { tmpdir } from "node:os";
 import { delimiter, dirname, join } from "node:path";
 import { test } from "node:test";
 import { checkRelease, prepareRelease, publishRelease } from "./release.mjs";
+
+const sentryEnv = {
+  PUBLIC_SENTRY_DSN:
+    "https://0123456789abcdef0123456789abcdef@o123.ingest.sentry.io/42",
+  SENTRY_ORG: "fixture-org",
+  SENTRY_PROJECT: "fixture-project",
+  SENTRY_AUTH_TOKEN: "fixture-private-token",
+};
 
 function fixture(t) {
   const cwd = mkdtempSync(join(tmpdir(), "void-release-"));
@@ -65,11 +74,38 @@ const fs = require("node:fs");
 const path = require("node:path");
 fs.mkdirSync("artifacts", {recursive: true});
 fs.appendFileSync("artifacts/commands.jsonl", JSON.stringify(process.argv.slice(2)) + "\\n");
+if (process.argv[3] === "sentry-cli") {
+  const assert = require("node:assert/strict");
+  const out = process.argv.at(-1);
+  const release = process.argv[process.argv.indexOf("--release") + 1];
+  assert.ok(fs.readFileSync(path.join(out, "app.js"), "utf8").includes(release));
+  assert.ok(fs.existsSync(path.join(out, "app.js.map")));
+  assert.equal(process.env.SENTRY_ORG, "fixture-org");
+  assert.equal(process.env.SENTRY_PROJECT, "fixture-project");
+  assert.equal(process.env.SENTRY_AUTH_TOKEN, "fixture-private-token");
+  if (process.env.FAIL_UPLOAD) {
+    console.error("Fixture upload error with credential:", process.env.SENTRY_AUTH_TOKEN);
+    process.exit(9);
+  }
+  process.exit(0);
+}
 if (process.env.FAIL_BUILD) process.exit(7);
+if (process.env.SENTRY_AUTH_TOKEN || process.env.SENTRY_ORG || process.env.SENTRY_PROJECT) process.exit(8);
 const out = process.argv[process.argv.indexOf("--outDir") + 1];
 fs.mkdirSync(out, {recursive: true});
 fs.writeFileSync(path.join(out, "index.html"), "<h1>Built</h1>");
-fs.writeFileSync(path.join(out, "app.js"), process.env.OMIT_CONFIG ? "unconfigured" : JSON.stringify([process.env.PUBLIC_FIREBASE_PROJECT_ID, process.env.PUBLIC_FIREBASE_API_KEY, process.env.PUBLIC_FIREBASE_APP_ID]));
+let code = process.env.OMIT_CONFIG ? "unconfigured" : JSON.stringify([process.env.PUBLIC_FIREBASE_PROJECT_ID, process.env.PUBLIC_FIREBASE_API_KEY, process.env.PUBLIC_FIREBASE_APP_ID]);
+if (process.env.PUBLIC_SENTRY_ENABLED === "true") {
+  const id = "00000000-0000-0000-0000-000000000042";
+  code += JSON.stringify([process.env.PUBLIC_SENTRY_DSN, process.env.PUBLIC_SENTRY_RELEASE]);
+  code += "\\n//# debugId=" + id + "\\n";
+  if (!process.env.OMIT_MAP) {
+    fs.writeFileSync(path.join(out, "app.js.map"), JSON.stringify({
+      debug_id: process.env.MISMATCH_DEBUG_ID ? "different" : id
+    }));
+  }
+}
+fs.writeFileSync(path.join(out, "app.js"), code);
 if (process.env.MUTATE_SOURCE) fs.writeFileSync("firestore.rules", "changed");
 `,
   );
@@ -83,6 +119,10 @@ if (process.env.MUTATE_SOURCE) fs.writeFileSync("firestore.rules", "changed");
       PUBLIC_FIREBASE_PROJECT_ID: "void-drift-alpha",
       PUBLIC_FIREBASE_APP_ID: "fixture-app",
       PUBLIC_FIREBASE_EMULATORS: "false",
+      PUBLIC_SENTRY_DSN: "",
+      SENTRY_ORG: "",
+      SENTRY_PROJECT: "",
+      SENTRY_AUTH_TOKEN: "",
     },
     smoke: async () => ({
       passed: true,
@@ -123,6 +163,7 @@ test("preparation saves the tested build, source identity and original deploymen
   assert.equal(report.workingTree, "");
   assert.equal(report.sourceUnchanged, true);
   assert.equal(report.smoke.liveBackendVerified, false);
+  assert.equal(report.sentry, undefined);
   assert.equal(
     readFileSync(join(directory, "bundle/firestore.rules"), "utf8"),
     "original rules",
@@ -134,6 +175,78 @@ test("preparation saves the tested build, source identity and original deploymen
       .split("\n").length,
     1,
   );
+});
+test("configured preparation uploads the exact build's source maps and keeps them out of the prepared bundle", async (t) => {
+  const options = fixture(t);
+  options.env = { ...options.env, ...sentryEnv };
+  writeFileSync(join(options.cwd, "firestore.rules"), "dirty rules");
+  const directory = await prepareRelease(options);
+  const report = checkRelease(directory);
+  const nextReport = checkRelease(await prepareRelease(options));
+  const entries = readFileSync(
+    join(options.cwd, "artifacts/commands.jsonl"),
+    "utf8",
+  )
+    .trim()
+    .split("\n")
+    .map(JSON.parse);
+  assert.equal(entries.length, 4);
+  assert.deepEqual(entries[1], [
+    "exec",
+    "sentry-cli",
+    "sourcemaps",
+    "upload",
+    "--release",
+    report.sentry.release,
+    "--ext",
+    "js",
+    "--ext",
+    "map",
+    "--strict",
+    "--wait",
+    join(directory, "bundle/public"),
+  ]);
+  assert.equal(report.sentry.environment, "production");
+  assert.match(report.workingTree, /firestore.rules/);
+  assert.equal(report.sourceFingerprint, nextReport.sourceFingerprint);
+  assert.notEqual(report.sentry.release, nextReport.sentry.release);
+  assert.equal(report.files["public/app.js.map"], undefined);
+  assert(!existsSync(join(directory, "bundle/public/app.js.map")));
+  assert(!JSON.stringify(report).includes(sentryEnv.SENTRY_AUTH_TOKEN));
+});
+test("incomplete Sentry configuration fails before building", async (t) => {
+  const options = fixture(t);
+  await assert.rejects(
+    prepareRelease({
+      ...options,
+      env: { ...options.env, PUBLIC_SENTRY_DSN: sentryEnv.PUBLIC_SENTRY_DSN },
+    }),
+    /Invalid release environment: SENTRY_ORG, SENTRY_PROJECT, SENTRY_AUTH_TOKEN/,
+  );
+  assert(!existsSync(join(options.cwd, "artifacts/commands.jsonl")));
+});
+test("missing or mismatched Debug IDs and failed source-map uploads cannot prepare a release", async (t) => {
+  for (const flag of ["OMIT_MAP", "MISMATCH_DEBUG_ID", "FAIL_UPLOAD"]) {
+    const options = fixture(t);
+    await assert.rejects(
+      prepareRelease({
+        ...options,
+        env: { ...options.env, ...sentryEnv, [flag]: "1" },
+      }),
+    );
+    const root = join(options.cwd, "artifacts/prepared-releases");
+    const directory = join(root, readdirSync(root)[0]);
+    const report = failedReport(options.cwd);
+    assert.equal(report.status, "failed");
+    assert(!JSON.stringify(report).includes(sentryEnv.SENTRY_AUTH_TOKEN));
+    assert(!existsSync(join(directory, "bundle/public/app.js.map")));
+    const log = join(directory, "sentry-upload.log");
+    if (flag === "FAIL_UPLOAD") {
+      assert.match(readFileSync(log, "utf8"), /credential: \[redacted\]/);
+    } else {
+      assert(!existsSync(log));
+    }
+  }
 });
 test("build failure, missing embedded configuration and source changes cannot prepare a release", async (t) => {
   for (const flag of ["FAIL_BUILD", "OMIT_CONFIG", "MUTATE_SOURCE"]) {

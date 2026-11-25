@@ -7,6 +7,36 @@ export const releaseEnvironmentSchema = z.object({
   PUBLIC_FIREBASE_EMULATORS: z.literal("false"),
 });
 
+export const sentryPublicDsnSchema = z
+  .string()
+  .trim()
+  .url()
+  .refine((value) => {
+    if (!URL.canParse(value)) return false;
+    const url = new URL(value);
+    return (
+      url.protocol === "https:" &&
+      /^[a-f0-9]+$/i.test(url.username) &&
+      !url.password &&
+      /^\/\d+$/.test(url.pathname) &&
+      !url.search &&
+      !url.hash
+    );
+  }, "Expected a public Sentry project DSN");
+
+export const releaseSentryEnvironmentSchema = z.object({
+  PUBLIC_SENTRY_DSN: sentryPublicDsnSchema,
+  SENTRY_ORG: z
+    .string()
+    .trim()
+    .regex(/^[\w-]+$/),
+  SENTRY_PROJECT: z
+    .string()
+    .trim()
+    .regex(/^[\w-]+$/),
+  SENTRY_AUTH_TOKEN: z.string().trim().min(1),
+});
+
 // Copy only the deployment inputs this project supports; no rebuild hooks.
 export const releaseFirebaseSchema = z.object({
   firestore: z
@@ -47,6 +77,12 @@ export const preparedReleaseSchema = z.object({
   platform: z.string(),
   artifactFingerprint: hash,
   files: z.record(hash),
+  sentry: z
+    .object({
+      release: z.string().min(1),
+      environment: z.literal("production"),
+    })
+    .optional(),
   smoke: z.object({
     passed: z.literal(true),
     browser: z.string(),

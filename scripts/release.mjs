@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import {
   copyFileSync,
   cpSync,
@@ -11,14 +11,16 @@ import {
   readdirSync,
   readFileSync,
   readlinkSync,
+  rmSync,
   writeFileSync,
 } from "node:fs";
-import { resolve } from "node:path";
+import { basename, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   preparedReleaseSchema,
   releaseEnvironmentSchema,
   releaseFirebaseSchema,
+  releaseSentryEnvironmentSchema,
 } from "../packages/core/src/lib/schemas/release.mjs";
 import { smokeArtifact } from "./release-smoke.mjs";
 
@@ -78,7 +80,7 @@ export function artifactManifest(directory) {
   visit("");
   return { files, artifactFingerprint: sha(JSON.stringify(files)) };
 }
-function run(cwd, args, env, log) {
+function run(cwd, args, env, log, token = env.SENTRY_AUTH_TOKEN) {
   const result = spawnSync("pnpm", args, {
     cwd,
     env,
@@ -86,29 +88,152 @@ function run(cwd, args, env, log) {
     timeout: 300_000,
     maxBuffer: 20 * 1024 * 1024,
   });
-  // Logs describe build/deploy operations; environment values are never printed here.
-  writeFileSync(
-    log,
-    `${result.stdout ?? ""}${result.stderr ?? ""}${result.error?.message ?? ""}`,
-  );
+  const output = `${result.stdout ?? ""}${result.stderr ?? ""}${result.error?.message ?? ""}`;
+  writeFileSync(log, token ? output.replaceAll(token, "[redacted]") : output);
   assert.equal(result.status, 0, `Command failed; inspect ${log}`);
+}
+function parseEnvironment(schema, env) {
+  const parsed = schema.safeParse(env);
+  if (!parsed.success)
+    throw new Error(
+      `Invalid release environment: ${[...new Set(parsed.error.issues.map((issue) => issue.path[0]))].join(", ")}`,
+    );
+  return parsed.data;
+}
+function withoutSentryCredentials(env) {
+  const childEnv = { ...env };
+  delete childEnv.SENTRY_AUTH_TOKEN;
+  delete childEnv.SENTRY_ORG;
+  delete childEnv.SENTRY_PROJECT;
+  return childEnv;
+}
+function validateSourceMaps(scripts, maps) {
+  const mapFiles = new Set(maps);
+  for (const [file, code] of scripts) {
+    const map = `${file}.map`;
+    assert(
+      mapFiles.has(map),
+      `Sentry release build is missing ${basename(map)}`,
+    );
+    const sourceMap = JSON.parse(readFileSync(map, "utf8"));
+    const debugId = code.match(/^\/\/# debugId=([a-f0-9-]{36})$/m)?.[1];
+    assert(
+      debugId && debugId === (sourceMap.debug_id ?? sourceMap.debugId),
+      `Sentry release build has no matching Debug ID for ${basename(file)}`,
+    );
+  }
+}
+function uploadReleaseSourceMaps({
+  cwd,
+  directory,
+  publicDirectory,
+  env,
+  sentry,
+  release,
+}) {
+  run(
+    cwd,
+    [
+      "exec",
+      "sentry-cli",
+      "sourcemaps",
+      "upload",
+      "--release",
+      release,
+      "--ext",
+      "js",
+      "--ext",
+      "map",
+      "--strict",
+      "--wait",
+      publicDirectory,
+    ],
+    {
+      ...env,
+      SENTRY_ORG: sentry.SENTRY_ORG,
+      SENTRY_PROJECT: sentry.SENTRY_PROJECT,
+      SENTRY_AUTH_TOKEN: sentry.SENTRY_AUTH_TOKEN,
+      SENTRY_URL: "https://sentry.io/",
+      SENTRY_ALLOW_FAILURE: "0",
+      SENTRY_LOAD_DOTENV: "0",
+      SENTRY_LOG_LEVEL: "warn",
+    },
+    resolve(directory, "sentry-upload.log"),
+  );
+}
+function validatePublicBuild({
+  cwd,
+  directory,
+  publicDirectory,
+  env,
+  firebase,
+  sentry,
+  sentryRelease,
+}) {
+  const entries = readdirSync(publicDirectory, {
+    recursive: true,
+    withFileTypes: true,
+  });
+  const files = entries
+    .filter((entry) => entry.isFile())
+    .map((entry) => resolve(entry.parentPath, entry.name));
+  const maps = files.filter((file) => file.endsWith(".map"));
+  try {
+    assert(
+      entries.every((entry) => entry.isFile() || entry.isDirectory()),
+      "Public release artifacts must contain only files and directories",
+    );
+    const scripts = files
+      .filter((file) => file.endsWith(".js"))
+      .map((file) => [file, readFileSync(file, "utf8")]);
+    const javascript = scripts.map(([, code]) => code).join("\n");
+    for (const key of [
+      "PUBLIC_FIREBASE_PROJECT_ID",
+      "PUBLIC_FIREBASE_API_KEY",
+      "PUBLIC_FIREBASE_APP_ID",
+    ])
+      assert(
+        javascript.includes(firebase[key]),
+        `Production bundle is missing ${key}`,
+      );
+    if (sentryRelease) {
+      assert(
+        javascript.includes(sentryRelease.release) &&
+          javascript.includes(sentry.PUBLIC_SENTRY_DSN),
+        "Production bundle is missing Sentry release configuration",
+      );
+      validateSourceMaps(scripts, maps);
+      uploadReleaseSourceMaps({
+        cwd,
+        directory,
+        publicDirectory,
+        env,
+        sentry,
+        release: sentryRelease.release,
+      });
+    }
+  } finally {
+    for (const file of maps) rmSync(file);
+  }
 }
 export async function prepareRelease({
   cwd = process.cwd(),
   env = process.env,
   smoke = smokeArtifact,
 } = {}) {
-  const parsed = releaseEnvironmentSchema.safeParse(env);
-  if (!parsed.success)
-    throw new Error(
-      `Invalid release environment: ${[...new Set(parsed.error.issues.map((issue) => issue.path[0]))].join(", ")}`,
-    );
+  const firebase = parseEnvironment(releaseEnvironmentSchema, env);
+  const sentry = Object.keys(releaseSentryEnvironmentSchema.shape).some((key) =>
+    env[key]?.trim(),
+  )
+    ? parseEnvironment(releaseSentryEnvironmentSchema, env)
+    : undefined;
   const root = resolve(cwd, "artifacts/prepared-releases");
   mkdirSync(root, { recursive: true });
   const directory = mkdtempSync(
     `${root}/${new Date().toISOString().replaceAll(":", "-")}-`,
   );
   const bundle = resolve(directory, "bundle");
+  const publicDirectory = resolve(bundle, "public");
   mkdirSync(bundle);
   const report = {
     status: "failed",
@@ -118,11 +243,17 @@ export async function prepareRelease({
     sourceFingerprint: sourceFingerprint(cwd),
     version: JSON.parse(readFileSync(resolve(cwd, "package.json"), "utf8"))
       .version,
-    project: parsed.data.PUBLIC_FIREBASE_PROJECT_ID,
+    project: firebase.PUBLIC_FIREBASE_PROJECT_ID,
     emulators: false,
     node: process.version,
     platform: `${process.platform}/${process.arch}`,
   };
+  const sentryRelease = sentry
+    ? {
+        release: `void-drift@${report.version}+${randomUUID()}`,
+        environment: "production",
+      }
+    : undefined;
   try {
     const config = releaseFirebaseSchema.parse(
       JSON.parse(readFileSync(resolve(cwd, "firebase.json"), "utf8")),
@@ -152,26 +283,31 @@ export async function prepareRelease({
         "astro",
         "build",
         "--outDir",
-        resolve(bundle, "public"),
+        publicDirectory,
       ],
-      { ...env, ...parsed.data },
+      {
+        ...withoutSentryCredentials(env),
+        ...firebase,
+        PUBLIC_SENTRY_ENABLED: sentry ? "true" : "false",
+        PUBLIC_SENTRY_DSN: sentry?.PUBLIC_SENTRY_DSN ?? "",
+        PUBLIC_SENTRY_ENVIRONMENT: sentryRelease?.environment ?? "",
+        PUBLIC_SENTRY_RELEASE: sentryRelease?.release ?? "",
+      },
       resolve(directory, "build.log"),
+      sentry?.SENTRY_AUTH_TOKEN,
     );
+    validatePublicBuild({
+      cwd,
+      directory,
+      publicDirectory,
+      env,
+      firebase,
+      sentry,
+      sentryRelease,
+    });
     const manifest = artifactManifest(bundle);
-    const javascript = Object.keys(manifest.files)
-      .filter((file) => file.startsWith("public/") && file.endsWith(".js"))
-      .map((file) => readFileSync(resolve(bundle, file), "utf8"))
-      .join("\n");
-    for (const key of [
-      "PUBLIC_FIREBASE_PROJECT_ID",
-      "PUBLIC_FIREBASE_API_KEY",
-      "PUBLIC_FIREBASE_APP_ID",
-    ])
-      assert(
-        javascript.includes(parsed.data[key]),
-        `Production bundle is missing ${key}`,
-      );
-    report.smoke = await smoke(resolve(bundle, "public"), directory);
+    if (sentryRelease) report.sentry = sentryRelease;
+    report.smoke = await smoke(publicDirectory, directory);
     report.sourceUnchanged =
       sourceFingerprint(cwd) === report.sourceFingerprint;
     assert(
@@ -239,7 +375,7 @@ export function publishRelease(
         "--config",
         resolve(staged, "firebase.json"),
       ],
-      process.env,
+      withoutSentryCredentials(process.env),
       resolve(attempt, "deploy.log"),
     );
     checkRelease(directory);
