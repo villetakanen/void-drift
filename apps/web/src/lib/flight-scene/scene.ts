@@ -72,7 +72,9 @@ export class FlightScene {
   }
   private run: FlightRun;
   private readonly renderer: Renderer;
-  private readonly camera = new Camera();
+  private camera = new Camera();
+  private cssScale = 1;
+  private speedCamera = false;
   private readonly fx = new FlightFx();
   private view: FlightView;
   private targets: TargetMode;
@@ -236,24 +238,52 @@ export class FlightScene {
     this.restart(this.run.burn);
     this.setPlanetAppearance(this.planetAppearance);
   }
-  /** Zoom of a view; null is the game's own camera. */
+  /** Actual displayed width, independent of layer backing resolution. */
+  configureViewport(cssWidth: number, speedCamera: boolean) {
+    if (!(cssWidth > 0) || !Number.isFinite(cssWidth)) return false;
+    const scale = cssWidth / this.camera.viewportWidth;
+    if (scale === this.cssScale && speedCamera === this.speedCamera)
+      return false;
+    this.cssScale = scale;
+    this.speedCamera = speedCamera;
+    this.restart(this.run.burn);
+    return true;
+  }
+  /** Zoom of a view; null delegates to production framing. */
   private zoom(view: FlightView): number | null {
-    if (view === "game") return null;
-    return view === "follow" ? this.doc.follow.near : this.doc.follow.far;
+    if (view === "auto") return null;
+    const magnification = { "1x": 1, "2x": 2, "4x": 4, "8x": 8 }[view];
+    return (0.5 * magnification) / this.cssScale;
   }
   /** The light surface follows the camera, so another view flies the burn again. */
   restart(burn: BurnId, view: FlightView = this.view) {
     this.view = view;
     this.run = this.fly(burn);
     this.fx.clear();
-    this.frameCamera(true);
+    // Replay starts with fresh pan, containment and speed-zoom eligibility state.
+    this.camera = new Camera({ viewportWidth: this.camera.viewportWidth });
+    this.camera.setActiveArea(null, null, this.cssScale);
+    this.frameCamera(true, true);
   }
-  private frameCamera(snap = false) {
+  private frameCamera(snap = false, entrance = false) {
     const { ship } = this.run.sim;
     const zoom = this.zoom(this.view);
     if (zoom !== null) {
       this.camera.pos.set(ship.pos.x, ship.pos.y);
       this.camera.zoom = zoom;
+      return;
+    }
+    if (this.speedCamera) {
+      const star = this.run.sim.star;
+      this.camera.frameSpeed(
+        ship.pos.x,
+        ship.pos.y,
+        ship.vel.x,
+        ship.vel.y,
+        ship.radius,
+        snap,
+        entrance ? { x: star.pos.x, y: star.pos.y, radius: star.radius } : null,
+      );
       return;
     }
     const c = this.run.sim.settings.camera;
@@ -267,6 +297,7 @@ export class FlightScene {
       snap,
       c.zoomSteps,
     );
+    this.camera.keepShipVisible(ship.pos.x, ship.pos.y, ship.radius);
   }
   /** Flies to `target`; a backward jump or another burn starts the flight again. */
   seek(burn: BurnId, target: number, history: number) {

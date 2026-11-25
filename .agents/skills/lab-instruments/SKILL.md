@@ -41,6 +41,20 @@ Use [shared-components](../shared-components/SKILL.md) for shared ownership and
 [design-study](../design-study/SKILL.md) for study decisions and evidence retention.
 Keep instrument-specific interfaces and replay rules in the instrument spec.
 
+For Flight scenes, use the shared AUTO, 1×, 2×, 4× and 8× zoom choices.
+AUTO delegates to the production camera; explicit levels follow the ship at
+0.5, 1, 2 and 4 CSS pixels per world unit at every supported size. Preserve that
+app-wide meaning through logical/render/CSS scaling; do not add per-study near/far
+values or a hidden fit multiplier. Keep burn, selected time and replay history
+consistent with the [Flight scene contract](../../../docs/specs/lab/flight-scene-instrument/spec.md).
+
+When replacing an instrument API, migrate active consumers. Compact retired or
+superseded historical examples into Markdown and useful static captures, recording
+the conditions needed to read them. Do not retain a legacy runtime merely to keep
+those examples executable. A dated study can still have an active step: inspect
+its status and content before retiring anything. Label later reconstructions and
+remove obsolete study code only after checking consumers.
+
 For a staged encounter, establish that the claimed event occurs and identify its
 useful inspection window. Run each offered sequence relevant to the claim through
 its full duration, including aftermath. Keep experimental conditions explicit;

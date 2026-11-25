@@ -14,7 +14,6 @@ import { writeReport } from "../helpers/write-report.mjs";
 // is recorded as an error in the report; the other steps still run.
 
 const LABEL = "Flight scene: a burn in the game’s layers";
-const STUDY = "/lab/studies/flight-scene-instrument-2026-11-10";
 const OUTPUT = "test-results/flight-scene-fidelity.json";
 
 type Store = Record<string, Record<string, Uint8ClampedArray>>;
@@ -170,14 +169,16 @@ const summarise = (deltas: number[]) => ({
 // and 800; 150 is a coast. The instrument's starter flies a Light Ion Cannon.
 const INSTANTS = [90, 150, 215, 330, 560, 800];
 const VIEWS = [
-  ["Follow", "follow"],
-  ["Game", "game"],
+  ["2×", "2x"],
+  ["AUTO", "auto"],
 ] as const;
 
 test("flight scene fidelity and cost", async ({ page }) => {
   test.setTimeout(1_200_000);
   await page.setViewportSize({ width: 1440, height: 900 });
   const report: Record<string, unknown> = {
+    surface:
+      "Canonical Flight scene, one mounted instrument; AUTO and fixed CSS magnification",
     viewport: { width: 1440, height: 900 },
     measuredAt: new Date().toISOString(),
     notes: {
@@ -278,7 +279,7 @@ test("flight scene fidelity and cost", async ({ page }) => {
   });
 
   // c. Cost: a jump from the start to the end of the burn, then frame times on
-  // the study page with all four examples mounted.
+  // the canonical page with one instrument mounted.
   await step("jumpCost", async () => {
     const scene = await open();
     const time = scene.getByRole("slider", { name: "Time" });
@@ -318,18 +319,8 @@ test("flight scene fidelity and cost", async ({ page }) => {
       note: "includes waiting for the next animation frame, up to one frame time",
     };
   });
-  await step("studyFrameTimes", async () => {
-    await page.goto(STUDY);
-    for (const id of ["time", "camera", "scene"])
-      await page.locator(`details#${id} > summary`).click();
-    const figures = page.getByRole("figure", { name: LABEL });
-    await expect(figures).toHaveCount(4);
-    for (const figure of await figures.all()) {
-      await figure.scrollIntoViewIfNeeded();
-      await expect(figure).toHaveAttribute("data-rendered", "true");
-    }
-    const playing = figures.last();
-    await playing.scrollIntoViewIfNeeded();
+  await step("canonicalFrameTimes", async () => {
+    const playing = await open();
     await page.waitForTimeout(1000);
     const idle = summarise(await frameTimes(page, 5000));
     await playing.getByRole("button", { name: "Play", exact: true }).click();
@@ -338,9 +329,9 @@ test("flight scene fidelity and cost", async ({ page }) => {
     const stillPlaying = await playing.getAttribute("data-playing");
     await playing.getByRole("button", { name: "Pause", exact: true }).click();
     return {
-      examplesMounted: 4,
-      allIdle: idle,
-      oneOfFourPlaying: { ...during, stillPlayingAtEnd: stillPlaying },
+      examplesMounted: 1,
+      idle,
+      playing: { ...during, stillPlayingAtEnd: stillPlaying },
     };
   });
 

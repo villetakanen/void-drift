@@ -1,0 +1,46 @@
+{
+  "step": "02.4",
+  "capturedAt": "2026-11-25",
+  "captureKind": "Original live UI screenshots before 02.5; separate static moments, not evidence of motion feel",
+  "acceptance": "Designer accepted Fighter motion model and defaults to date for continued study; no production adoption.",
+  "viewport": { "width": 1512, "height": 805 },
+  "burn": "B1",
+  "zoom": "4x",
+  "cssPixelsPerWorldUnit": 2,
+  "flightStyle": "Fighter",
+  "turning": "Production Fighter stabilized response and 180 degrees/second ceiling; canted engine and stabilizer forces steer thrust",
+  "course": {
+    "phases": ["left", "forward", "right", "forward"],
+    "phaseSeconds": 0.5,
+    "origin": "Each drone ignition",
+    "repeats": true
+  },
+  "poweredAccelerationUnitsPerSecondSquared": 60,
+  "engineEnvelopeUnitsPerSecond": 271,
+  "plumeServiceToLightPercent": 50,
+  "plumeFullOutputSourceLengthUnits": 40.8,
+  "plumeOutputScaling": "Square root of delivered engine output; shared FX accumulation and bloom",
+  "launcherLengthUnits": 17,
+  "mountPercentFromNose": 68,
+  "ejectionSpeedUnitsPerSecond": 70,
+  "ignitionDistanceUnits": 32,
+  "releaseSeconds": [1, 3, 5],
+  "seatedPreviewSeconds": 0.1,
+  "environment": "G4 yellow-family star, radius 36 u; carrier outside its gravity field; no planets. Drone has no gravity, drag, targeting, collision, detonation or return behaviour.",
+  "captures": [
+    {
+      "seconds": 1.9,
+      "file": "02-4-fighter-1-90-turn.jpg",
+      "phase": "Left",
+      "displayedSpeedUnitsPerSecond": 164,
+      "displayedDrivePercent": 45
+    },
+    {
+      "seconds": 2.4,
+      "file": "02-4-fighter-2-40-forward.jpg",
+      "phase": "Forward",
+      "displayedSpeedUnitsPerSecond": 171,
+      "displayedDrivePercent": 91
+    }
+  ]
+}

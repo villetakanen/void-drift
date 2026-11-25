@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "drone-launcher-2026-11-25",
+    title: "Drone launcher",
+    phase: "exploration",
+    status: "open",
+    question:
+      "How should the drone launcher’s manufacture, launch, pursuit and energy recovery work and read in flight?",
+  },
+  {
     slug: "ranked-initials-2026-11-20",
     title: "Signing a ranked score",
     phase: "exploration",

@@ -30,6 +30,7 @@ import {
   TICK_RATE,
   TOTAL_TICKS,
 } from "../../../lib/instrument";
+import { settings } from "../../../lib/stores/settings";
 import GameField from "../../GameField.svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
 import SegmentedControl from "../../inputs/SegmentedControl.svelte";
@@ -151,16 +152,18 @@ const sceneSummary = $derived(
 const RENDER_WIDTH = 1728;
 
 const VIEW_LABELS: Record<FlightView, string> = {
-  game: "Game",
-  follow: "Follow",
-  "follow-far": `Follow ${doc?.follow.far ?? 4}×`,
+  auto: "AUTO",
+  "1x": "1×",
+  "2x": "2×",
+  "4x": "4×",
+  "8x": "8×",
 };
 const viewOptions = Object.values(VIEW_LABELS);
 
 let burn = $state<BurnId>(doc?.opening.burn ?? "course");
 let tick = $state(doc?.opening.tick ?? 0);
 let playing = $state(false);
-let view = $state<FlightView>(doc?.opening.view ?? "follow");
+let view = $state<FlightView>(doc?.opening.view ?? "auto");
 const staged = $derived<TargetMode>(
   targets ?? (doc ? defaultTargets(doc) : "none"),
 );
@@ -179,12 +182,13 @@ let skyX = $state(960),
     ),
   );
 let canvases = $state<FlightLayerCanvases>({});
+let screen = $state<HTMLDivElement>();
 
 onMount(() => {
   const world = canvases.world?.getContext("2d");
   const fx = canvases.fx?.getContext("2d");
   const lfx = canvases.lfx?.getContext("2d");
-  if (!doc || !world || !fx || !lfx) return;
+  if (!doc || !world || !fx || !lfx || !screen) return;
   const scene = new FlightScene(
     { world, fx, lfx, fxGlow: canvases.fxGlow } satisfies FlightLayerContexts,
     untrack(() => activeDoc) ?? doc,
@@ -195,6 +199,11 @@ onMount(() => {
     untrack(() => planetAppearance),
     untrack(() => experiment),
   );
+  let cssWidth = screen.getBoundingClientRect().width;
+  const resize = new ResizeObserver(([entry]) => {
+    cssWidth = entry.contentRect.width;
+  });
+  resize.observe(screen);
   scene.backgroundMode = backgroundMode;
   background = scene.background;
   // The constructor already flew the opening burn in the opening view and the
@@ -228,6 +237,8 @@ onMount(() => {
       if (tick === TOTAL_TICKS) playing = false;
     } else accumulator = 0;
     previous = now;
+    if (scene.configureViewport(cssWidth, $settings.speedCamera))
+      drawn.tick = -1;
     const shownLight = light;
     const tuned = JSON.stringify(tuning ?? {});
     const targets = staged;
@@ -285,6 +296,7 @@ onMount(() => {
   raf = requestAnimationFrame(frame);
   return () => {
     cancelAnimationFrame(raf);
+    resize.disconnect();
     releaseMaterials?.();
   };
 });
@@ -306,7 +318,7 @@ onMount(() => {
     data-study-light={light ? "true" : undefined}
     aria-label={label}
   >
-    <div class="screen">
+    <div class="screen" bind:this={screen}>
       <div class="slot scene">
         <GameField
           {background}

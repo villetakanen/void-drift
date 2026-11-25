@@ -1,0 +1,68 @@
+---
+const base = "/studies/drone-launcher-2026-11-25";
+---
+
+<figure>
+  <div class="specimen">
+    <svg
+      viewBox="0 0 40 27"
+      role="img"
+      aria-label="Launcher and drone masters at the same drawing scale, preserving their source proportions"
+    >
+      <title>Launcher and drone · same drawing scale</title>
+      <image
+        href={`${base}/02-1-launcher-master.svg`}
+        x="7"
+        y="1.5"
+        width="8.505661"
+        height="22.138202"
+      />
+      <image
+        href={`${base}/02-1-drone-master.svg`}
+        x="24"
+        y="3.737112"
+        width="5.428502"
+        height="9.39426"
+      />
+    </svg>
+  </div>
+  <figcaption>
+    Same drawing scale for both objects. The drone is approximately 42.4% of the
+    launcher's length, including its original blue exhaust. Black background
+    matches the draft. This is an enlarged form inspection; world size is
+    unassigned.
+  </figcaption>
+  <div class="downloads">
+    <a href={`${base}/02-1-launcher-master.svg`}>Launcher SVG master</a>
+    <a href={`${base}/02-1-drone-master.svg`}>Drone SVG master</a>
+  </div>
+</figure>
+
+<style>
+figure {
+  margin: var(--spacing-xl) 0;
+}
+.specimen {
+  background: #000;
+  border: 1px solid var(--color-border);
+}
+svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+figcaption {
+  max-width: var(--measure-prose);
+  margin-top: var(--spacing-md);
+  color: var(--color-text-muted);
+}
+.downloads {
+  display: flex;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+}
+a:focus-visible {
+  outline: 2px solid var(--color-selected);
+  outline-offset: 4px;
+}
+</style>

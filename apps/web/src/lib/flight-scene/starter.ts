@@ -17,13 +17,11 @@ export const STARTER_FLIGHT_SCENE = {
     { x: 520, y: 120 },
   ],
   held: { distance: 140, shardLife: 2 },
-  follow: { near: 1.6, far: 4 },
-  opening: { burn: "course", view: "follow", tick: 180 },
+  opening: { burn: "course", view: "2x", tick: 180 },
 } satisfies z.input<typeof FlightSceneDocumentSchema>;
 
 export const PRACTICE_FLIGHT_SCENE = {
   system: "practice",
   loadout,
-  follow: STARTER_FLIGHT_SCENE.follow,
-  opening: { burn: "course", view: "game", tick: 0 },
+  opening: { burn: "course", view: "auto", tick: 0 },
 } satisfies z.input<typeof FlightSceneDocumentSchema>;

@@ -1,0 +1,44 @@
+{
+  "step": "02.3",
+  "capturedAt": "2026-11-25",
+  "captureKind": "Original live UI screenshots before 02.4; separate static moments, not a motion recording",
+  "acceptance": "Designer accepted launch presentation and reasonable defaults; no production adoption or final flight-style decision.",
+  "viewport": {
+    "width": 1512,
+    "height": 805
+  },
+  "burn": "B1",
+  "zoom": "8x",
+  "cssPixelsPerWorldUnit": 4,
+  "launcherLengthUnits": 17,
+  "mountPercentFromNose": 68,
+  "ejectionSpeedUnitsPerSecond": 70,
+  "ignitionDistanceUnits": 32,
+  "poweredAccelerationUnitsPerSecondSquared": 60,
+  "seatedPreviewSeconds": 0.1,
+  "releaseSeconds": [1, 3, 5],
+  "handoff": "Drone centre crosses launcher muzzle; inherits carrier translation and rotational muzzle velocity.",
+  "environment": "G4 yellow-family star, radius 36 u; carrier starts 500 u away outside gravity; no planets.",
+  "captures": [
+    {
+      "seconds": 0.95,
+      "file": "02-3-launch-0-95-seated-blue.jpg",
+      "state": "Seated preview with original blue indicator"
+    },
+    {
+      "seconds": 1.1,
+      "file": "02-3-launch-1-10-rails.jpg",
+      "state": "On rails, 7.0 u ejected"
+    },
+    {
+      "seconds": 1.3,
+      "file": "02-3-launch-1-30-coast.jpg",
+      "state": "Coasting, 21.0 u ejected"
+    },
+    {
+      "seconds": 1.6,
+      "file": "02-3-launch-1-60-powered.jpg",
+      "state": "Ion drive on, 42.6 u ejected"
+    }
+  ]
+}

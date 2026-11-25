@@ -134,5 +134,5 @@ export const FISSION_PERIOD_021 = { game: 0.45, opening: 0.9 } as const;
 export const FISSION_SCENE_021 = {
   loadout: { ...defaultLoadout("wasp"), side: "fusion" },
   start: { x: 460, y: 540, rotation: -Math.PI / 2 },
-  opening: { burn: "course", view: "follow", tick: 8 },
+  opening: { burn: "course", view: "2x", tick: 8 },
 };

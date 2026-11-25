@@ -9,5 +9,5 @@ export const DERELICT_INSTRUMENT_SCENE = {
   start: { x: 960, y: -360, rotation: -Math.PI / 2 },
   targets: [{ x: 960, y: -440 }],
   encounter: { restTicks: 840 },
-  opening: { burn: "course", view: "follow", tick: 0 },
+  opening: { burn: "course", view: "2x", tick: 0 },
 };

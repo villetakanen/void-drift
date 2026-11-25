@@ -35,7 +35,7 @@ export const StagedPlanetSchema = z
   .strict();
 export type StagedPlanet = z.infer<typeof StagedPlanetSchema>;
 
-export const FLIGHT_VIEWS = ["game", "follow", "follow-far"] as const;
+export const FLIGHT_VIEWS = ["auto", "1x", "2x", "4x", "8x"] as const;
 export type FlightView = (typeof FLIGHT_VIEWS)[number];
 
 export const StagedStartSchema = z
@@ -86,22 +86,11 @@ export const FlightSceneDocumentSchema = z
       })
       .strict()
       .optional(),
-    /** Zoom of the two follow views. */
-    follow: z
-      .object({
-        near: z.number().finite().positive().default(1.6),
-        far: z.number().finite().positive().default(4),
-      })
-      .strict()
-      .default({})
-      .refine(({ near, far }) => near < far, {
-        message: "near must be smaller than far",
-      }),
     /** What the scene shows when it opens. */
     opening: z
       .object({
         burn: z.enum(BURN_IDS).default("course"),
-        view: z.enum(FLIGHT_VIEWS).default("follow"),
+        view: z.enum(FLIGHT_VIEWS).default("auto"),
         tick: z.number().int().min(0).max(TOTAL_TICKS).default(180),
       })
       .strict()

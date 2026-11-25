@@ -1,0 +1,326 @@
+---
+layout: ../../../layouts/StudyLayout.astro
+---
+
+import MasterSpecimen from '../../../components/studies/drone-launcher-2026-11-25/MasterSpecimen.astro';
+import FlightBench from '../../../components/studies/drone-launcher-2026-11-25/FlightBench.svelte';
+import InstrumentBand from '../../../components/lab/instrument/InstrumentBand.astro';
+import SizingBench from '../../../components/studies/drone-launcher-2026-11-25/SizingBench.svelte';
+
+<section>
+
+## 01 / Develop the problem
+
+The drone launcher turns potential into small autonomous craft carrying fission
+payloads. A drone pursues an enemy and explodes nearby, or returns to the
+launcher to be converted back into energy. Manufacturing takes time, and only
+a few drones can be in play at once. The weapon's character comes from this
+whole cycle: preparation aboard the ship, independent flight, and either an
+explosion or recovery.
+
+The launcher and drone already have their visual direction and approximate
+proportions. The study brings those forms into working detail and explores how
+the cycle should move and read in flight. How does the launcher communicate its
+preparation? What makes the drone's pursuit and return convincing? How do the
+pilot's movement and distance from the enemy shape the encounter?
+
+### Form and equipment family
+
+<figure>
+  <img src="/studies/drone-launcher-2026-11-25/01-designer-draft.png" alt="Launcher and drone draft: an open twin-rail cyan launcher with lime fittings, beside a pointed cyan drone with a blue exhaust." width="688" height="832" style="max-width: 100%; height: auto;" />
+  <figcaption>Launcher and drone draft, 25 November 2026. The forms and approximate
+  proportions are the starting reference for mastering.</figcaption>
+</figure>
+
+The [original SVG](/studies/drone-launcher-2026-11-25/01-ion-weapons-source.svg)
+and reference image preserve the artwork. The open rails, cyan planes, lime
+fittings and pointed drone silhouette carry its identity. Mastering needs to
+resolve construction, attachment, the drone's position in the launcher, and
+release geometry while retaining that character. Exact world dimensions and
+how much of the fitting remains visible on a hull need examination at flight scale.
+
+The launcher belongs to the same equipment family as the fission engine. Their
+explosions share the nuclear color: in the drone's close attack and in the
+engine's plume. The [fission light study](/lab/studies/fission-light-2026-11-11)
+provides a related visual reference. The drone itself has an ion drive with a
+small plume, giving its travel a different light from its detonation.
+
+### Manufacture, attack and recovery
+
+The launcher acquires targets like other weapons. When it has a target within
+range, it starts manufacturing a drone from potential. After a manufacturing
+delay, it launches the drone with its fission payload. Deployment is limited
+by the number of drones already in play: three is the starting point, with a
+higher limit still possible.
+
+An airborne drone heads towards an enemy while that enemy is in range. It
+explodes when close enough. Without an enemy in range, it heads back towards
+the firing ship if that ship is in range. At the launcher, the returning drone
+is converted back into energy. This recovery is what “reload” means in the cycle.
+The amount of potential used to manufacture a drone and the energy recovered
+on return remain to be established.
+
+These range conditions describe different moments: acquiring a launch target,
+pursuing an enemy, returning to the ship, and detonating nearby. Their distances,
+measurement origins and relationship need definition. The ship-range condition
+also needs clarification: does it govern starting the return or beginning
+recovery on arrival? The behaviour when neither destination is in range is open.
+
+### Flight and machinery
+
+The ion drive supplies thrust; turning and rotation control are still unresolved.
+A small rotation stabilizer is one possibility. The movement needs to establish
+how the drone points towards its destination, accelerates, handles drift and
+overshoot, and meets a launcher that is itself moving. Departure velocity,
+turning authority, braking and gravity all affect that character.
+
+The launcher and drone must make the cycle understandable at game scale.
+Manufacturing, release and recovery need a visible relationship to the machinery.
+The small ion plume should help explain flight, while the nuclear explosion
+marks the attack. Several drones must remain readable alongside their carrier,
+targets and other weapon effects.
+
+### Open design questions
+
+- **Timing and commitment.** How long does manufacture take, when is potential
+  spent, and what happens if the target is lost before launch? What pace do
+  successive launches give the weapon?
+- **Capacity and recovery.** Is the active limit per launcher or per ship? How
+  do manufacturing, returning and conversion count towards it? How much energy
+  returns, and how quickly can that potential become another drone?
+- **Pursuit and return.** What do the range conditions measure? How does a drone
+  choose or change its target, and when does it commit to returning? What happens
+  when neither an enemy nor its firing ship is in range?
+- **Attack and interruption.** What proximity triggers detonation, what does the
+  explosion affect, and can a drone be intercepted? What happens if its firing
+  ship is lost?
+- **Pilot control.** How do Auto/Off and emergency energy affect manufacturing
+  and drones already airborne? Which states need explicit feedback beyond the
+  machinery, movement and light?
+
+The inquiry centres on one complete cycle, from target acquisition through
+manufacture and flight to detonation or recovered energy. Its timing, motion
+and visual expression should be considered together: the launcher's form needs
+to explain what it does, and the drone's behaviour needs to make sense from the
+moving ship that sent it.
+
+</section>
+
+<section>
+
+## 02 / Explore
+
+### 02.1 / Launcher and drone masters
+
+The first inspection holds both objects still. Their paths, proportions, plane
+colours and overlaps come from the original SVG, including the drone's small
+blue gradient. Both are shown at the same scale so the drone keeps its size
+relative to the launcher.
+
+<MasterSpecimen />
+
+The masters collect each object into its own SVG. Nested translations, scales
+and reflections are flattened into paths, with named groups for the rails,
+housing, receiver bands and drone faces. Unused definitions, other equipment,
+labels and editor metadata are removed. The drone's scattered pieces are brought
+together in their original paint order, retaining its single exhaust gradient.
+
+Both coordinate frames point nose-up, with the front at zero and the horizontal
+silhouette centred on zero. They use the same source drawing units. These are
+artwork origins, not chosen mount points. The launcher has 26 faces in 14 groups;
+the drone has seven faces in seven groups.
+
+Inspect the rail spacing, rear assembly, drone silhouette and their relative
+size against the draft. This step establishes the static masters for review;
+manufacturing, release, steering, recovery and explosion remain to be explored.
+
+<details>
+<summary>Original draft for comparison</summary>
+
+<img src="/studies/drone-launcher-2026-11-25/01-designer-draft.png" alt="Original launcher and drone draft for comparison with the cleaned masters." width="688" height="832" style="max-width: 100%; height: auto;" />
+
+</details>
+
+</section>
+
+<section>
+
+### 02.2 / Size the launcher on the Fighter
+
+Fit the launcher alongside the Light Ion Cannon and Plasma rifle, then vary its
+length while preserving the master’s proportions. Each of the Fighter’s four
+slots can hold a launcher, either reference weapon, or remain empty. The forward
+pair sits under the hull; the aft pair is exposed. Both views use the shared
+Fighter rendering and its actual slot positions and layering.
+
+<SizingBench client:load />
+
+The [supplied sizing](/studies/drone-launcher-2026-11-25/02-2-sizing.json)
+is 17 world units long, with its attachment 68% of the way from nose to rear.
+The launcher occupies both left slots, with the cannon forward right and the
+rifle aft right. This is the tool’s reset configuration. The initial comparison
+used 18.2 units and 78%; the supplied export replaces that starting point.
+Adjust attachment separately from size; inspection zoom changes only the enlarged view. The cannon
+and rifle retain their production sizes and anchors. The small view stays at one
+CSS pixel per world unit.
+
+This is a static fitting comparison using the launcher master’s paths. It does
+not simulate weapon operation or assign production stats. The drone master stays
+unchanged in 02.1; this step sizes the launcher. Export a candidate to preserve
+its length, attachment, slot choices and inspection zoom for discussion.
+
+</section>
+
+<section>
+
+### 02.3 / Eject, coast, ignite
+
+The launch presentation and starting values were accepted as reasonable for
+continuing the study: 17 u launcher length, 68% attachment, unchanged master
+proportions, +70 u/s ejection and 32 u unpowered distance. Launches occur at
+1, 3, 5 s and so on. The next drone appears only during the final 0.10 s.
+
+The drone starts at the yellow receiver and follows the moving, turning rails
+until its centre reaches the muzzle. At that crossing it inherits both the
+carrier’s translation and the muzzle’s sideways velocity from rotation. Coast
+distance includes rail travel and is measured relative to that inherited drift;
+ignition cannot precede muzzle clearance. With these values, ignition is at
+approximately 1.46 s. The original blue gradient remains World artwork; a
+separate shared ion plume appears on FX when powered.
+
+<details>
+<summary>Accepted launch captures · seated, rails, coast, ignition</summary>
+
+<figure>
+  <img src="/studies/drone-launcher-2026-11-25/02-3-launch-0-95-seated-blue.jpg" alt="Accepted launch at 0.95 s: seated drone and its blue World indicator." loading="lazy" />
+  <figcaption>0.95 s · seated during the final tenth-second before launch.</figcaption>
+</figure>
+<figure>
+  <img src="/studies/drone-launcher-2026-11-25/02-3-launch-1-10-rails.jpg" alt="Accepted launch at 1.10 s: drone travelling along the launcher rails." loading="lazy" />
+  <figcaption>1.10 s · the drone’s centre is still attached to the moving rails.</figcaption>
+</figure>
+<figure>
+  <img src="/studies/drone-launcher-2026-11-25/02-3-launch-1-30-coast.jpg" alt="Accepted launch at 1.30 s: drone coasting beyond the muzzle without thrust." loading="lazy" />
+  <figcaption>1.30 s · clear of the muzzle, coasting with inherited velocity.</figcaption>
+</figure>
+<figure>
+  <img src="/studies/drone-launcher-2026-11-25/02-3-launch-1-60-powered.jpg" alt="Accepted launch at 1.60 s: separate ion plume after ignition." loading="lazy" />
+  <figcaption>1.60 s · powered flight on the original fixed heading.</figcaption>
+</figure>
+
+</details>
+
+These captures preserve 02.3 before powered steering was added: B1, 8×
+(4 CSS px/u), viewport 1512 × 805, 60 u/s² straight acceleration, plume
+length 0.13 and width 0.16. The carrier begins with 90 u/s drift, outside the
+G4 star’s gravity field; no planets. This accepted launch does not settle
+launcher mass, energy, recoil, combat or the drone’s powered flight.
+
+### 02.4 / Accepted Fighter motion and plume
+
+The designer selected **Fighter** motion for continuing the study: the production
+Fighter’s stabilized turn response, with its 180°/s ceiling and canted thrust.
+Releasing a turn counter-burns the remaining rotation without reversing it;
+lateral velocity remains. The comparison used repeating left, forward, right,
+forward commands, each for 0.5 s relative to ignition. Wasp cut its main drive
+while turning; Scout doubled the turn response. Fighter was selected from these
+three study adaptations; no production drone handling was adopted.
+
+The retained values are **60 u/s²**, the **271 u/s engine envelope**, and the
+**50% Service Ion → Light Ion plume**. The engine envelope tapers acceleration
+along world velocity rather than clamping inherited speed; braking and transverse
+thrust remain available. The midpoint plume has a 40.8 u full-output source length,
+shrinking with the square root of delivered output through the shared FX surface.
+The original blue gradient remains separate World artwork, including when the
+main drive is off.
+
+<details>
+<summary>Accepted Fighter captures · turn and forward</summary>
+
+<figure>
+  <img src="/studies/drone-launcher-2026-11-25/02-4-fighter-1-90-turn.jpg" alt="Accepted Fighter response at 1.90 s, during the left-turn phase." loading="lazy" />
+  <figcaption>1.90 s · left turn · 164 u/s · 45% delivered main drive.</figcaption>
+</figure>
+<figure>
+  <img src="/studies/drone-launcher-2026-11-25/02-4-fighter-2-40-forward.jpg" alt="Accepted Fighter response at 2.40 s, after the forward command has released the turn." loading="lazy" />
+  <figcaption>2.40 s · forward command · 171 u/s · 91% delivered main drive.</figcaption>
+</figure>
+
+These original live captures were saved before moving the instrument to 02.5:
+B1, 4× (2 CSS px/u), viewport 1512 × 805. The carrier began at 90 u/s; launches
+repeated every 2 s. [Capture conditions](/studies/drone-launcher-2026-11-25/02-4-capture-conditions.json)
+retain the complete settings. The stills preserve appearance at two moments;
+the designer’s motion judgment came from the live comparison.
+
+</details>
+
+### 02.5 / Pursuit, return and drift
+
+One drone now flies autonomously against one moving Scout target. Launch is
+allowed only while an enemy is **within 450 u of the carrier**. In flight,
+an enemy strictly inside **500 u of the drone** takes priority: pursue it.
+Otherwise return towards the carrier if it is strictly inside **500 u of the
+drone**. Outside both airborne ranges, switch off the main drive and drift
+while the stabilizers settle rotation.
+
+These distances remain suspect and are deliberately adjustable: the menu has
+separate launch, pursuit and return ranges. Centre-to-centre measurement is this
+step’s working interpretation. Launch includes its boundary (≤450 u); airborne
+checks exclude theirs (less than 500 u). Neither measurement origin nor these values
+are production targeting decisions.
+
+</section>
+
+<InstrumentBand>
+  <FlightBench client:visible label="Drone flight · pursuit, return and drift" />
+</InstrumentBand>
+
+<section>
+
+Each encounter substitutes one launch for the earlier repeating salvo so the
+drone’s decisions remain readable. The carrier coasts at 40 u/s. The target
+follows a staged smooth route with continuous position and velocity, using
+production Scout artwork. Its route is an experiment condition, not enemy AI;
+the drone chooses its own commands throughout.
+
+The earliest release is 1 s. If the target is already in launch range, the
+accepted seated preview begins at 0.90 s and release is at 1 s. If it enters
+range later, the drone appears for 0.10 s before release. Losing range cancels
+that preview; release checks range again. There is no manufacturing simulation
+or queued launch after a target has left range.
+
+At the default ranges, both encounters launch legitimately at 1 s and ignite
+at about 1.47 s. **Long pursuit** pursues until about 8.83 s, then drifts through
+14 s: the enemy is about 501 u away and the carrier 726 u away at the transition.
+The main plume extinguishes; a remaining −30°/s rotation settles while the
+roughly 81 u/s drift continues. **Early departure** switches from Pursuit to
+Return at about 3.73 s. It approaches the moving carrier over the remaining
+course, reaching about 3 u separation and 41 u/s against the carrier’s 40 u/s
+at 14 s. This demonstrates approach and settling, not recovery.
+
+Use 1× to inspect the whole encounter. Higher magnifications are close inspections
+and can take objects outside the carrier’s view. The blue dashed circle shows
+pursuit range; if return range differs, a yellow circle shows that second
+radius. Distances, current command and spin distinguish the decision from the
+inertia that follows it. Changing a range or encounter reconstructs the same
+selected instant, so the new conditions are applied from the start.
+
+The controller uses the pirate pilot’s bounded planning approach: eight
+Off/Left/Right/Forward command sequences, a 1.2 s prediction, and a 0.3 s first
+command followed by coasting or forward thrust. It looks again every eight
+60 Hz ticks, immediately on destination changes. Its cached response table is
+built from the accepted drone’s Fighter steering including starting angular
+velocity. Each predicted impulse applies the drone’s actual 271 u/s envelope
+to its current velocity. It borrows no pirate hull, standoff distance, hazard
+avoidance or energy assumptions. Pursuit aims for the moving target’s centre;
+Return also values matching carrier velocity. These are study choices to judge,
+not settled drone intelligence.
+
+The accepted launcher, rail attachment, ejection, coast, ignition, blue World
+indicator and ion plume remain. The smallest yellow-family star is present,
+with the carrier’s course outside its gravity field and no planets. The drone
+has no gravity, drag, collision or attack in this step. Approaching the carrier
+does not trigger recovery or energy conversion. Manufacture, capacity, target
+selection among several enemies and detonation remain later questions.
+
+</section>

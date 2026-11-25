@@ -37,6 +37,14 @@ describe("flight scene document", () => {
         .success;
     expect(accepts({})).toBe(true);
     expect(accepts({ extra: 1 })).toBe(false);
+    expect(accepts({ follow: { near: 1.6, far: 4 } })).toBe(false);
+    for (const view of ["game", "follow", "follow-far"])
+      expect(accepts({ opening: { view } })).toBe(false);
+    for (const view of ["auto", "1x", "2x", "4x", "8x"])
+      expect(accepts({ opening: { view } })).toBe(true);
+    expect(
+      FlightSceneDocumentSchema.parse({ loadout: doc.loadout }).opening.view,
+    ).toBe("auto");
     expect(accepts({ wreckSpin: -1 })).toBe(false);
     expect(accepts({ wreckSpin: 2 })).toBe(true);
     expect(accepts({ wreckSpin: 2.1 })).toBe(false);

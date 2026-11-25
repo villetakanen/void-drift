@@ -1,8 +1,8 @@
 ---
 
 generated:
-  by: "openai/gpt-6.1-terra"
-  at: "2026-11-24T12:30:43+02:00"
+  by: "openai-codex/gpt-6"
+  at: "2026-11-25T18:53:04Z"
 verified:
   - by: "human:ville-takanen"
     at: "2026-11-24"
@@ -10,10 +10,6 @@ verified:
 ---
 
 # Flight scene instrument
-
-## Blueprint
-
-### Context
 
 When a study's question requires observing FX or an in-game scenario during
 flight, the Flight scene instrument is the shared way to do that: one ship
@@ -24,9 +20,9 @@ compares two embeds two instruments. A study that proposes a light for an engine
 supplies it as a [study light](#study-light), the one thing in the scene that is
 not the game's.
 
-### Architecture
+## Architecture
 
-#### Document
+### Document
 
 `FlightSceneDocumentSchema` in `apps/web/src/lib/flight-scene/config.ts` parses
 an agent-supplied document; the starter is `STARTER_FLIGHT_SCENE` in
@@ -38,16 +34,15 @@ an agent-supplied document; the starter is `STARTER_FLIGHT_SCENE` in
 | `start`   | Optional `{x, y, rotation, velocity?}`; starts at rest unless velocity is supplied. Absent: where a run starts.  |
 | `targets` | Wrecks placed in the arena, `{x, y}` in world units. Default none.                                               |
 | `held`    | Optional `{distance, shardLife}`, both positive; defaults 140 units and 2 seconds.                               |
-| `follow`  | `{near, far}` zoom of the two follow views, positive with `near < far`; defaults 1.6 and 4.                      |
-| `opening` | `{burn, view, tick}`: what is shown on opening; defaults `course`, `follow`, 180. The tick lies within the burn. |
+| `opening` | `{burn, view, tick}`: what is shown on opening; defaults `course`, `auto`, 180. `view` is one of `auto`, `1x`, `2x`, `4x`, `8x`. The tick lies within the burn. |
 
 The optional `encounter.restTicks` suppresses both thrusters for that many initial simulation ticks; other simulation systems continue to run. The component's `fixedBurn` hides burn selection, and `onTargetHull` reports the first placed target's current and maximum hull, or null when unavailable, as the scene updates.
 
-#### Full Practice system
+### Full Practice system
 
 The canonical inspector opens in Practice. A study selects the same environment with `system: "practice"`. The simulation supplies the G7 Sun, Mercury, Venus and The Cradle with their Practice orbits, gravity, body sizes and surface appearances. Replay and backward seek restore the same system. Wreck staging and the isolated Venus encounter remain available as separate scenes. The document rejects combining either with the full system.
 
-#### Staged impulses
+### Staged impulses
 
 A document may supply `impulses`, default empty: up to sixteen strict objects
 with `tick` (an integer from 1 through the burn's final tick) and finite,
@@ -63,9 +58,9 @@ An absent or empty list retains the original flight. Configured study light may
 place an active eruption on LFX and reduced emission history on FX; the shared
 surface still owns world-space decay. This does not select a projector recipe.
 
-The default zoom and held values are working values, not tuned ones.
+The default held values are working values, not tuned ones.
 
-#### Engine
+### Engine
 
 The default uses the [shared game field](../../game/render/game-field/spec.md),
 with its prepared browser sky beneath transparent World. Practice and isolated
@@ -84,7 +79,7 @@ replacement with clear/pass policy, retaining the same flight and camera.
   engines' state from the simulation.
 - `index.ts` is the public surface; code outside the folder imports from it.
 
-#### Component
+### Component
 
 `apps/web/src/components/lab/flight-scene/FlightSceneInstrument.svelte` takes
 `config: unknown`, `label?`, and optional inputs from whoever mounts it:
@@ -121,10 +116,10 @@ the instrument only through `light`, `targets`, `layers` and `tuning`.
 
 The figure exposes `data-rendered`, `data-drawn-tick`, `data-drawn-view`,
 `data-drawn-burn`, `data-burn`, `data-playing` and `data-tick` for tests.
-`data-drawn-view` carries the view id: `game`, `follow` or `follow-far`.
+`data-drawn-view` carries the view id: `auto`, `1x`, `2x`, `4x` or `8x`.
 `data-study-light` is present while a study light is shown.
 
-#### Using it
+### Using it
 
 - In the Lab: `/lab/flight-scene` mounts the instrument with the starter
   document through `FlightSceneLab.svelte`. That page supplies its own menu:
@@ -143,7 +138,7 @@ The figure exposes `data-rendered`, `data-drawn-tick`, `data-drawn-view`,
   client directive (for example `client:visible`) and at least one prop;
   `FlightSceneEmbed` supplies a directive only for its own route.
 
-#### Time model
+### Time model
 
 A burn is 14 s at 60 ticks a second, with no randomness: the same document, burn
 and instant always give the same flight. The scene plays at real time and jumps
@@ -153,16 +148,42 @@ part tuning flies the burn again from tick 0. A jump paints the
 whole flight's light into the persistent FX history, because that history is
 what the flight so far has left on the light surface.
 
-#### Views
+### Zoom and camera
 
-- Game: the game's own camera, framed on the ship with its settings.
-- Follow: the ship held at the centre at `follow.near`.
-- Follow far: the ship held at the centre at `follow.far`.
+The top-left Zoom selector offers **AUTO, 1×, 2×, 4×, 8×**, in that order.
+AUTO uses the production game's camera and its current settings, including its
+follow framing and speed-dependent zoom. It does not approximate the game camera
+with a fixed scale. The canonical Lab page opens in AUTO.
 
-The light surface follows the camera, so choosing another view flies the burn
-again.
+The explicit levels hold the ship at the scene centre and use the app-wide
+[game camera scale](../../game/camera/speed-camera/spec.md): **0.5, 1, 2 and 4
+CSS pixels per world unit**, respectively. They stay fixed during flight;
+production automatic zoom and hull-containment adjustments do not change an
+explicit level. A world-space length of 100 units therefore measures 50, 100,
+200 or 400 CSS pixels on screen. These are magnifications, not camera distances,
+fit-to-ship scales or per-study tuning.
 
-#### Staging
+The scene's logical drawing size, render resolution, device pixel ratio and CSS
+layout do not change those meanings. Camera projection compensates for the actual
+CSS pixels per logical stage unit: logical zoom multiplied by that CSS scale is
+`0.5 × magnification`. Resizing preserves the chosen level, selected burn and
+time, while recomputing the projection for the new displayed size. AUTO receives
+the same actual layout scale through the production camera's viewport contract.
+
+Changing the selected zoom preserves burn, time and playback state and replays
+from tick zero to reconstruct camera state and persistent FX history. The light
+surface follows the chosen camera. Selecting AUTO after a fixed level gives the
+same camera state as a fresh AUTO replay to that instant.
+
+The strict document has no `follow`, `near` or `far` scale configuration and does
+not accept the old `game`, `follow` or `follow-far` view IDs. Active consumers use
+the shared choices. Retired or superseded historical study examples are preserved
+as compact Markdown and useful static captures with their original conditions,
+rather than kept executable through a legacy camera API. A dated study is not
+historical merely because of its date; its active step can continue using the
+current instrument. A later reconstruction is labelled as such.
+
+### Staging
 
 The game has no staging code. The instrument writes to simulation fields the
 game already reads, from the Lab side: it pushes wrecks into the salvage bodies,
@@ -180,20 +201,20 @@ The default choice is Placed when targets exist, else Held ahead, else None.
 
 `wreckSpin` sets placed wrecks' spin in radians per second, finite and in the range 0..2 inclusive, default 0.3. It does not affect held wrecks. The optional reactive `wreckSpin` component prop overrides the document through the same validation; changing it rebuilds the scene and replays the selected burn to the current tick. Invalid values, including null, report an error and clear the target hull readout; undefined preserves the document value. A host may provide a screen readout below the view selector.
 
-#### Held target and shard expiry
+### Held target and shard expiry
 
 The game keeps a broken wreck's shards for good. A wreck replaced all burn would
 bury the scene, so the instrument gives each shard of the held wreck the game's
 own expiry (`life`) of `shardLife` seconds. The shards of placed wrecks keep the
 game's behaviour and remain.
 
-#### Layers
+### Layers
 
 World, FX and LFX are drawn on the three production layer canvases
 (`FlightLayers.svelte`). The `layers` input hides any of them; hiding a layer
 changes its visibility, not whether its history is kept.
 
-#### Study light
+### Study light
 
 A study about an engine's light has to show a light the game does not draw yet.
 A study light (`StudyLight` in `light.ts`) is the study's own drawing for the
@@ -225,7 +246,7 @@ The state is read from the simulation's read-only `emitters` and
 - While a study light is shown, the scene carries a caption naming it.
 - Ship, stabilizers, weapons, fade, bloom and layer order stay the game's.
 
-#### Part tuning
+### Part tuning
 
 A study about a delayed or pulsed engine may need to fly it with other values.
 `tuning` takes the same experiment-wide values the Motion instrument exposes
@@ -236,11 +257,11 @@ changed, and a flight with no tuning runs on the game's own. A study light's
 engine state reports the tuned charge length. Other values after mount fly the
 burn again to the same instant.
 
-#### Fidelity and cost
+### Fidelity and cost
 
 The [fidelity capture](../../../../tests/review/flight-scene-fidelity.spec.ts) compares jump/play frames, bloom scale and replay cost. A jump reconstructs one emission tick per simulation tick; uneven production frame timing is outside that comparison. Bloom uses the FX layer's logical layout size. Measurements identify browser, hardware and sample conditions; headless timing does not certify desktop performance.
 
-#### Planet encounters
+### Planet encounters
 
 Study flight never adds manual piloting. The shared fixed burns, timeline, views
 and burger pane remain the interaction model. Studies extend shared staging instead
@@ -288,7 +309,7 @@ single staged planet keeps its outward ordinal and its production name rule.
 The rock-atmospheres study is the first configured use. The canonical Flight scene
 Lab also offers a planet encounter to expose the shared staging capability.
 
-#### Star colour inspection
+### Star colour inspection
 
 Optional reactive `starAppearance` supplies strict six-digit hex `color` and
 `glowColor`, validated by `StarAppearanceSchema`. The scene redraws the same
@@ -304,7 +325,7 @@ relight materials. The canonical Flight scene page offers Stock/Warm/Cool.
 
 A study may supply a reactive `loadout` override validated by the document’s existing loadout schema. Changing it rebuilds the simulated ship and replays the selected burn to the current tick in the current view.
 
-#### Atmospheric study light and reactive approach
+### Atmospheric study light and reactive approach
 
 The optional `start` prop accepts the existing strict `StagedStartSchema` pose
 and velocity. Like `planet`, it is validated in the complete document and a change
@@ -323,7 +344,7 @@ shared persistent surface, which owns pause, reset, seek and decay. This capabil
 adds no temperature, dose, damage or new simulation rules. The heat study uses it
 for a provisional visual cue, with a filled planet-facing LFX contact highlight; engine output remains the game's own.
 
-#### Experiment attachment
+### Experiment attachment
 
 `FlightSceneInstrument` accepts an optional trusted-code `FlightExperiment`.
 Its factory receives the production simulation after initial staging and creates
@@ -353,71 +374,34 @@ mass, power and weapons. No production fitting is added by this capability.
 Reset, backward seek and replacement of an experiment create fresh state and replay
 from the start. Replacement preserves the selected burn and time. Pause never
 steps behaviour or adds light. A run without an experiment retains its existing
-behaviour. Tests verify reset/replay equivalence and isolation between runs.
+behaviour. Separate runs have isolated experiment state; replay reconstructs the same result as a fresh run.
 
 Experiments can use the shared `SalvageSystem.applyDamage` operation for registered
 bodies: it validates positive finite damage and reuses production breakup and
 impact events. This is a combat operation, not an instrument-specific damage model.
 The experiment determines contact and damage; the instrument does neither.
 
-### Constraints
+## Constraints
 
 - Shared controls and visual tokens follow the [choice-control contract](../../factory/design-system/choices/spec.md).
-- Simulation and presentation use production rules and render passes.
-- Burn and view alternatives use SegmentedControl; layer and study-light settings use Switch.
-- Fixed burns and timeline controls provide flight interaction in the Lab.
-- Study-specific drawing and behavior remain local to the supplying study.
+- Burn and zoom alternatives use SegmentedControl; layer and study-light settings use Switch.
+- Fixed burns and timeline controls provide flight interaction in the Lab; no manual piloting is added.
+- Simulation and presentation use production rules and render passes. The instrument has no separate ship, effect or weapon drawing. Labelled study painters remain owned by their studies.
+- Production code does not know the instrument: staging stays on the Lab side. Part tuning never changes the game's part definitions.
+- The strict document refuses unknown fields, out-of-range values, more than sixteen placed targets and a start pose without rotation. Invalid configuration shows its issues in place of the scene.
+- The simulation runs without a canvas. Replaying the same instant, including after a backward seek, reproduces ship pose, velocity, tick count and salvage bodies.
+- A live default held wreck stays within the Light Ion Cannon's reach throughout a burn. Held shards expire after their configured lifetime; placed shards remain.
+- The Lab reference exposes each supported target choice with the document's default selected, all three production layers with their blend modes and bloom, each zoom choice, layer visibility, jump, play and pause.
+- Embedded scenes hydrate and fill their shared instrument band. A pane receives a frozen document; without a pane there is no menu. The scene retains the documented observation attributes.
+- Study light state reports a delayed engine's increasing charge with no output until fully charged. Replacing its plume leaves other outlets and the flight unchanged. The Lab study-light switch shows the study caption and replays to the same instant.
+- Tuning a delayed part's charge changes its release time and reported study-light charge; an untuned flight uses the production parts.
+- Fidelity to play, bloom scale and replay cost have recorded measurements with browser, hardware and sampling conditions. Deterministic tick reconstruction does not claim to reproduce uneven production frame timing.
 
-## Contract
-
-### Definition of Done
-
-- The schema accepts a valid document and refuses an invalid one, including
-  unknown fields, out-of-range values, too many targets and a `start` without
-  `rotation` (unit test).
-- The component shows an invalid document's issues in place of the scene.
-- The simulation half runs without a canvas; flying to the same instant twice,
-  or after a backward jump, gives the same ship pose and velocity, tick count and
-  salvage bodies as a fresh flight (unit test).
-- A live held wreck stays within the Light Ion Cannon's reach across a burn;
-  held shards expire after their lifetime and placed shards remain.
-- The document determines which target choices exist.
-- The Lab page offers the document's target choices with its default chosen;
-  the component keeps the `data-*` attributes above.
-- After changing a study option and closing the menu, its current value is selectable in the scene readout. Wrapped text leaves every view button exposed and operable. The menu contains the study controls.
-- Without a `pane` the component shows no menu.
-- A pane receives a read-only copy of the document (unit test).
-- The four dated study examples keep rendering on the shared engine.
-- The Lab shows the instrument in its default setting as a reference page:
-  three layers with their own blend modes, the bloom filter, jump, play and
-  pause, each view, each layer switch.
-- A study page embeds the instrument through `FlightSceneEmbed`, hydrated and
-  filling the band.
-- The instrument's fidelity to play, its bloom size against the game's and
-  its cost are measured and recorded (measurement script).
-- The study light's state reports a delayed engine's charge rising with no
-  output, then output at full charge.
-- A replaced part's plume stays dark while other outlets stay lit, and the
-  flight is the same with and without a study light (unit test).
-- Tuning a delayed part's charge moves its release, reaches a study light's
-  engine state and leaves the game's parts unchanged; an untuned flight runs on
-  the game's own parts (unit test).
-- The Lab page's study light switch shows the light's caption and flies the
-  burn again at the same instant.
-
-### Regression guardrails
-
-- The instrument draws only through the production frame passes; it has no
-  drawing of its own for ships, effects or weapons. A study light is the
-  study's drawing, labelled on the scene, and it never changes the flight.
-- Production code does not know the instrument: staging stays on the Lab side.
-- Part tuning never changes the game's part definitions.
-- Tests assert relations (same instant, same state; reach; expiry), not pinned
-  geometry, colours or tuning.
-
-### Scenarios
+## Scenarios
 
 ```gherkin
+Feature: Flight scene instrument
+
 Scenario: Open a configured scene
   Given a document with a loadout, targets and a held wreck
   When a study embeds the instrument
@@ -436,10 +420,30 @@ Scenario: Jump back in time
   Then the burn is flown again from its start
   And the scene equals a fresh flight to 3 s, with the light of the whole flight
 
-Scenario: Change view
-  Given the Follow view at 3 s
-  When Game is chosen
-  Then the burn is flown again to 3 s under the game camera
+Scenario: Return to the production camera
+  Given the 4× view is paused at 3 s
+  When AUTO is chosen
+  Then the burn is flown again to 3 s under the production game camera
+  And its camera and FX history equal a fresh AUTO replay to 3 s
+  And playback remains paused
+
+Scenario: Inspect at an explicit scale after resizing
+  Given 8× is selected at 3 s in a supported Lab viewport
+  When the scene is resized to another supported Lab viewport
+  Then a 100-world-unit length spans 400 CSS pixels
+  And the ship remains at the scene centre
+  And the burn and time remain unchanged
+
+Scenario: Keep choices readable outside the menu
+  Given a study supplies a summary of its current options
+  When an option changes and the menu closes
+  Then the scene shows the current value as selectable text
+  And wrapped text leaves all five zoom buttons exposed and operable
+
+Scenario: Refuse a retired camera configuration
+  Given a document with a follow near and far configuration
+  When the instrument opens
+  Then it shows the invalid configuration and no scene
 
 Scenario: Hold a target ahead
   Given Held ahead is chosen

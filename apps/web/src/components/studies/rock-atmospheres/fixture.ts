@@ -20,8 +20,7 @@ export const ROCK_ATMOSPHERE_SCENE = FlightSceneDocumentSchema.parse({
     rotation: Math.PI / 2,
     velocity: { x: 0, y: 230 + PRACTICE_VENUS_TRAVEL_SPEED },
   },
-  follow: { near: 0.8, far: 4 },
-  opening: { burn: "course", view: "follow", tick: 30 },
+  opening: { burn: "course", view: "1x", tick: 30 },
 });
 
 // Same atmosphere and ship: change approach clearance only for the heat study.
