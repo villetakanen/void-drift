@@ -1,9 +1,10 @@
 ---
-status: draft
 generated:
-  by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-20T19:44:42Z"
-verified: []
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-25T08:37:38Z"
+verified:
+  - by: "human:ville-takanen"
+    at: "2026-11-25T09:16:37+02:00"
 ---
 
 # Parts
@@ -15,7 +16,7 @@ verified: []
 Parts give ships their capabilities. Engines, weapons and support equipment
 contribute mass, use or supply energy, and determine what a ship can do.
 
-### Architecture and boundaries
+### Architecture
 
 - **Catalog.** `PARTS` in [`loadout.ts`](../../../../packages/mode-a/src/lib/schemas/loadout.ts) holds
   every part, validated by `PartSchema`: its name, description, short fluff, category, mass,
@@ -40,7 +41,7 @@ contribute mass, use or supply energy, and determine what a ship can do.
   sanctioning means and how it gates play; the catalog owns each part's status.
   The [Hangar](../hangar/spec.md) owns fitting on screen.
 
-### Rules
+### Constraints
 
 - **Category and slot.** Every part has one category: engine, weapon or
   support. Every slot has one slot type, and a part can be fitted only where
@@ -76,13 +77,6 @@ contribute mass, use or supply energy, and determine what a ship can do.
   on a held target or vents when the target escapes. Its card
   shows mass alone. The master lives at `packages/mode-a/src/lib/art/weapons/plasma-rifle.svg`;
   derived paths serve both the card and fitted World drawing.
-- **Weapons.** Functional weapons fire on their own; there is no fire control on keyboard
-  or touch. A weapon draws energy per shot and none while idle.
-- **Weapon energy floor.** No weapon fires while the ship holds less than a
-  tenth of its energy capacity; it also requires more than 10 power. Below the floor
-  a weapon takes no energy and starts no cooldown, and a shot the remaining
-  energy cannot pay for is not fired. Engines and life support still draw below
-  the floor.
 - **Weapon order.** Defence weapons take energy before guns; slot order
   settles the rest.
 - **Support.** A support part works on the ship's resources, for example by
@@ -91,6 +85,31 @@ contribute mass, use or supply energy, and determine what a ship can do.
   capacity.
 - **Sanctioned or unsanctioned.** Each part is one or the other, as
   [Playground](../experimental/spec.md) defines.
+
+#### Weapon operation
+
+- Auto permits normal automatic operation; it does not command a shot. The
+  [controls contract](../controls/spec.md#automatic-weapons-command) owns who
+  can change this choice and when. Off gives every fitted player weapon,
+  including point defence, the operational equivalent of no targets. It
+  prevents new shots without clearing or disabling the
+  [targeting system](../targeting/spec.md). Already-funded effects and weapon
+  recovery keep advancing, including
+  [plasma vents and releases](../plasma-rifle/spec.md#automatic-charge-cycle).
+  The player's choice does not affect enemy weapon operation.
+- The light ion cannon, ion point defence and laser require more than 10
+  power and at least 10% of capacity to fire. The plasma rifle requires
+  power strictly above the greater of 10 and 10% of capacity to add charge.
+  A reserve failure prevents new shots, shot cooldowns and weapon power
+  debits; engines and life support still draw. Shot and release affordability
+  are separate from reserve status.
+- For the energy check, functional weapons are fitted light ion cannons,
+  ion point defence turrets, lasers and plasma rifles; disabled rail guns
+  do not count. The player's energy emergency is active when at least one
+  functional weapon is fitted and every such weapon fails its reserve check.
+  The emergency ends as soon as one clears its check, even if it cannot pay
+  for a shot. Targets, readiness, Auto/Off and the entry lock do not change
+  the check.
 
 ## Contract
 
@@ -103,8 +122,10 @@ contribute mass, use or supply energy, and determine what a ship can do.
 - A fitted part's mass counts toward the ship's mass.
 - A storage part raises the ship's energy capacity, and a run starts with
   the whole capacity full.
-- Below a tenth of capacity no weapon fires, draws or starts a cooldown; at
-  exactly a tenth it may fire only with more than 10 power; this holds for every weapon and every capacity.
+- At exactly 10% of capacity and above 10 power, the ion cannon, point
+  defence and laser pass reserve and the plasma rifle cannot add charge.
+  The energy emergency ends when any fitted functional weapon passes reserve,
+  even if its next shot or release is unaffordable.
 - A held charged engine first thrusts once its charge length has elapsed;
   releasing the input or losing power resets the charge.
 - From rest and at equal ship mass, an ion engine accelerates at its ion
@@ -160,12 +181,35 @@ Feature: Parts
     Then the ship's energy capacity includes the part's storage
     And the ship starts with its energy full
 
-  Scenario: Weapons hold fire when energy is low
-    Given a ship holding less than a tenth of its energy capacity
-    When a target comes into a weapon's reach
-    Then the weapon does not fire, takes no energy and starts no cooldown
-    When the ship's energy rises to a tenth of capacity
-    Then the weapon fires
+  Scenario: Off withholds automatic fire without clearing targets
+    Given ready player guns and point defence with valid targets and enough power
+    When the accepted choice changes to Off
+    Then no new shots, shot debits or shot cooldowns begin
+    And the targeting system still acquires and retains targets under its own rules
+
+  Scenario Outline: Emergency follows reserve equality per fitted weapon
+    Given a player ship with capacity 200 and only <fitting> fitted as weapons
+    When its power is 20
+    Then the energy emergency is <status>
+
+    Examples:
+      | fitting               | status   |
+      | plasma                | active   |
+      | ion                   | inactive |
+      | plasma and ion        | inactive |
+      | no functional weapons | inactive |
+
+  Scenario: All fitted weapons fail reserve
+    Given a player ship with ion and plasma weapons and 200 capacity
+    When it holds only 10 power
+    Then the energy emergency is active
+    And a ready weapon with a valid target starts no shot or shot cooldown and spends no power
+
+  Scenario: Release cost is not an emergency
+    Given a player ship with capacity 100 and only a fully charged plasma rifle
+    When it holds 11 power and the charging target is still valid
+    Then there is no energy emergency
+    And the rifle holds charge until it can afford release
 
   Scenario: A weaker ion engine accelerates less
     Given two identical ships at rest, one with a light ion and one with an ion engine of lower strength

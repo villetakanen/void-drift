@@ -2,7 +2,9 @@
 generated:
   by: "openai-codex/gpt-6.2-sol"
   at: "2026-11-22T18:15:15+02:00"
-verified: []
+verified:
+  - by: "human:ville-takanen"
+    at: "2026-11-25T09:16:37+02:00"
 ---
 
 # Game
@@ -53,7 +55,7 @@ with one meaning each.
 - The Lab is not part of the game. It holds game-designer tools that reuse game systems where they need them. Game specs describe the game only: they place no rule on the Lab, and nothing in them is changed by what the Lab does. The [Lab spec](../lab/spec.md) owns its own constraints.
 - This contract owns the game as a whole: its modes, launch and return, replay, ranking eligibility and the scoring boundary. Child contracts own the parts:
   - **Flight screen:** [game screen](game-screen/spec.md), [render](render/spec.md), [camera](camera/spec.md), [controls](controls/spec.md), [dialogs](dialogs/spec.md), [game over](game-over/spec.md)
-  - **Modes:** [Survival](survival/spec.md), [Practice](test-flight/spec.md), [Derelicts](derelicts/spec.md), [Gauntlet](gauntlet/spec.md)
+  - **Modes:** [Survival](survival/spec.md), [Practice](test-flight/spec.md), [Derelicts](derelicts/spec.md), [Gauntlet](gauntlet/spec.md). See [Controls](controls/spec.md#automatic-weapons-command) for mode-specific weapons command availability.
   - **Launch and ships:** [title screen](landing-page/spec.md), [Hangar](hangar/spec.md), [active ship](active-ship/spec.md), [Playground](experimental/spec.md), [ships](ships/spec.md), [parts](parts/spec.md)
   - **World:** [star](world/star/spec.md), [gravity](world/gravity-field/spec.md), [derelict](world/derelict/spec.md)
   - **Scores and options:** [scores](scores/spec.md), [options](options/spec.md)

@@ -1,6 +1,17 @@
+---
+generated:
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-25T08:37:38Z"
+verified:
+  - by: "human:ville-takanen"
+    at: "2026-11-25T09:16:37+02:00"
+---
+
 # Ion Point Defence
 
-## Context
+## Blueprint
+
+### Context
 
 A baseline automatic turret implements the accepted
 [Ion Point Defence study](../../../../apps/web/src/pages/lab/studies/ion-point-defence-2026-11-08.astro).
@@ -8,7 +19,7 @@ It sits in a weapon slot, turns its round base towards the closest target and fi
 a short instant ray of the [Light Ion Cannon](../light-ion-cannon/spec.md) family.
 The accepted form, turning, firing rhythm and mounting remain fixed during integration.
 
-## Architecture
+### Architecture
 
 `packages/mode-a/src/lib/schemas/loadout.ts` validates the genuine
 `ion-point-defence` part in version-2 saved fittings. Existing compatible weapon,
@@ -36,9 +47,9 @@ cannot apply damage. Existing Hangar persistence and launch handoff carry the pa
 without a storage migration. The [Hangar](../hangar/spec.md) and
 [effects](../../factory/effects/spec.md) contracts describe its fitting and LFX.
 
-## Contract
+### Constraints
 
-### Form and turning
+#### Form and turning
 
 - Rim slots, index mark, barrel and housing turn together about the pivot. Base
   lighting stays fixed to the ship and does not turn with the turret.
@@ -49,7 +60,7 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
   rotation within that limit. Without a target it holds its current angle.
   Flight start and reset return it to the mount direction.
 
-### Targeting
+#### Targeting
 
 - Candidates are live wrecks and fragments within 300 units of the pivot, measured
   to the closest point of their actual shared polygon collision geometry. Collectible
@@ -62,7 +73,7 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
 - Candidates are tracked without firing until the barrel's first contact from the
   muzzle lies within reach, so the turret is already aimed when they arrive.
 
-### Firing
+#### Firing
 
 - A ready turret fires when its barrel is within 2° of the aim point's bearing and
   the first physical contact along the barrel from its muzzle is damageable material
@@ -75,9 +86,9 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
 - First contact stops the ray, applies integer damage once and starts the existing
   impact plume at that contact. The contact may be material other than the target.
 - Each discharge debits 0.1p and starts its own 1/3-second cooldown: three shots/s,
-  0.3p/s continuous per turret, none while idle. The shared weapon energy floor
-  gates every discharge: below 10% of the ship's energy capacity no turret fires,
-  takes power or starts a cooldown (tracking stays free); it also requires more than 10 power.
+  0.3p/s continuous per turret, none while idle. Every discharge is subject to
+  [shared weapon operation, reserve and affordability](../parts/spec.md#weapon-operation).
+  Tracking consumes no power.
 - Power is drawn in this order: life support, engines, defence weapons, guns.
   Defence weapons are point defences and lasers; guns are Light Ion Cannons. Saved rail guns are disabled and draw no weapon power.
   Within an update, defence weapons resolve before any gun, each class in stable
@@ -86,7 +97,7 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
   funding the remaining turrets without starting their cooldowns.
 - The builder shows 8–24 damage/s, three shots/s, 200 units and 0.1p/shot.
 
-### Light
+#### Light
 
 - For 80 ms after discharge, fresh topmost LFX follows the current muzzle and turret
   heading, also from a muzzle under the hull. Its length is capped by both discharge
@@ -95,6 +106,8 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
   transparent tip; a hit clips it rather than stretching it. The cannon's 300-unit
   profile is unchanged. Only the 65% dispersal stamps into persistent FX under the
   shared decay, pause, camera, wrap and reset semantics.
+
+## Contract
 
 ### Definition of Done
 

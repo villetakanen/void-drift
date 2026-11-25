@@ -2,7 +2,9 @@
 generated:
   by: "openai/gpt-6.1-terra"
   at: "2026-11-24T14:37:17+02:00"
-verified: []
+verified:
+  - by: "human:ville-takanen"
+    at: "2026-11-25T09:16:37+02:00"
 ---
 
 # Design system
@@ -62,7 +64,7 @@ canonical examples; Lab and Studies consume them without acquiring ownership.
 - [Ship part artwork](artwork/spec.md) owns that domain's definitions and acceptance behavior.
 - [Identity](identity/spec.md) owns that domain's definitions and acceptance behavior.
 - [Actions](actions/spec.md) owns that domain's definitions and acceptance behavior.
-- [Input presentation](inputs/spec.md) owns Tabs, RingSlider and thrust-pad presentation.
+- [Input presentation](inputs/spec.md) owns Tabs, RingSlider, thrust-pad presentation and the [shared deck flaps](inputs/spec.md#deck-flaps).
 - [Choice controls](choices/spec.md) owns SegmentedControl, Switch and their usage boundaries.
 - [Initials](initials/spec.md) owns the three-letter entry for a player's tag.
 - [Game field backdrop](game-field-backdrop/spec.md) owns the shared generated

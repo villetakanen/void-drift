@@ -53,7 +53,7 @@
 }
 /* The deck: screen-fixed DOM parts in the gutters (architecture.md). One grid
    spans the stage: the side gutters are its outer columns, so both share each
-   row. Instruments sit at the top; the deck buttons and the fixed-height
+   row. Instruments sit at the top; the deck flaps and the fixed-height
    thrust pads at the bottom. Nothing here enters the active area. */
 .deck {
   position: absolute;
@@ -73,11 +73,11 @@
   grid-column: 3;
 }
 .deck-instruments.left,
-.deck-button.left {
+.deck-flap.left {
   justify-self: start;
 }
 .deck-instruments.right,
-.deck-button.right {
+.deck-flap.right {
   justify-self: end;
 }
 .deck-instruments {
@@ -116,31 +116,11 @@
   height: var(--spacing-xs);
   accent-color: var(--color-resource-power);
 }
-.deck-button {
+.deck-flap {
   grid-row: 3;
-  min-height: var(--control-min-height);
-  margin: 0 var(--spacing-md) var(--spacing-sm);
-  padding: 0 var(--spacing-md);
-  border: 1px solid var(--color-text);
-  border-radius: 0;
-  background: none;
-  color: var(--color-text);
-  /* The thrust pad marking type. */
-  font-family: var(--font-family-ui);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-bold);
-  text-transform: uppercase;
-  pointer-events: auto;
-}
-.deck-button:focus-visible {
-  outline: var(--focus-ring-width) solid var(--color-focus-ring);
-  outline-offset: var(--focus-ring-offset-inset);
-}
-.deck-button:disabled {
-  opacity: 0.5;
 }
 /* Outside active play Pause keeps its place but is neither seen nor reached. */
-.deck-button.standby {
+.deck-flap.standby {
   visibility: hidden;
 }
 .deck .deck-pads {

@@ -1,10 +1,10 @@
 ---
-title: "Spec: Game Screen"
-status: draft
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-19T21:31:48+02:00"
-verified: []
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-25T08:37:38Z"
+verified:
+  - by: "human:ville-takanen"
+    at: "2026-11-25T09:16:37+02:00"
 ---
 
 # Game Screen
@@ -13,7 +13,7 @@ verified: []
 
 ### Context
 
-Flight in every mode (Survival, Practice and Derelicts) occupies the same
+Flight in every mode (Survival, Practice, Derelicts and Gauntlet) occupies the same
 self-contained game screen. Desktop and iPad landscape players receive a play area that uses their whole screen, dependable controls
 and a deliberate way to pause and leave. Browser dimensions affect presentation,
 never the run.
@@ -80,12 +80,17 @@ never the run.
   view at the start of a run, which is wider than `1×`, shows `1×`. The camera
   contract owns the scale and label calculation.
 - At a safe viewport height of 700 CSS px and above, the side gutters hold
-  their instruments, deck buttons and full-height pads without overlap.
-- Just above each pad assembly sits one deck button: Pause on the left, and a
-  Weapons button on the right that shows whether weapons are active or
-  disabled. Each is white text in the pad marking type with a 1 CSS px white
-  border and no fill. Weapons is disabled in every mode and drawn at 50%
-  opacity.
+  their instruments, flaps and full-height pads without overlap.
+- Every mode uses the [paired deck flaps](../../factory/design-system/inputs/spec.md#deck-flaps)
+  just above the pads: Pause on the left and Weapons on the right. Activating
+  Pause opens the Paused dialog as Escape does.
+- In flight, the right flap shows the simulation's Auto or Off choice. When
+  the [controls contract](../controls/spec.md#automatic-weapons-command) leaves
+  the choice fixed at Auto, the flap is a passive readout with no focus stop,
+  Shift cue or response to activation. A [weapon energy emergency](../parts/spec.md#weapon-operation)
+  takes priority: the flap shows only `EMERGENCY / LOW ENERGY` as an alert,
+  without a choice, cue or action. When the emergency ends, the flap again
+  shows the current choice, with the Shift cue only if operable.
 - The top and bottom gutters hold information, such as key hints, the version
   and the logo. The bottom gutter holds the mode label and the mode's status
   lines: `G CLASS / SHARED CHALLENGE` for a ranked run, `GOD MODE` for
@@ -140,14 +145,14 @@ never the run.
   actions provide deliberate exits, preserving the correct launch-source return.
 - Two-thumb pad input works without selection, callouts or document
   gestures on iPad Safari; cancellation and lost capture leave no stuck thrust.
-- Each side gutter holds its thrust pads at the bottom, its deck button
+- Each side gutter holds its thrust pads at the bottom, its flap
   just above them (Pause left, Weapons right) and its instruments at the top
   (hull and power left, time and score right); the bottom gutter holds the mode label and
   status lines; no deck part covers the active area.
 - At a safe viewport height of 700 CSS px and above, each side gutter's
-  instruments, deck button and full-height pads do not overlap.
-- Pause toggles pause as Escape does; Weapons is disabled and drawn at 50%
-  opacity in every mode; both keep at least 44 CSS px of height.
+  instruments, flap and full-height pads do not overlap.
+- Operable flaps keep touch targets of at least 44 CSS px. Passive Weapons
+  states are status, not focus stops.
 - The mode label reads `G CLASS / SHARED CHALLENGE` for a ranked run,
   `GOD MODE` for Practice and `UNRANKED` for any other run.
 - Restoring a 4:3 or wider viewport, or the foreground, preserves the run and
@@ -191,9 +196,27 @@ Scenario: Ultra-wide fills the screen
 Scenario: Deck at the design floor
   Given a 1280 by 700 viewport
   When a run starts
-  Then each side gutter shows its instruments, deck button and full-height pads
+  Then each side gutter shows its instruments, flap and full-height pads
   And none of them overlap one another or the active area
   And the mode label sits in the bottom gutter
+
+Scenario: Passive Auto is visibly distinct from the weapons toggle
+  Given a Survival run or locked arena entry with enough power
+  When I inspect or tab through the deck
+  Then the paired flaps show Pause and Weapons Auto
+  And Weapons has no Shift cue, action affordance or focus stop
+
+Scenario: Only the alert shows during emergency
+  Given an operable Weapons flap showing Auto or Off and the Shift cue
+  When a weapon energy emergency begins
+  Then the flap shows only EMERGENCY / LOW ENERGY and is not operable
+  When its energy emergency ends
+  Then the previous choice and Shift cue return
+
+Scenario: Pause opens the same dialog as Escape
+  Given a run in active flight
+  When I activate the left flap
+  Then the Paused dialog opens and the deck is hidden
 
 Scenario: Narrow while thrusting
   Given a landscape iPad run with both engines held

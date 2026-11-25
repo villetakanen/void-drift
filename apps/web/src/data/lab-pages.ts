@@ -194,6 +194,15 @@ export const labPages = z.array(labPageSchema).parse([
     spec: "docs/specs/factory/design-system/inputs/spec.md#ring-slider",
   },
   {
+    href: "/lab/ds/flight-controls",
+    title: "Flight controls",
+    purpose: "Paired deck flaps: Pause, Weapons choices and low-energy status.",
+    group: "design-system",
+    source: "production",
+    defines: ["apps/web/src/components/inputs/DeckFlap.svelte"],
+    spec: "docs/specs/factory/design-system/inputs/spec.md#deck-flaps",
+  },
+  {
     href: "/lab/ds/actions",
     title: "Actions",
     purpose:

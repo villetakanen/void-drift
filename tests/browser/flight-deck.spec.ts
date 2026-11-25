@@ -43,3 +43,53 @@ test("losing pointer capture clears a held flight action", async ({ page }) => {
   await expectLit(deck, null);
   await page.mouse.up();
 });
+
+test("weapons toggles once per tap even while a thumb holds thrust", async ({
+  newLocalContext,
+}) => {
+  const context = await newLocalContext({
+    viewport: { width: 1180, height: 820 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  const page = await context.newPage();
+  await page.goto("/hangar");
+  await page.getByRole("button", { name: "Practice", exact: true }).tap();
+  const deck = page.locator(".flight-page");
+  const weapons = page.getByRole("button", { name: "Automatic weapons" });
+  await expect(weapons).toHaveAttribute("aria-pressed", "true");
+  await weapons.tap();
+  await expect(weapons).toHaveAttribute("aria-pressed", "false");
+
+  const box = await weapons.boundingBox();
+  if (!box) throw new Error("Weapons flap missing");
+  const thumb = { ...(await padPoint(page, "rightLower")), id: 1 };
+  const tap = { x: box.x + box.width / 2, y: box.y + box.height / 2, id: 2 };
+  const client = await context.newCDPSession(page);
+  await client.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: [thumb],
+  });
+  await expect(deck).toHaveAttribute("data-action", "LF");
+  await client.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: [tap],
+  });
+  await expect(weapons).toHaveAttribute("aria-pressed", "false");
+  await client.send("Input.dispatchTouchEvent", {
+    type: "touchEnd",
+    touchPoints: [tap],
+  });
+  await expect(weapons).toHaveAttribute("aria-pressed", "true");
+  await expect(deck).toHaveAttribute("data-action", "LF");
+  await client.send("Input.dispatchTouchEvent", {
+    type: "touchEnd",
+    touchPoints: [],
+  });
+  await expect(deck).toHaveAttribute("data-action", "none");
+
+  await weapons.click();
+  await expect(weapons).toHaveAttribute("aria-pressed", "false");
+  await weapons.press("Space");
+  await expect(weapons).toHaveAttribute("aria-pressed", "true");
+});

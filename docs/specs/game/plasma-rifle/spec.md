@@ -1,12 +1,10 @@
 ---
-title: "Spec: Plasma rifle"
-status: draft
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-19T20:39:26+00:00"
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-25T06:39:42Z"
 verified:
-  - by: "codex/gpt-6"
-    at: "2026-11-19T20:39:26+00:00"
+  - by: "human:ville-takanen"
+    at: "2026-11-25T09:16:37+02:00"
 legacy_reviewer: "Ville Takanen (undated)"
 ---
 
@@ -32,7 +30,7 @@ Each mount starts idle. With an acquired ship or wreck it charges against that I
 
 On reaching full charge with the same target, release as soon as 3.5 power can be debited while preserving that reserve (13.5 available for a 10-power reserve). Record exactly one release per funded cycle and spend the 3.5 immediately. The firing phase lasts 0.7 s even if the target leaves. A completed firing phase opens the paired vents for 0.3 s before the 2.1 s cooldown. The complete charge and release cost 7 power.
 
-Loss or replacement of the charging target before release starts venting. Drain the remaining stored charge over the same 0.3 s vent cycle used after firing. A returning target cannot interrupt venting or the subsequent 2.1 s cooldown. At the end of recovery any currently eligible target can start a fresh charge. Each fitted rifle owns its timers and charge. Pausing freezes them; a fresh encounter starts idle.
+Loss or replacement of the charging target before release starts venting. Switching [weapon operation](../parts/spec.md#weapon-operation) Off counts as target loss for an unreleased charge, including a full charge waiting for funding. It starts the same vent, with normal push and area damage. A release that is already funded finishes its firing, venting and recovery as usual. Low energy alone is not target loss and holds charge while the target remains valid and weapons are in Auto. Drain the remaining stored charge over the same 0.3 s vent cycle used after firing. A returning target cannot interrupt venting or the subsequent 2.1 s cooldown. At the end of recovery any currently eligible target can start a fresh charge. Each fitted rifle owns its timers and charge. Pausing freezes them; a fresh encounter starts idle.
 
 #### Cycle scenarios
 
@@ -124,6 +122,25 @@ Feature: Plasma rifle
     Given Playground is Off and a sanctioned ship carries a Plasma rifle
     When I start Survival and an eligible target stays in the muzzle sector
     Then the rifle charges and fires under its ordinary power and timing rules
+
+  Scenario: Off vents a full but unfunded charge
+    Given the rifle is fully charged with a valid target but cannot afford release
+    When the pilot switches weapons Off
+    Then there is no new release
+    And the rifle vents with the same push and area damage as target loss
+    And switching back to Auto cannot cut short recovery
+
+  Scenario: Off allows a funded release to finish
+    Given a rifle has begun a funded release
+    When the pilot switches weapons Off before firing finishes
+    Then that release finishes with its normal discharge, venting and cooldown
+    And no new cycle starts while Off
+
+  Scenario: Emergency alone holds charge in Auto
+    Given an Auto rifle is partway charged against an eligible target
+    When power falls to the reserve while that target stays valid
+    Then the rifle retains its charge without venting
+    And it can resume charging when power rises above reserve
 ```
 
 #### Acquisition examples
