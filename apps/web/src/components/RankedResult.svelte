@@ -8,6 +8,7 @@ import {
   submitHighScore,
 } from "@void-drift/mode-a";
 import { onMount, tick } from "svelte";
+import { reportFlightEvent } from "../lib/flight-reporting";
 import { readInitials, rememberInitials } from "../lib/stores/initials";
 import Initials from "./inputs/Initials.svelte";
 
@@ -57,6 +58,7 @@ async function submit() {
   if (!current || view.step !== "entry" || !complete) return;
   const signed = initials;
   view = { step: "saving" };
+  reportFlightEvent("score-attempted", "survival", run.shipId);
   const result = await submitHighScore({ ...run, initials: signed });
   if (!current) return;
   if (result.outcome === "saved") {

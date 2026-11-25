@@ -44,6 +44,7 @@ import {
   type FlightContactCue,
   projectFlightContacts,
 } from "../lib/flight-contacts";
+import { reportFlightEvent } from "../lib/flight-reporting";
 import {
   drawGameField,
   PRACTICE_BACKGROUND,
@@ -225,7 +226,12 @@ let reducedMotion = false;
 let stage: HTMLElement;
 let pauseButton = $state<HTMLButtonElement>();
 let pendingWeaponsShift: string | undefined;
+function leaveFlight() {
+  if (runSetup)
+    reportFlightEvent("left", runSetup.mode, runSetup.loadout.chassis);
+}
 function enterMenu() {
+  leaveFlight();
   runSetup = undefined;
   launchBlocked = false;
   landing = true;
@@ -291,6 +297,7 @@ function reset(start = false, previousSeed?: number) {
     .catch(() => {});
   if (start) simulation.start();
   paused = start && (narrow || document.hidden);
+  if (paused) reportFlightEvent("paused", mode, chosen);
   // A new run enters the star system: the speed camera shows star and ship.
   frameCamera(true, $settings.speedCamera, true);
   sync();
@@ -413,17 +420,20 @@ function beginFlight(previousSeed?: number) {
 }
 function start() {
   if (phase === "starting" || !captureSetup()) return;
+  reportFlightEvent("launched", mode, chosen);
   launchBlocked = false;
   if (launchSource === "title" && !reducedMotion && landing) {
     phase = "starting";
     transitionTime = 0;
     paused = narrow;
+    if (paused) reportFlightEvent("paused", mode, chosen);
     input?.reset();
   } else beginFlight();
   (document.activeElement as HTMLElement)?.blur();
 }
 async function retry() {
   if (!runSetup || status !== "GAME_OVER" || leaving) return;
+  reportFlightEvent("retried", mode, chosen);
   beginFlight(simulation.settings.seed);
   // Let GameOver release the deck. A replacement dialog keeps it inert.
   await tick();
@@ -441,12 +451,16 @@ function suspend() {
   input?.reset();
   action = null;
   lastFrameTime = performance.now();
-  if (status === "PLAYING" || phase === "starting") paused = true;
+  if (!paused && (status === "PLAYING" || phase === "starting")) {
+    paused = true;
+    reportFlightEvent("paused", mode, chosen);
+  }
 }
 function togglePause() {
   if (narrow || document.hidden) return;
   pendingWeaponsShift = undefined;
   paused = !paused;
+  reportFlightEvent(paused ? "paused" : "resumed", mode, chosen);
   input?.reset();
   lastFrameTime = performance.now();
 }
@@ -483,6 +497,10 @@ function padPress(pointerId: number, pad: ThrustPad | null) {
     return;
   input?.setPointer(pointerId, pad);
 }
+$effect(() => {
+  if (status === "GAME_OVER" && runSetup)
+    reportFlightEvent("completed", runSetup.mode, runSetup.loadout.chassis);
+});
 onMount(() => {
   let disposed = false;
   void createRockMaterial(PLANET_MAPS.mercuryGround)
@@ -574,8 +592,10 @@ onMount(() => {
   // A new run's entrance view needs the stage geometry before it is framed.
   fitStage();
   if (launchSource === "title") enterMenu();
-  else if (captureSetup()) beginFlight();
-  else {
+  else if (captureSetup()) {
+    reportFlightEvent("launched", mode, chosen);
+    beginFlight();
+  } else {
     launchBlocked = true;
     reset(false);
   }
@@ -747,6 +767,7 @@ onMount(() => {
   document.addEventListener("visibilitychange", visibility);
   frame = requestAnimationFrame(draw);
   return () => {
+    leaveFlight();
     disposed = true;
     cancelAnimationFrame(frame);
     habitableMaterials.dispose();

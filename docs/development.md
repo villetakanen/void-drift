@@ -193,12 +193,34 @@ precedence. It requires nonempty `PUBLIC_FIREBASE_API_KEY` and `PUBLIC_FIREBASE_
 Missing or invalid settings fail before building, without printing their values.
 Offline development and ordinary verification still work without production settings.
 
+To enable production browser error reporting, choose a project hosted by Sentry
+and set these values in the ignored `.env.local`:
+
+| Setting | Value |
+| --- | --- |
+| `PUBLIC_SENTRY_DSN` | Public DSN from the project's Client Keys settings |
+| `SENTRY_ORG` | Sentry organization slug |
+| `SENTRY_PROJECT` | Sentry project slug |
+| `SENTRY_AUTH_TOKEN` | Private organization token for source-map uploads with the `org:ci` scope |
+
+Leave all four values blank to prepare with reporting off. Partial configuration
+fails before building. Keep the token in `.env.local` or the shell environment
+used for preparation. [Sentry token permissions](https://docs.sentry.io/api/permissions/).
+
 The command builds once into the new run's `bundle/public`, confirms that the production
 identifiers reached the JavaScript, and smoke-tests that built site in Chromium: real
-keyboard flight, pause and the FX Lab controls, with page/asset errors checked. External
-requests are blocked; preparation neither contacts the live backend nor verifies its
-availability. A failed build/smoke or a source edit during preparation cannot produce a
-prepared release. It does not replace full verification.
+keyboard flight, pause and the FX Lab controls, with page/asset errors checked.
+Chromium blocks external requests during smoke and leaves the live Firebase backend
+unverified. A failed build or smoke check, or a source edit during preparation,
+prevents a prepared release. Full verification remains a separate gate.
+
+When configured, preparation assigns a unique Sentry release to the build, including
+when building the same checkout twice, and uploads the matching JavaScript source maps
+to Sentry. It checks the Debug IDs in the script and map, waits for Sentry to process the
+upload, and removes the map files before hashing the bundle for publication. An upload
+failure prevents preparation and leaves diagnostics in `sentry-upload.log`. The report
+records the Sentry release and environment. The uploaded bundle is visible under the
+project's Source Maps settings. [Sentry source-map uploads](https://docs.sentry.io/platforms/javascript/sourcemaps/uploading/cli/).
 
 Each `artifacts/prepared-releases/<run>/` retains a report, build log and smoke captures.
 The report identifies revision, dirty state, source fingerprint, version, environment,

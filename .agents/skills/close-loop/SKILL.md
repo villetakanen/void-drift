@@ -1,51 +1,105 @@
 ---
 name: close-loop
-description: Close completed work on request by comparing intent, result, and verification and recording findings so evidence accumulates across runs.
+description: Record the agent’s self-assessment of its own work loop on request, using only context already available from that loop.
 generated:
-  by: openai-codex/gpt-6.2-sol
-  at: "2026-11-23T13:01:51Z"
-verified: []
+  by: openai-codex/gpt-6.2
+  at: "2026-11-25T12:35:38Z"
+verified:
+  - by: human:ville-takanen
+    at: "2026-11-25T12:45:25Z"
 ---
 
 # Close the loop
 
-A request to “close loop” authorizes writing only the closeout finding record. Start by reading applicable `AGENTS.md` and the available artifacts. Use the repository report destination specified by applicable `AGENTS.md`; otherwise use `docs/close-loop-reports/` at the repository root. Do not ask for permission for the ordinary record. If it cannot be written, report the intended location and blocker. Never write findings to tickets, propose implementation, or change factory behavior during closeout.
+## Tool boundary: read before acting
 
-## Compare and accumulate evidence
+Closeout is report writing from memory. Do not start the usual repository
+exploration or coding verification workflow, even before loading host guidance.
+In particular, do not run `git status`, `git diff`, `rg --files`, recursive
+searches or directory inventories such as `ls -la`. Those operations are outside
+this skill, even when intended to check preservation or prepare a handoff.
 
-1. Recover the intent and acceptance criteria from the brief, decision, or spec. Compare them with the delivered result and available verification. Cite durable locators (paths, revisions, URLs, or expected locations for missing artifacts) and explain what each supports. Distinguish observed evidence, reported claims, and missing evidence, including checks not run. Identify stale or conflicting evidence; never fabricate proof or treat a claim as a verified result.
-2. Choose a stable reference for the work, such as a canonical ticket ID or durable repository reference, and reuse it across closeouts. Search prior reports for that reference and for relevant findings from other work. Compare the current evidence against relevant prior findings and link their report paths. A prior report is not itself proof that a check passed.
-3. Record each material finding. A reusable improvement identifies an evidenced lesson and where it recurs, not a proposed change. If evidence supports completion and reveals no material finding, record `no_finding` rather than omitting findings.
+Use tools only to:
 
-Classify each conclusion at the scope the evidence supports:
+1. Read this skill and applicable `AGENTS.md` files by their exact paths if not
+   already supplied in context. Check guidance along the chosen destination path
+   directly; do not discover it by scanning the repository.
+2. Obtain a timestamp and unique run ID, check or create the destination, and
+   exclusively create the new report. A direct destination type/permission check
+   is allowed; listing existing reports is unnecessary.
+3. Optionally read back that exact new report to verify the write, then hand off.
 
-- If the stated acceptance criteria and delivered artifact directly show a mismatch specific to this work, classify it as a `one_off_issue` even if the cause is unknown. An unestablished cause does not make the mismatch an `unverifiable_claim`. A hypothetical guard that might have prevented it is not evidence of a `reusable_improvement`.
-- If an inspected check omits a material case, record the coverage gap as an observed limitation and classify it at its evidenced scope. Keep that distinct from any unavailable outcome for the omitted case; missing coverage does not show whether that case would pass or fail.
-- Mark directly inspected requirements and artifact contents as `observed` for what they show. If an event is known only from another party’s account, mark that event `reported`; observing the account does not independently establish the event.
+Before each call, check it against these three permitted operations. Everything
+else stays in the loop's existing context; do not gather more evidence.
 
-## Write and report
+## Purpose
 
-Write one machine-readable JSON file per run by default. Use an explicitly specified host format instead when required, retaining equivalent fields and meanings. Choose a unique run ID and filename, create the report without replacing any earlier run, and keep prior reports intact. Tell the user where the report was written, or state the blocker if it was not written.
+A request to “close loop” authorizes one new self-assessment report. Record what
+you thought worked and the harness, project or context issues you encountered
+in your own work loop. This is your account, not an independent audit or a
+human acceptance decision. Interpretation across reports belongs to a separate
+process.
 
-### Report schema (version 1)
+## Assess from existing context
+
+Use only the context already available from this loop. Do not investigate,
+inspect project artifacts anew, rerun checks, consult outside sources, search
+prior reports or compare knowledge across runs. Available sources are not an
+invitation to read them. Questions you cannot answer from this context stay
+uncertain; do not invent causes or generalize beyond the loop.
+
+Describe what you thought worked. For each noticed issue, separate what you
+observed, its effect on the loop, and any interpretation. Label suspected
+explanations and uncertainty explicitly. Use `null` for an unknown explanation.
+When you noticed no issues, use an empty `issues` array: it means only that you
+noticed none, not that an audit established their absence. Do not manufacture
+findings to fill a report.
+
+## Write and hand off
+
+Use the destination in applicable `AGENTS.md`; the fallback is
+`docs/close-loop-reports/` at the repository root. Read applicable host guidance
+if it is not already in context. Reading guidance, checking the destination and
+creating the record are allowed reporting operations, not an investigation of
+the loop. Do not inventory the repository or run Git status/diff to audit the
+loop or prove preservation. Check guidance by its applicable paths, not a
+recursive repository search. You may read back only the report you just wrote
+to verify the write. Do not read earlier reports, including for filename or
+run ID selection.
+
+Write one JSON file by default, using the schema below. An explicitly specified
+host format takes precedence, preserving the same assessment content. Choose a
+unique run ID and new filename (for example using a UUID). Create exclusively;
+if the name exists, choose another without reading or replacing it. Preserve
+all earlier reports and other artifacts. Do not write to tickets, change project
+artifacts or factory behaviour, or undertake implementation work during closeout.
+
+Do not ask permission for the ordinary report. If writing is blocked, identify
+the intended location and the actual blocker in the handoff; do not claim the
+report was written or substitute a ticket or another destination. Otherwise,
+identify the written report path in the handoff. Never infer human acceptance.
+
+## Report schema (version 2)
 
 | Field | Type and meaning |
 | --- | --- |
-| `schema_version` | Integer, always `1`. |
+| `schema_version` | Integer, always `2`. |
 | `run_id` | Nonempty string, unique to this run. |
 | `recorded_at` | RFC 3339 timestamp string. |
-| `work_ref` | Nonempty string, stable reference to the work across runs. |
-| `intent` | String: brief and acceptance criteria, with source locators or explicit gaps. |
-| `result` | String: delivered outcome, with source locators or explicit gaps. |
-| `verification` | String: what was observed, reported, or missing, with source locators or explicit gaps. |
-| `findings` | Array of finding objects, including a `no_finding` object if there is no material finding. |
+| `loop` | Nonempty string identifying this work loop from existing context. |
+| `worked` | Array of nonempty strings describing what you thought worked; may be empty if nothing is known. |
+| `issues` | Array of issue objects; `[]` explicitly means no issues noticed. |
 
-Each finding has:
+Each issue has only:
 
 | Field | Type and meaning |
 | --- | --- |
-| `classification` | String: `reusable_improvement` (evidenced lesson applicable beyond this instance), `one_off_issue` (evidenced discrepancy specific to this instance), `unverifiable_claim` (material claim not established; identify missing evidence), or `no_finding` (evidence supports the intended result and reveals no material gap or lesson). |
-| `summary` | String describing the finding. |
-| `evidence` | Array of objects with `locator` (durable source or expected source, string), `supports` (what it supports or what is missing, string), and `kind` (`observed`, `reported`, or `missing`, string). |
-| `prior_reports` | Array of path strings for relevant prior reports; use `[]` when none apply (an equivalent empty representation is allowed in a host format). |
-| `evidence_status` | String: `new` (evidenced finding without a relevant prior finding), `supports` (current evidence corroborates a prior finding), `contradicts` (current evidence conflicts with a prior finding), `unresolved` (evidence cannot settle the claim or comparison), or `not_applicable` (no finding). |
+| `area` | `harness`, `project` or `context`: where the issue was encountered, not a proven root cause. |
+| `observation` | Nonempty string describing what you encountered. |
+| `effect` | Nonempty string describing its effect on this loop, including uncertainty if unknown. |
+| `interpretation` | Nonempty string explicitly distinguishing any suspected explanation and uncertainty, or `null` when unknown. |
+
+Use only these fields. No stable cross-run reference, prior-report links,
+recurrence classification, evidence-comparison status or acceptance verdict is
+needed. Version 1 reports are historical records; leave them intact without
+reading, migrating or regrading them.

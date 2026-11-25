@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "run_id": "2026-11-25T125002Z-c280dd70-b305-4509-b8f8-81b13a944ce3",
+  "recorded_at": "2026-11-25T12:50:02Z",
+  "loop": "Void Drift 0.7.3 release from feat/0-7-0 through protected main and Firebase Hosting, followed by merge-back.",
+  "worked": [
+    "Prepared the 0.7.3 release candidate, recorded the ranked Survival compatibility decision, and kept the fires-in-the-sky challenge unchanged.",
+    "Full verification passed after setting the repository's local Java 21 environment; the prepared production bundle passed smoke and hash checks.",
+    "Merged the release through protected-main PR #19, published the checked bundle, and passed live checks for hashes, flight, pause, FX Lab, authentication, and score reads without score writes.",
+    "Recorded deployment evidence through PR #20 and fast-forwarded feat/0-7-0 to final main for continued work."
+  ],
+  "issues": [
+    {
+      "area": "context",
+      "observation": "I initially treated the mount planner's BREAKING CHANGE footer as a possible app-release version blocker. The user clarified that these JSONs are agent handoff outputs, not a supported import contract.",
+      "effect": "This introduced an unnecessary compatibility discussion before the release proceeded as 0.7.3.",
+      "interpretation": "I overread the commit footer without enough product context; the user's clarification resolved the scope."
+    },
+    {
+      "area": "harness",
+      "observation": "The first full verification run could not start Firebase emulators because JAVA_HOME and PATH did not point to the installed local Java 21 runtime.",
+      "effect": "Rules and competition checks did not run in that attempt, so I repeated the full verification with the documented environment; that run passed.",
+      "interpretation": "The shell environment likely omitted the local toolchain setup; setting JAVA_HOME and PATH fixed the observed failure."
+    },
+    {
+      "area": "harness",
+      "observation": "The first release preparation built the site but its smoke test failed to listen on the local preview address with EPERM.",
+      "effect": "That attempt was retained as failed and preparation had to run again with local preview access; the second bundle passed smoke and release:check.",
+      "interpretation": "The error indicates the sandbox denied local listener access; the same preparation succeeded when run with that access."
+    },
+    {
+      "area": "project",
+      "observation": "GitHub rejected a direct push to main with GH006 because updates must go through a pull request.",
+      "effect": "I opened and merged PR #19, then used PR #20 for the post-deployment release record.",
+      "interpretation": "The protected-branch rule was explicit in the rejection and the PR path completed the release."
+    },
+    {
+      "area": "context",
+      "observation": "I created and pushed v0.7.3 on a local merge commit before the protected-branch PR completed. GitHub produced a different merge commit for main.",
+      "effect": "The tag temporarily pointed at a non-main merge commit; I force-updated it to the actual PR merge commit before deploying.",
+      "interpretation": "I assumed the local merge commit would be reused by the protected-main merge. I should have tagged after the PR supplied the final main commit."
+    }
+  ]
+}
