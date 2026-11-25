@@ -1,15 +1,21 @@
 ---
 name: first-mate
-description: Coordinate authorized work through subagents when the user explicitly summons a conductor or first mate. Do not activate for ordinary tasks or other skills merely because they involve multiple steps.
+description: Coordinate authorized work through subagents only when the user explicitly requests first-mate or conductor mode.
 generated:
-  by: codex/gpt-6.2-sol
-  at: "2026-11-20T09:43:07Z"
+  by: openai-codex/gpt-6.1-terra
+  at: "2026-11-23T11:17:31Z"
 verified:
   - by: human:ville-takanen
     at: "2026-11-20T09:50:32Z"
+  - by: human:ville-takanen
+    at: "2026-11-25T08:57:54Z"
 ---
 
 # First mate
+
+Activate only when the user explicitly requests first-mate or conductor mode.
+Otherwise work directly by default, including development; mere mentions of
+first mate or requests with multiple steps do not activate this workflow.
 
 Own the user's goal in the main conversation. Establish what success looks
 like and what the user has authorized. Keep discussion and investigation
