@@ -1,59 +1,39 @@
 ---
 name: unit-test-konmari
-description: Prune an existing unit-test suite during an explicitly requested test-maintenance pass. Identify redundant tests and tests whose ongoing maintenance exceeds their regression value. Do not invoke when adding tests, implementing features, debugging, or verifying a development round.
+description: Prune unit tests only on explicit user request. Keep reliable guards whose long-term regression value justifies their maintenance cost.
 ---
 
-## Timing
+## When to run
 
-This skill governs later retention, not test creation. Read and apply it only
-when the user explicitly requests pruning or test-suite maintenance; never infer
-that request from adding or running tests. During development, add whatever tests
-help verify and understand the work. Temporary verification tests are welcome;
-deciding whether to retain them is later work. Preserve checks still needed by
-an ongoing development round.
+Run only when the user explicitly requests test pruning or suite maintenance.
+During implementation, debugging and verification, agents are expected to write
+whatever tests help them deliver confidently. Permanent retention is not a
+condition of delivery. Preserve checks still needed by ongoing work.
 
-A test earns its long-term place by catching a regression that would otherwise ship
-unnoticed. Coverage is not a goal: every test costs tokens and edits on every
-change that touches it.
+## Prune by failure, not by test
 
-## Keep: guards
+1. Inventory unit-test files; label the review as a sample if requested. Flag
+   and leave others’ uncommitted changes alone.
+2. Group checks across files by the concrete failure they catch. Read relevant
+   specs for intent, not coverage: Gherkin does not oblige a test. Ask what
+   would catch the failure without this group: other tests, types, builds,
+   browser or rules checks, or an obvious failure in play or the Lab.
+3. For a failure worth guarding long term, keep the lowest-maintenance reliable
+   guard. Extract any unique assertion before deleting redundant tests. Keep
+   another test or matrix case only if it catches a materially different
+   failure. If no unit guard earns its upkeep, remove the whole group.
 
-- Silent loss of data or state: saves, migrations, recovery, parsing of external input.
-- Integrity and security boundaries: schemas for stored or submitted data, access rules.
-- Rules whose breakage still looks plausible: scoring, run endings, determinism, replay, seeded scheduling.
-- Limits players can exploit or nobody sees break: speed ceilings, energy floors, bounded effect budgets.
-- A real bug that happened and could recur silently, at its smallest reproduction.
-- An invariant of a tricky algorithm, stated as a property over many inputs.
+Prioritise silent data loss, integrity boundaries, plausible scoring or replay
+errors, exploitable limits, past bugs likely to recur and tricky invariants.
+Prune implementation mirrors, tuning pins, visual geometry, framework behaviour
+and Lab internals unless they are needed to guard a meaningful failure. Churn
+from edits that fix no bug argues for replacement or deletion, not just shortening.
 
-## Remove
+## Scope and report
 
-- Mirrors: the expected value is worked out the way the code works it out, or restates a table, formula or branch.
-- Configuration pins: a setting compared with its own value, directly or through a literal that holds only for today's tuning. Deriving the literal from the setting does not redeem it.
-- Art and layout geometry: coordinates, sizes, colours, strokes, mirrored mounts.
-- Loud failures: anything the type check, the build, a browser journey or the Lab page shows at once.
-- Study and instrument internals, unless a shipped surface depends on them.
-- Framework and library behaviour.
-
-## Three questions per test
-
-1. Silent: would this regression ship unnoticed without the test?
-2. Spec: does a spec state the behaviour, rather than the code happening to do it?
-3. Fee: has it been edited by changes that fixed no bug?
-
-Keep a test when 1 and 2 are yes. When 3 is yes, reduce it to the one relation that guards.
-
-## Method
-
-- Read the relevant specs; list their silent acceptance criteria and find the guard for each.
-- List every unit-test file first. Review a sample when asked, and label the result as one.
-- Pull guards out of mirror-shaped tests before deleting the rest.
-- Prefer one behavioural relation per guard over a matrix of cases.
-- Prune unit tests only; report browser, rules, factory and evidence suites separately.
-- Never target a count; the count is the outcome.
-- Flag files with someone else's uncommitted changes, and leave their lines alone.
-- When asked for a percentage, answer in edits per change, false failures and run time. List removals that need a product decision, such as retiring a study or a legacy path.
-
-## Report
-
-- Per file: guards kept, guards extracted, tests removed, and spec criteria left without a guard.
-- Pass, fail, skipped and unavailable results for what you ran.
+Prune unit tests only. Flag removals that need a product decision. Don’t target
+a count or keep a separate list. Report what was removed or consolidated, where
+protection remains and any meaningful regression deliberately left unguarded.
+Report verification outcomes and distinguish browser, rules, factory and evidence
+suites. If asked for a percentage, discuss edits per change, false failures and
+runtime instead.

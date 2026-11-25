@@ -17,6 +17,17 @@ export const releaseFirebaseSchema = z.object({
       public: z.string().min(1),
       ignore: z.array(z.string()).optional(),
       cleanUrls: z.boolean().optional(),
+      redirects: z
+        .array(
+          z
+            .object({
+              source: z.string().min(1),
+              destination: z.string().min(1),
+              type: z.literal(301),
+            })
+            .strict(),
+        )
+        .optional(),
     })
     .strict(),
 });

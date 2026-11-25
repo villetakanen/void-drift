@@ -72,7 +72,7 @@ describe("Gauntlet flight and combat", () => {
     expect(a.opponents[1].ship.pos).toEqual(b.opponents[1].ship.pos);
   });
 
-  it("lets an approaching pirate fire during the player opening lock", () => {
+  it("lets pirates fire during player entry and Off, while Auto permits both player ion weapons", () => {
     const sim = new Simulation({
       ...gameSettings("scout"),
       loadout: ionCombatLoadout(),
@@ -95,19 +95,51 @@ describe("Gauntlet flight and combat", () => {
     pirate.weapons = pirate.combat.weapons;
     const playerWeapons = sim.salvage;
     if (!playerWeapons) throw new Error("Expected a fitted player");
-    for (const weapon of [...playerWeapons.weapons, ...pirate.weapons]) {
-      weapon.readyAt = weapon.kind === "light-ion-cannon" ? 0 : Infinity;
-      weapon.angle = 0;
-    }
+    const readyWeapons = () => {
+      for (const weapon of playerWeapons.weapons) {
+        weapon.readyAt = 0;
+        weapon.angle = 0;
+      }
+      for (const weapon of pirate.weapons) {
+        weapon.readyAt = weapon.kind === "light-ion-cannon" ? 0 : Infinity;
+        weapon.angle = 0;
+      }
+    };
+    readyWeapons();
     sim.start();
+    expect(sim.weaponsEnergyEmergency).toBe(false);
+    expect(sim.toggleWeapons()).toBe(false);
+    expect(sim.weaponsChoice).toBe("auto");
     sim.step(still);
-    expect(playerWeapons.ionDischarges).toBe(0);
+    const playerShots = () => [
+      playerWeapons.ionDischarges,
+      playerWeapons.pointDefenceDischarges,
+    ];
+    expect(playerShots()).toEqual([0, 0]);
     expect(pirate.combat.ionDischarges).toBeGreaterThan(0);
     expect(sim.state.resources.hull).toBeLessThan(100);
-    sim.ship.pos.set(2000, 540);
-    pirate.ship.pos.set(1880, 540);
-    sim.step(still);
-    expect(playerWeapons.ionDischarges).toBeGreaterThan(0);
+
+    const exchange = () => {
+      sim.ship.pos.set(2000, 540);
+      sim.ship.vel.set(0, 0);
+      sim.ship.rotation = Math.PI;
+      pirate.ship.pos.set(1880, 540);
+      pirate.ship.vel.set(0, 0);
+      pirate.ship.rotation = 0;
+      readyWeapons();
+      const enemyShots = pirate.combat.ionDischarges;
+      sim.step(still);
+      expect(pirate.combat.ionDischarges).toBeGreaterThan(enemyShots);
+    };
+    exchange();
+    const autoShots = playerShots();
+    for (const shots of autoShots) expect(shots).toBeGreaterThan(0);
+
+    expect(sim.toggleWeapons()).toBe(true);
+    const spent = playerWeapons.energySpent;
+    exchange();
+    expect(playerShots()).toEqual(autoShots);
+    expect(playerWeapons.energySpent).toBe(spent);
   });
 
   it("suppresses recovery fire while advancing emitted plasma", () => {

@@ -225,6 +225,10 @@ export class FlightScene {
   get lost() {
     return this.run.lost;
   }
+  /** Hull at the currently selected time for a placed target. */
+  targetHull(index: number) {
+    return this.run.targetHull(index);
+  }
   /** Another document or target choice flies the burn again from its start. */
   configure(doc: FlightSceneDocument, targets: TargetMode = this.targets) {
     this.doc = doc;

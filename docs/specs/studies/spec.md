@@ -1,14 +1,12 @@
 ---
 
-title: "Spec: Studies"
-status: draft
 generated:
   by: "codex/gpt-6"
-  at: "2026-11-21T18:32:27+00:00"
+  at: "2026-11-24T18:34:46+00:00"
 verified: []
 ---
 
-# Spec: Studies
+# Studies
 
 ## Blueprint
 
@@ -31,6 +29,12 @@ The [study index](../../../apps/web/src/pages/lab/studies/index.astro) links
 each registered study to `/lab/studies/<slug>` and shows its title, question,
 phase and status. The [registry](../../../apps/web/src/data/studies.ts)
 validates those fields with Zod. The page filename matches the registered slug.
+The Flight Deck weapons study owns its title, question, phase and status in
+its MDX frontmatter. The layout validates that metadata with the same Zod
+schema; the combined [study index data](../../../apps/web/src/data/study-index.ts)
+reads it for the Studies and Lab indexes. It has no duplicate registry entry.
+Other studies retain their registry metadata. This limited migration does not
+introduce a content collection.
 Changing phase, status or source format preserves the URL.
 
 #### Page source and presentation
@@ -85,6 +89,12 @@ appears in the index, its existing page remains available at the same URL.
 ### Scenarios
 
 ```gherkin
+Scenario: Read the weapons study metadata
+  Given the Flight Deck weapons study owns its metadata in MDX frontmatter
+  When its title, question, phase or status changes
+  Then its page and index entries use that same metadata
+  And other studies continue to use their existing registry entries
+
 Scenario: Embed an instrument
   Given a study uses a Lab instrument to investigate a question
   When the study configures the instrument

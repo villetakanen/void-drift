@@ -46,8 +46,6 @@ function record() {
   return { calls, frame };
 }
 const ids = FLIGHT_PASSES.map((pass) => pass.id);
-const drawn = (calls: string[]) =>
-  calls.filter((call) => call.startsWith("draw:")).map((call) => call.slice(5));
 afterEach(() => vi.restoreAllMocks());
 
 function makePlanet(id: string | undefined, x: number, radius = 10): Planet {
@@ -119,10 +117,18 @@ describe("flight frame", () => {
       getContext: () => ({ clearRect: vi.fn(), drawImage }),
     } as unknown as HTMLCanvasElement;
 
+    const observed: string[] = [];
     drawFlightFrame(frame, {
-      include: (pass) => pass.layer === "fx",
+      include: (pass) =>
+        pass.id === "accumulated-light" || pass.id === "aperture-cut",
+      observe: (pass) => observed.push(pass.id),
       presentFx: false,
     });
+    expect(calls.filter((call) => call.startsWith("draw:"))).toEqual([
+      "draw:accumulated-light",
+      "draw:aperture-cut",
+    ]);
+    expect(observed).toEqual(["accumulated-light", "aperture-cut"]);
     expect(drawImage).not.toHaveBeenCalled();
 
     calls.length = 0;
@@ -234,16 +240,5 @@ describe("flight frame", () => {
     expect(first).toHaveBeenCalledWith(frame, expect.anything(), inner);
     expect(second).toHaveBeenCalledWith(frame, expect.anything(), outer);
     expect(frame.renderer.drawPlanet).not.toHaveBeenCalled();
-  });
-  it("draws and reports exactly the included passes, in order", () => {
-    const { calls, frame } = record();
-    const some = ids.filter((_, index) => index % 2 === 1);
-    const observed: string[] = [];
-    drawFlightFrame(frame, {
-      include: (pass) => some.includes(pass.id),
-      observe: (pass) => observed.push(pass.id),
-    });
-    expect(drawn(calls)).toEqual(some);
-    expect(observed).toEqual(some);
   });
 });

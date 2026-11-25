@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-11-24T150000-lint-fix-and-biome-hook",
+  "recorded_at": "2026-11-24T15:00:00+02:00",
+  "work_ref": "agent-tooling/lint-fix-and-biome-hook",
+  "intent": "From the session requests (no ticket or spec): reduce permission prompts with a project allowlist for frequent safe commands; allow Biome writes because linting always runs; replace direct `pnpm exec biome` calls with package.json scripts documented where agents look; add a Claude Code hook that tells an agent to use those scripts when it calls Biome directly.",
+  "result": "package.json adds `lint:fix` (`biome check --write .`). AGENTS.md (CLAUDE.md links to it) Engineering essentials and docs/development.md Required gates document `pnpm lint:fix` then `pnpm lint`. .claude/settings.json allows `pnpm verify:changed`, `pnpm test:rules`, `pnpm lint:fix` and registers a PreToolUse Bash hook, .claude/hooks/no-direct-biome.sh, which denies direct Biome invocations with a message naming the scripts. .gitignore now shares .claude/hooks.",
+  "verification": "Observed: `pnpm lint:fix` ran and reported fixing 8 files; afterwards `pnpm lint` reported no fixes needed and `pnpm check:repo` passed 23, failed 0. The hook script was fed sample JSON inputs: five direct-Biome forms were denied; `pnpm lint:fix`, `pnpm lint`, `grep -n biome ...` and `cat biome.json` passed. `jq` validated settings.json. Missing: the hook has not been observed firing inside a live Claude Code session; the 8 files fixed by the first `lint:fix` run were not identified (none of this work's tracked files showed changes, so they are presumably untracked work by another agent).",
+  "findings": [
+    {
+      "classification": "one_off_issue",
+      "summary": "The hook script was first written under .claude/hooks, which .gitignore excluded (`.claude/*` with only skills and settings.json re-included). Committing settings.json alone would have referenced a missing script for every other checkout. Fixed before commit by re-including .claude/hooks.",
+      "evidence": [
+        {
+          "locator": ".gitignore (Local Claude Code files block)",
+          "supports": "`git check-ignore -v` matched .claude/hooks/no-direct-biome.sh to `.claude/*`; the block now re-includes .claude/hooks",
+          "kind": "observed"
+        }
+      ],
+      "prior_reports": [],
+      "evidence_status": "new"
+    },
+    {
+      "classification": "unverifiable_claim",
+      "summary": "That agents stop calling Biome directly is not established: the hook was tested only with sample inputs, not seen denying a real tool call.",
+      "evidence": [
+        {
+          "locator": ".claude/hooks/no-direct-biome.sh",
+          "supports": "deny/pass behaviour on sample inputs",
+          "kind": "observed"
+        },
+        {
+          "locator": "a later Claude Code session transcript",
+          "supports": "a live denied direct Biome call",
+          "kind": "missing"
+        }
+      ],
+      "prior_reports": [],
+      "evidence_status": "unresolved"
+    }
+  ]
+}

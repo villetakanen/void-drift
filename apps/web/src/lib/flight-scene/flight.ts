@@ -76,6 +76,24 @@ export class FlightRun {
     this.experimentRun = this.experiment?.create(this.sim);
   }
 
+  /** Hull of a placed wreck by its document index; zero once it is gone. */
+  targetHull(index: number): { current: number; maximum: number } | null {
+    if (
+      this.targets !== "placed" ||
+      !Number.isInteger(index) ||
+      index < 0 ||
+      index >= this.doc.targets.length
+    )
+      return null;
+    const body = this.sim.salvage?.bodies.find(
+      (item) => item.id === PLACED_ID + index && item.kind === "wreck",
+    );
+    return {
+      current: Math.max(0, body?.hull ?? 0),
+      maximum: SALVAGE.wreck.hull,
+    };
+  }
+
   get lost() {
     return this.sim.state.status === "PLAYING"
       ? null
@@ -112,7 +130,10 @@ export class FlightRun {
       salvage.nextPass = Infinity;
       if (this.targets === "placed")
         for (const [index, { x, y }] of doc.targets.entries())
-          salvage.bodies.push(wreck(PLACED_ID + index, x, y));
+          salvage.bodies.push({
+            ...wreck(PLACED_ID + index, x, y),
+            spin: doc.wreckSpin,
+          });
     }
     if (doc.start) {
       sim.ship.pos.set(doc.start.x, doc.start.y);
@@ -188,8 +209,10 @@ export class FlightRun {
     const wraps = this.sim.wraps;
     this.hold();
     this.sim.step({
-      leftThruster: input.left,
-      rightThruster: input.right,
+      leftThruster:
+        this.tick >= (this.doc.encounter?.restTicks ?? 0) && input.left,
+      rightThruster:
+        this.tick >= (this.doc.encounter?.restTicks ?? 0) && input.right,
       fire: false,
     });
     const air = this.doc.planet?.atmosphere;

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-11-24T103820-lab-instruments",
+  "recorded_at": "2026-11-24T10:38:20Z",
+  "work_ref": "docs/specs/lab/derelict-instrument/spec.md",
+  "intent": "The user confirmed the three substantively changed Lab specs and requested dated human verification and a close-loop comparison; the instrument specifications describe the intended Lab and staged derelict workflows.",
+  "result": "The three specs at docs/specs/lab/spec.md, docs/specs/lab/derelict-instrument/spec.md and docs/specs/lab/flight-scene-instrument/spec.md contain the human:ville-takanen event dated 2026-11-24. The first two already contained that event; the third was updated without duplicating events. The working tree also contains a derelict instrument and flight-scene changes; no commit was made.",
+  "verification": "The user's confirmation is reported in the request, not independently observed. Frontmatter and selected implementation and test source were inspected; this does not establish runtime conformance. pnpm check:repo passed (23 factory tests). pnpm check:specs docs/specs/lab failed with 43 findings in other child specs and none in the three named specs. git diff --check passed. Browser, flight unit tests and human playtesting were not run in this closeout; prior delivery verification was not available in the inspected artifacts.",
+  "findings": [
+    {
+      "classification": "reusable_improvement",
+      "summary": "Recursive Lab spec lint continues to mix unchanged child migration findings with results for the edited specs; interpret the subtree exit status separately from the edited files' findings.",
+      "evidence": [
+        {
+          "locator": "docs/specs/lab/ (pnpm check:specs docs/specs/lab, 2026-11-24)",
+          "supports": "Observed 43 findings in other child specs and none in the three named specs.",
+          "kind": "observed"
+        },
+        {
+          "locator": "docs/close-loop-reports/2026-11-23T151138-lab-tray.json",
+          "supports": "Prior report describes the same distinction and reports 44 child findings in an earlier run; its reported outcome was not independently reproduced.",
+          "kind": "reported"
+        }
+      ],
+      "prior_reports": [
+        "docs/close-loop-reports/2026-11-23T151138-lab-tray.json"
+      ],
+      "evidence_status": "supports"
+    },
+    {
+      "classification": "unverifiable_claim",
+      "summary": "Full runtime conformance of the changed instruments to the specs is not established by this closeout's source inspection and repository checks.",
+      "evidence": [
+        {
+          "locator": "apps/web/src/components/lab/flight-scene/FlightSceneInstrument.svelte; apps/web/src/lib/flight-scene/flight.test.ts",
+          "supports": "Selected implementation and test cases exist; their runtime outcomes were not checked here.",
+          "kind": "observed"
+        },
+        {
+          "locator": "Browser and flight unit test results for this working tree",
+          "supports": "No such results were inspected or generated in this closeout.",
+          "kind": "missing"
+        }
+      ],
+      "prior_reports": [],
+      "evidence_status": "unresolved"
+    }
+  ]
+}

@@ -48,6 +48,9 @@ failure or source change during verification. It never auto-fixes source.
 
 `pnpm check:contracts` remains an alias for `pnpm check:repo` for existing references.
 
+`pnpm lint:fix` applies Biome's formatting, import order and safe lint fixes in
+place. Run it before `pnpm lint` instead of calling Biome directly.
+
 ### Which checks to run
 
 Before a commit, run `pnpm verify:changed`. It reads every path that differs from

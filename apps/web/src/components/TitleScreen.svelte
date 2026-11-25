@@ -20,7 +20,7 @@ import { onMount } from "svelte";
 import { version } from "../../package.json";
 import { LANDING_HINTS } from "../data/landing-hints";
 import { isNarrowerThanMinRatio } from "../lib/game-screen";
-import ButtonGroup from "./inputs/ButtonGroup.svelte";
+import ActionGroup from "./inputs/ActionGroup.svelte";
 import Logo from "./Logo.svelte";
 import PlaygroundStatus from "./PlaygroundStatus.svelte";
 
@@ -104,6 +104,7 @@ function drawArrival() {
   }
   drawBuild(ctx, loadout, 0, 0, 0, scale);
 }
+const MENU_CONTROLS = "button, a[href], input, select, textarea";
 let hint = $state(0);
 let narrow = $state(false);
 
@@ -115,6 +116,17 @@ onMount(() => {
   };
   resize();
   window.addEventListener("resize", resize);
+  // Only menu controls take the pointer; elsewhere a press keeps focus and
+  // starts no selection, drag or context menu.
+  const ignoreStray = (event: Event) => {
+    const target = event.target;
+    if (!(target instanceof Element && target.closest(MENU_CONTROLS)))
+      event.preventDefault();
+  };
+  const ignore = (event: Event) => event.preventDefault();
+  window.addEventListener("mousedown", ignoreStray);
+  window.addEventListener("contextmenu", ignoreStray);
+  window.addEventListener("dragstart", ignore);
   if (disabled && blockedReason) hangarLink.focus();
   else startButton.focus();
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -123,6 +135,9 @@ onMount(() => {
   }, 8000);
   return () => {
     window.removeEventListener("resize", resize);
+    window.removeEventListener("mousedown", ignoreStray);
+    window.removeEventListener("contextmenu", ignoreStray);
+    window.removeEventListener("dragstart", ignore);
     window.clearInterval(timer);
   };
 });
@@ -137,7 +152,7 @@ onMount(() => {
           <h1>VOID DRIFT</h1>
         </div>
         <nav aria-label="Title screen">
-          <ButtonGroup navigation="directional">
+          <ActionGroup navigation="directional">
             <div class="start-action">
               <button
                 bind:this={startButton}
@@ -164,8 +179,10 @@ onMount(() => {
             >
             <a href="/leaderboard" class="btn btn-normal">TOP SCORES</a>
             <a href="/settings" class="btn btn-normal">SETTINGS</a>
-            <a href="/credits" class="btn btn-normal">CREDITS</a>
-          </ButtonGroup>
+            <a href="/field-guide/credits" class="text-link action-link"
+              >CREDITS</a
+            >
+          </ActionGroup>
         </nav>
         <p class="version">
           <span class="active-ship">
@@ -213,6 +230,10 @@ onMount(() => {
   display: grid;
   place-items: center;
   pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 .title-slot {
   position: relative;

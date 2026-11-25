@@ -35,8 +35,10 @@ test-results/
 .firebase/
 *-debug.log
 
-# Local Claude Code files. Shared: the skills link and project settings.
+# Local Claude Code files. Shared: the skills link, project settings, subagents and hooks.
 .claude/*
 !.claude/skills
 !.claude/settings.json
+!.claude/agents
+!.claude/hooks
 CLAUDE.local.md

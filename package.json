@@ -14,6 +14,7 @@
     "check:contracts": "pnpm check:repo",
     "check:specs": "node scripts/spec-lint/check.mjs",
     "lint": "biome check . --error-on-warnings",
+    "lint:fix": "biome check --write .",
     "check:types": "pnpm check && pnpm --filter web exec svelte-check --tsconfig ./tsconfig.json --fail-on-warnings && tsc -p tsconfig.check.json",
     "test:browser": "playwright test",
     "test:capture": "playwright test -c playwright.capture.config.ts",

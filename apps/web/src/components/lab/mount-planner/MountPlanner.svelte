@@ -2,21 +2,25 @@
 import { COLOR, loadCanvasFonts } from "@void-drift/core";
 import {
   BUILD_FLIGHT_SCALE,
+  buildSlotLinks,
   CHASSIS,
   CRUISER,
   drawBuild,
   FIDDLER,
   FIGHTER,
   type Loadout,
+  loadMountPlan,
   type MountPlan,
+  type MountPlanDocument,
   MountPlanSchema,
   moveMount,
+  moveSlotLinkLine,
   newMountPlan,
   PARTS,
   previewMounts,
+  previewSlotLinkLines,
   SCOUT,
   slotAccepts,
-  staleMounts,
   WASP,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
@@ -25,7 +29,10 @@ import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 
 let { label = "Ship mount planner" }: { label?: string } = $props();
 let ready = $state(false);
-let plan = $state<MountPlan>(newMountPlan("fighter"));
+type Draft = { plan: MountPlanDocument; stale?: string; notice?: string };
+let draft = $state<Draft>({ plan: newMountPlan("fighter") });
+let plan = $derived(draft.plan);
+let crossbar = $state("");
 let selected = $state("left"),
   zoom = $state(4),
   rotation = $state(-90),
@@ -36,10 +43,14 @@ let original = $state(false),
   text = $state(""),
   message = $state(""),
   partner = $state("");
-let history = $state<string[]>([]),
-  future = $state<string[]>([]);
+let history = $state<Draft[]>([]),
+  future = $state<Draft[]>([]);
+let documentOpen = $state(false);
 let autoFit = $state(true);
 let dragging = $state(false);
+let dragPreview = $state<MountPlan>();
+let visiblePlan = $derived(dragPreview ?? plan);
+let editable = $derived(!draft.stale && !original && !dragging);
 let canvas: HTMLCanvasElement, flight: HTMLCanvasElement;
 let width = $state(700),
   height = $state(500);
@@ -47,20 +58,52 @@ let drag:
   | {
       id: number;
       key: string;
-      start: string;
-      x: number;
-      y: number;
+      target: "crossbar" | "mount" | "pan";
+      start: MountPlan | undefined;
+      zoom: number;
+      angle: number;
+      width: number;
+      height: number;
       mx: number;
       my: number;
       px: number;
       py: number;
+      selectionOnly: boolean;
+      moved: boolean;
     }
   | undefined;
-let current = $derived(plan.mounts.find((m) => m.key === selected));
-let pair = $derived(
-  plan.mirrorPairs.find((p) => p.a === selected || p.b === selected),
+const marked = $derived(contents !== "In-game");
+let current = $derived(
+  (original ? plan.baseline : visiblePlan.mounts).find(
+    (m) => m.key === selected,
+  ),
 );
-let stale = $derived(staleMounts(plan));
+function routes(doc: MountPlanDocument, baseline: boolean) {
+  return buildSlotLinks(
+    doc.chassis,
+    previewMounts(doc, baseline),
+    previewSlotLinkLines(doc, baseline),
+  ).map((route) => ({
+    ...route,
+    x: route.points[1][0],
+    y: route.points[1][1] / 2 + route.points[2][1] / 2,
+  }));
+}
+let visibleRoutes = $derived(marked ? routes(visiblePlan, original) : []);
+let activeRoute = $derived(
+  visibleRoutes.find((r) => r.secondary.key === crossbar),
+);
+let pair = $derived(
+  original
+    ? plan.baseline
+        .flatMap((m) =>
+          m.linkedTo
+            ? [{ a: m.linkedTo, b: m.key, origin: "production" as const }]
+            : [],
+        )
+        .find((p) => p.a === selected || p.b === selected)
+    : plan.mirrorPairs.find((p) => p.a === selected || p.b === selected),
+);
 let candidates = $derived(
   plan.mounts.filter(
     (m) =>
@@ -71,60 +114,106 @@ let candidates = $derived(
       !plan.mirrorPairs.some((p) => p.a === m.key || p.b === m.key),
   ),
 );
-const snapshot = () => JSON.stringify(plan);
-function save(before = snapshot()) {
-  history = [...history, before];
-  future = [];
+function editingPlan(): MountPlan | undefined {
+  if (editable && plan.version === 2) return $state.snapshot(plan);
 }
-function apply(next: MountPlan) {
-  save();
-  plan = next;
+function replace(next: Draft) {
+  history = [...history, $state.snapshot(draft)];
+  future = [];
+  draft = next;
   message = "";
 }
+function apply(next: MountPlan) {
+  if (JSON.stringify(next) !== JSON.stringify(plan))
+    replace({ plan: next, notice: draft.notice });
+}
 function edit(field: "x" | "y" | "angle", value: number) {
-  if (Number.isFinite(value) && !stale.length)
-    apply(moveMount($state.snapshot(plan), selected, { [field]: value }));
+  const next = editingPlan();
+  if (next && Number.isFinite(value))
+    apply(moveMount(next, selected, { [field]: value }));
+}
+function editCrossbar(input: HTMLInputElement) {
+  const next = editingPlan();
+  if (!next || !activeRoute) return;
+  const key = activeRoute.secondary.key;
+  const value = input.valueAsNumber;
+  const changed = Number.isFinite(value)
+    ? moveSlotLinkLine(next, key, value)
+    : next;
+  input.value = String(changed.slotLinkLines[key]);
+  apply(changed);
+}
+function selectMount(key: string) {
+  selected = key;
+  crossbar = "";
+  partner = "";
+}
+function selectCrossbar(key: string) {
+  crossbar = key;
+  selected = "";
+  partner = "";
+}
+function restore(next: Draft) {
+  draft = next;
+  if (
+    !next.plan.mounts.some((m) => m.key === selected) &&
+    !Object.hasOwn(previewSlotLinkLines(next.plan), crossbar)
+  )
+    selectMount(next.plan.mounts[0].key);
+  partner = "";
+  message = "";
 }
 function undo() {
   const prev = history.at(-1);
-  if (!prev) return;
-  future = [...future, snapshot()];
+  if (!prev || dragging || original) return;
+  future = [...future, $state.snapshot(draft)];
   history = history.slice(0, -1);
-  plan = JSON.parse(prev);
+  restore(prev);
 }
 function redo() {
   const next = future.at(-1);
-  if (!next) return;
-  history = [...history, snapshot()];
+  if (!next || dragging || original) return;
+  history = [...history, $state.snapshot(draft)];
   future = future.slice(0, -1);
-  plan = JSON.parse(next);
+  restore(next);
 }
 function switchShip(chassis: Loadout["chassis"]) {
-  autoFit = true;
-  apply(newMountPlan(chassis));
-  selected = plan.mounts[0].key;
-  partner = "";
+  if (dragging || (chassis === plan.chassis && !draft.stale)) return;
+  try {
+    const next = newMountPlan(chassis);
+    autoFit = true;
+    original = false;
+    replace({ plan: next });
+    selectMount(next.mounts[0].key);
+    message = "Current layout opened. Previous draft is available with Undo.";
+  } catch (error) {
+    message = `Cannot capture current layout: ${String(error)}`;
+  }
 }
 function link() {
-  if (!partner || !current) return;
-  const next = $state.snapshot(plan);
+  if (!current || pair || !candidates.some((m) => m.key === partner)) return;
+  const next = editingPlan();
+  if (!next) return;
   next.mirrorPairs.push({ a: selected, b: partner, origin: "planner" });
   apply(moveMount(next, selected, {}));
   partner = "";
 }
 function unlink() {
-  apply({
-    ...$state.snapshot(plan),
-    mirrorPairs: plan.mirrorPairs
-      .filter((p) => p !== pair)
-      .map((p) => ({ ...p })),
-  });
+  const next = editingPlan();
+  if (!next || pair?.origin !== "planner") return;
+  next.mirrorPairs = next.mirrorPairs.filter(
+    (p) => p.a !== selected && p.b !== selected,
+  );
+  apply(next);
 }
 function reset() {
+  const next = editingPlan();
+  if (!next) return;
   apply({
-    ...$state.snapshot(plan),
-    mounts: structuredClone($state.snapshot(plan.baseline)),
-    mirrorPairs: plan.baseline
+    ...next,
+    mounts: structuredClone(next.baseline),
+    slotLinkLines: { ...next.baselineSlotLinkLines },
+    mirrorPairs: next.baseline
       .filter((m) => m.linkedTo)
       .map((m) => ({
         a: m.linkedTo as string,
@@ -139,23 +228,41 @@ async function copy() {
     await navigator.clipboard.writeText(text);
     message = "Layout copied.";
   } catch {
+    documentOpen = true;
     message = "Clipboard unavailable. Select and copy the document below.";
   }
 }
 function load() {
+  if (dragging) return;
   try {
-    const parsed = MountPlanSchema.parse(JSON.parse(text));
-    apply(parsed);
-    selected = parsed.mounts[0].key;
+    const result = loadMountPlan(JSON.parse(text));
+    const next: Draft = { plan: result.plan };
+    if (result.status === "stale") {
+      const reasons = [
+        result.staleMounts.length &&
+          `Mount baseline: ${result.staleMounts.join(", ")}.`,
+        result.staleSlotLinkLines.length &&
+          `Crossbar baseline: ${result.staleSlotLinkLines.join(", ")}.`,
+        result.routingCaptureError &&
+          `Current routing could not be captured: ${result.routingCaptureError.message}`,
+      ];
+      next.stale = reasons.filter(Boolean).join(" ");
+    } else if (result.status === "migrated") {
+      next.notice =
+        "Legacy v1 loaded. Both maps adopt current production routing; the legacy document did not record it. Copies are v2.";
+    }
+    replace(next);
+    original = false;
+    selectMount(next.plan.mounts[0].key);
     message = "Layout loaded. Previous draft is available with Undo.";
   } catch (error) {
     message = error instanceof Error ? error.message : "Invalid document";
   }
 }
 function fitPart(value: string) {
-  if (!current || value === "rail") return;
-  const next = $state.snapshot(plan),
-    id = value || null;
+  const next = editingPlan();
+  if (!next || !current || value === "rail") return;
+  const id = value || null;
   const result = PARTS[id as keyof typeof PARTS];
   if (current.group === "side") {
     if (!result) return;
@@ -174,7 +281,7 @@ function fitPart(value: string) {
 const EXHAUST_GUIDE_LENGTH = 20;
 const EXHAUST_ARROW_SIZE = 1.5;
 function fitView() {
-  const mounts = previewMounts(plan, original);
+  const mounts = [...previewMounts(plan), ...previewMounts(plan, true)];
   const hull =
     plan.chassis === "fighter"
       ? FIGHTER.hull
@@ -197,14 +304,10 @@ function fitView() {
           m.y + x * Math.sin(m.angle) + y * Math.cos(m.angle),
         ]);
   }
-  if (contents !== "In-game")
-    for (const m of mounts.filter((m) => m.linkedTo)) {
-      const partner = mounts.find((p) => p.key === m.linkedTo);
-      const rear =
-        Math.max(CHASSIS[plan.chassis].length, ...mounts.map((m) => m.x)) + 8;
-      points.push([rear, m.y], [rear, partner?.y ?? m.y]);
-    }
-  if (contents !== "In-game") {
+  if (marked) {
+    // The fixed screen-space padding accommodates the midpoint handles.
+    for (const route of [...routes(plan, false), ...routes(plan, true)])
+      points.push(...route.points, [route.x, route.y]);
     for (const m of mounts.filter((m) => slotAccepts(m.type, "E"))) {
       const x = m.x - EXHAUST_GUIDE_LENGTH * Math.cos(m.angle);
       const y = m.y - EXHAUST_GUIDE_LENGTH * Math.sin(m.angle);
@@ -224,15 +327,12 @@ function fitView() {
     maxX = Math.max(...xs),
     minY = Math.min(...ys),
     maxY = Math.max(...ys);
-  zoom = Math.max(
-    0.01,
-    Math.min(
-      Math.max(1, width - 64) / (maxX - minX),
-      Math.max(1, height - 80) / (maxY - minY),
-    ),
+  zoom = Math.min(
+    Math.max(1, width - 64) / 2 / (maxX / 2 - minX / 2),
+    Math.max(1, height - 80) / 2 / (maxY / 2 - minY / 2),
   );
-  panX = (-(minX + maxX) * zoom) / 2;
-  panY = (-(minY + maxY) * zoom) / 2 + 12;
+  panX = -(minX / 2 + maxX / 2) * zoom;
+  panY = -(minY / 2 + maxY / 2) * zoom + 12;
 }
 $effect(() => {
   plan;
@@ -253,37 +353,58 @@ function local(event: PointerEvent) {
     y: (-x * Math.sin(a) + y * Math.cos(a)) / zoom,
   };
 }
+const HANDLE_HIT_RADIUS = 14;
 function down(event: PointerEvent) {
-  if (stale.length || original) return;
+  if (drag || !event.isPrimary || event.button !== 0) return;
   const pos = local(event);
-  const hit = [...plan.mounts].reverse().find((m) => {
-    const dx = pos.x - m.x,
-      dy = pos.y - m.y,
-      c = Math.cos(m.angle),
-      s = Math.sin(m.angle);
-    return (
-      Math.abs(dx * c + dy * s) <= Math.max(m.width / 2, 12 / zoom) &&
-      Math.abs(-dx * s + dy * c) <= Math.max(m.height / 2, 12 / zoom)
-    );
-  });
-  if (hit) selected = hit.key;
+  const route = visibleRoutes
+    .map((r) => ({
+      route: r,
+      distance: Math.hypot(pos.x - r.x, pos.y - r.y) * zoom,
+    }))
+    .filter((r) => r.distance <= HANDLE_HIT_RADIUS)
+    .sort((a, b) => a.distance - b.distance)[0]?.route;
+  const hits = route
+    ? []
+    : [...previewMounts(plan, original)].reverse().filter((m) => {
+        const dx = pos.x - m.x,
+          dy = pos.y - m.y,
+          c = Math.cos(m.angle),
+          s = Math.sin(m.angle);
+        return (
+          Math.abs(dx * c + dy * s) <= Math.max(m.width / 2, 12 / zoom) &&
+          Math.abs(-dx * s + dy * c) <= Math.max(m.height / 2, 12 / zoom)
+        );
+      });
+  const hit = hits.find((m) => m.key === selected) ?? hits[0];
+  const start = editingPlan();
+  const selectionOnly = route
+    ? route.secondary.key !== crossbar
+    : !!hit && hit.key !== selected;
+  if (route) selectCrossbar(route.secondary.key);
+  else if (hit && selectionOnly) selectMount(hit.key);
   drag = {
     id: event.pointerId,
-    key: hit?.key ?? "",
-    start: snapshot(),
-    x: pos.x,
-    y: pos.y,
-    mx: hit?.x ?? 0,
+    key: route?.secondary.key ?? hit?.key ?? "",
+    target: route ? "crossbar" : hit ? "mount" : "pan",
+    start,
+    zoom,
+    angle: (rotation * Math.PI) / 180,
+    width,
+    height,
+    mx: route?.x ?? hit?.x ?? 0,
     my: hit?.y ?? 0,
     px: event.clientX,
     py: event.clientY,
+    selectionOnly,
+    moved: false,
   };
   dragging = true;
   canvas.setPointerCapture(event.pointerId);
 }
 function move(event: PointerEvent) {
   if (!drag || drag.id !== event.pointerId) return;
-  if (!drag.key) {
+  if (drag.target === "pan") {
     autoFit = false;
     panX += event.clientX - drag.px;
     panY += event.clientY - drag.py;
@@ -291,23 +412,39 @@ function move(event: PointerEvent) {
     drag.py = event.clientY;
     return;
   }
-  const pos = local(event);
-  plan = moveMount($state.snapshot(plan), drag.key, {
-    x: drag.mx + pos.x - drag.x,
-    y: drag.my + pos.y - drag.y,
-  });
+  if (drag.selectionOnly || !drag.start) return;
+  const dx = event.clientX - drag.px;
+  const dy = event.clientY - drag.py;
+  if (!drag.moved && Math.hypot(dx, dy) < 6) return;
+  drag.moved = true;
+  const c = Math.cos(drag.angle);
+  const s = Math.sin(drag.angle);
+  const x = drag.mx + (dx * c + dy * s) / drag.zoom;
+  if (!Number.isFinite(x)) return;
+  if (drag.target === "crossbar") {
+    dragPreview = moveSlotLinkLine(drag.start, drag.key, x);
+  } else {
+    const y = drag.my + (-dx * s + dy * c) / drag.zoom;
+    if (Number.isFinite(y))
+      dragPreview = moveMount(drag.start, drag.key, { x, y });
+  }
+}
+function clearDrag() {
+  const id = drag?.id;
+  drag = undefined;
+  dragPreview = undefined;
+  dragging = false;
+  if (id !== undefined && canvas.hasPointerCapture(id))
+    canvas.releasePointerCapture(id);
 }
 function end(event: PointerEvent) {
   if (drag?.id !== event.pointerId) return;
-  if (drag.key && snapshot() !== drag.start) save(drag.start);
-  drag = undefined;
-  dragging = false;
+  if (drag.target !== "pan") move(event);
+  if (dragPreview) apply($state.snapshot(dragPreview));
+  clearDrag();
 }
 function cancel(event: PointerEvent) {
-  if (drag?.id !== event.pointerId) return;
-  plan = JSON.parse(drag.start);
-  drag = undefined;
-  dragging = false;
+  if (drag?.id === event.pointerId) clearDrag();
 }
 function draw() {
   if (!canvas || !flight) return;
@@ -318,10 +455,12 @@ function draw() {
   canvas.width = width * dpr;
   canvas.height = height * dpr;
   ctx.scale(dpr, dpr);
-  const mounts = previewMounts(plan, original),
+  const mounts = previewMounts(visiblePlan, original),
     a = (rotation * Math.PI) / 180;
+  const cx = (drag?.width ?? width) / 2 + panX;
+  const cy = (drag?.height ?? height) / 2 + panY;
   ctx.save();
-  ctx.translate(width / 2 + panX, height / 2 + panY);
+  ctx.translate(cx, cy);
   ctx.rotate(a);
   ctx.scale(zoom, zoom);
   ctx.strokeStyle = COLOR.textMuted;
@@ -337,19 +476,44 @@ function draw() {
   drawBuild(
     ctx,
     plan.previewLoadout,
-    width / 2 + panX,
-    height / 2 + panY,
+    cx,
+    cy,
     a,
     zoom,
     mounts.find((m) => m.key === selected)?.linkedTo ?? selected,
-    contents === "In-game"
-      ? undefined
-      : { dark: COLOR.void, lime: COLOR.selected, ivory: COLOR.text },
+    marked
+      ? { dark: COLOR.void, lime: COLOR.selected, ivory: COLOR.text }
+      : undefined,
     contents === "Empty" ? mounts.map((m) => ({ ...m, part: null })) : mounts,
+    undefined,
+    true,
+    undefined,
+    undefined,
+    previewSlotLinkLines(visiblePlan, original),
   );
-  if (contents !== "In-game") {
+  const selectedMount = mounts.find((m) => m.key === selected);
+  if (selectedMount && marked) {
     ctx.save();
-    ctx.translate(width / 2 + panX, height / 2 + panY);
+    ctx.translate(cx, cy);
+    ctx.rotate(a);
+    ctx.scale(zoom, zoom);
+    ctx.translate(selectedMount.x, selectedMount.y);
+    ctx.strokeStyle = COLOR.selected;
+    ctx.lineWidth = 2 / zoom;
+    ctx.beginPath();
+    ctx.arc(
+      0,
+      0,
+      Math.max(selectedMount.width, selectedMount.height) / 2 + 5 / zoom,
+      0,
+      Math.PI * 2,
+    );
+    ctx.stroke();
+    ctx.restore();
+  }
+  if (marked) {
+    ctx.save();
+    ctx.translate(cx, cy);
     ctx.rotate(a);
     ctx.scale(zoom, zoom);
     ctx.strokeStyle = COLOR.selected;
@@ -376,6 +540,17 @@ function draw() {
       );
       ctx.stroke();
       ctx.restore();
+    }
+    ctx.setLineDash([]);
+    for (const route of visibleRoutes) {
+      const active = route.secondary.key === crossbar;
+      ctx.strokeStyle = active ? COLOR.selected : COLOR.text;
+      ctx.fillStyle = active ? COLOR.selected : COLOR.void;
+      ctx.lineWidth = (active ? 2 : 1.5) / zoom;
+      ctx.beginPath();
+      ctx.arc(route.x, route.y, (active ? 6 : 4) / zoom, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
     }
     ctx.restore();
   }
@@ -405,6 +580,7 @@ $effect(() => {
   contents;
   width;
   height;
+  dragging;
   draw();
 });
 onMount(() => {
@@ -419,6 +595,12 @@ onMount(() => {
   return () => observer.disconnect();
 });
 </script>
+
+<svelte:window
+  onkeydown={(event) => {
+    if (event.key === "Escape" && drag) clearDrag();
+  }}
+/>
 
 <section class="planner" data-ready={ready} aria-label={label}>
   <section class="workspace">
@@ -435,14 +617,14 @@ onMount(() => {
         class="btn btn-ghost"
         type="button"
         onclick={undo}
-        disabled={!history.length}
+        disabled={dragging || original || !history.length}
       >
         Undo
       </button><button
         class="btn btn-ghost"
         type="button"
         onclick={redo}
-        disabled={!future.length}
+        disabled={dragging || original || !future.length}
       >
         Redo
       </button>
@@ -450,7 +632,7 @@ onMount(() => {
         class="btn btn-ghost"
         type="button"
         onclick={reset}
-        disabled={!!stale.length}
+        disabled={!editable}
       >
         Reset layout
       </button>
@@ -458,12 +640,12 @@ onMount(() => {
     <div class="stage">
       <canvas
         bind:this={canvas}
-        aria-label="Ship mount canvas; select mounts and edit exact values in the adjacent controls"
+        aria-label="Ship preview; select mounts and crossbars or edit exact values in the inspector"
         onpointerdown={down}
         onpointermove={move}
         onpointerup={end}
         onpointercancel={cancel}
-        onlostpointercapture={end}
+        onlostpointercapture={cancel}
       ></canvas><span class="stage-label"
         >{original ? "ORIGINAL" : "DRAFT"}
         · +X FORWARD · +Y RIGHT</span
@@ -475,18 +657,28 @@ onMount(() => {
         options={["Draft", "Original"]}
         bind:value={
           () => (original ? "Original" : "Draft"),
-          (v) => (original = v === "Original")
+          (v) => {
+  if (drag) clearDrag();
+  original = v === "Original";
+}
         }
       />
       <SegmentedControl
         label="Mount contents"
         options={["Fitted", "In-game", "Empty"]}
-        bind:value={contents}
+        bind:value={
+          () => contents,
+          (v) => {
+  if (drag) clearDrag();
+  contents = v;
+  if (v === "In-game" && !selected) selectMount(plan.mounts[0].key);
+}
+        }
       />
       <div class="zoom">
         <RingSlider
           label="Zoom"
-          min={0.1}
+          min={Math.min(0.1, zoom)}
           max={Math.max(12, zoom)}
           step={0.1}
           digits={1}
@@ -494,6 +686,7 @@ onMount(() => {
           bind:value={
             () => zoom,
             (v) => {
+  if (drag) clearDrag();
   autoFit = false;
   zoom = v;
 }
@@ -501,10 +694,21 @@ onMount(() => {
         />
       </div>
       <label
-        >View ° <input class="short" type="number" bind:value={rotation}></label
+        >View °
+        <input
+          class="short"
+          type="number"
+          disabled={dragging}
+          value={rotation}
+          oninput={(e) => {
+            const value = e.currentTarget.valueAsNumber;
+            if (Number.isFinite(value)) rotation = value;
+          }}
+        ></label
       ><button
         class="btn btn-ghost"
         type="button"
+        disabled={dragging}
         onclick={() => {
           panX = 0;
           panY = 0;
@@ -517,8 +721,8 @@ onMount(() => {
       </button>
     </div>
     <p>
-      Drag a mount to move it. Drag the background to pan. Linked mounts move
-      together.
+      Select a mount or crossbar, then drag it to move. Drag the background to
+      pan. Linked mounts move together.
     </p>
   </section>
   <aside>
@@ -529,27 +733,88 @@ onMount(() => {
           type="button"
           class="btn btn-ghost"
           aria-pressed={selected === m.key}
-          onclick={() => {
-            selected = m.key;
-            partner = "";
-          }}
+          disabled={dragging}
+          onclick={() => selectMount(m.key)}
         >
-          {m.key}{plan.mirrorPairs.some((p) => p.a === m.key || p.b === m.key)
+          {m.key}{(
+            original
+              ? plan.baseline.some(
+                  (b) =>
+                    b.linkedTo === m.key || (b.key === m.key && b.linkedTo),
+                )
+              : plan.mirrorPairs.some((p) => p.a === m.key || p.b === m.key)
+          )
             ? " ↔"
             : ""}
         </button>
       {/each}
     </div>
-    {#if stale.length}
-      <p role="alert">
-        Stale layout: {stale.join(", ")}. Select a ship to start fresh. The
-        supplied document remains available to copy.
+    {#if draft.stale}
+      <p class="message" role="alert">
+        Stale layout · read-only. {draft.stale} The supplied v{plan.version}
+        document remains available to copy.
       </p>
+      <button
+        type="button"
+        class="btn btn-ghost"
+        disabled={dragging}
+        onclick={() => switchShip(plan.chassis)}
+      >
+        Start fresh from production
+      </button>
     {/if}
-    {#if current}
+    {#if draft.notice}
+      <p role="status">{draft.notice}</p>
+    {/if}
+    {#if visibleRoutes.length}
+      <p class="eyebrow">PRODUCTION CROSSBARS</p>
+      <fieldset class="mount-list" aria-label="Production crossbars">
+        {#each visibleRoutes as route (route.secondary.key)}
+          <button
+            type="button"
+            class={crossbar === route.secondary.key
+              ? "btn btn-filled"
+              : "btn btn-ghost"}
+            aria-label={`Crossbar ${route.secondary.key}`}
+            aria-pressed={crossbar === route.secondary.key}
+            disabled={dragging}
+            onclick={() => selectCrossbar(route.secondary.key)}
+          >
+            {route.secondary.key}
+          </button>
+        {/each}
+      </fieldset>
+    {/if}
+    {#if activeRoute}
+      <h2>Crossbar · {activeRoute.secondary.key}</h2>
+      <p>
+        {activeRoute.primary.key}
+        ↔ {activeRoute.secondary.key} · {original ? "Original" : "Draft"}
+      </p>
+      {#key activeRoute.secondary.key}
+        <fieldset disabled={!editable}>
+          <label>
+            Crossbar X · ship units
+            <input
+              type="number"
+              step="0.5"
+              value={activeRoute.x}
+              onchange={(e) => editCrossbar(e.currentTarget)}
+              onkeydown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  editCrossbar(e.currentTarget);
+                }
+              }}
+            >
+          </label>
+        </fieldset>
+      {/key}
+      <p>Snaps to 0.5 units · +X forward · −X aft</p>
+    {:else if current}
       <h2>{current.key}</h2>
       <p>{current.type} · {current.width} × {current.height}</p>
-      <fieldset disabled={!!stale.length || original}>
+      <fieldset disabled={!editable}>
         <div class="values">
           <label
             >X<input
@@ -656,13 +921,18 @@ onMount(() => {
     <button type="button" class="btn btn-filled copy" onclick={copy}>
       Copy layout
     </button>
-    <details>
+    <details bind:open={documentOpen}>
       <summary>Load / inspect document</summary>
       <textarea
         aria-label="Layout document"
         bind:value={text}
         spellcheck="false"
-      ></textarea><button class="btn btn-ghost" type="button" onclick={load}>
+      ></textarea><button
+        class="btn btn-ghost"
+        type="button"
+        disabled={dragging}
+        onclick={load}
+      >
         Load document
       </button>
     </details>

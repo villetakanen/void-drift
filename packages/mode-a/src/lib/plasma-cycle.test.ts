@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { createStar } from "./game-loop";
 import { liveShipBody, type SalvageBody, SalvageSystem } from "./salvage";
 import { defaultLoadout, type Loadout } from "./schemas/loadout";
+import { PLASMA_RIFLE, WEAPONS } from "./schemas/salvage";
 import { STEP } from "./simulation";
 
 const substep = STEP / 4;
@@ -30,8 +31,25 @@ function fixture(
   const rifles = system.weapons.filter(
     (weapon) => weapon.kind === "plasma-rifle",
   );
-  function step(dt = substep, roster: readonly SalvageBody[] = [original]) {
-    system.stepWeapons(dt, ship, star, resources, capacity, [], roster);
+  function step(
+    dt = substep,
+    roster: readonly SalvageBody[] = [original],
+    allowFire = true,
+  ) {
+    system.stepWeapons(
+      dt,
+      ship,
+      star,
+      resources,
+      capacity,
+      [],
+      roster,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      allowFire,
+    );
   }
   function advance(
     seconds: number,
@@ -150,6 +168,63 @@ describe("Plasma rifle charge cycle", () => {
       expect(f.system.plasmaReleases).toBe(0);
     },
   );
+
+  it("vents a full lock in Off and does not interrupt or repeat the vent on return to Auto", () => {
+    const capacity = 200;
+    const chargePower =
+      PLASMA_RIFLE.chargePowerPerSecond * PLASMA_RIFLE.chargeSeconds;
+    const f = fixture(
+      ["plasma-rifle", null],
+      capacity * WEAPONS.energyFloor + chargePower,
+      capacity,
+    );
+    const [rifle] = f.rifles;
+    f.advance(PLASMA_RIFLE.chargeSeconds);
+    expect(rifle.plasma?.charge).toBeCloseTo(1);
+    expect(f.system.plasmaReleases).toBe(0);
+
+    f.resources.power = capacity;
+    f.step(substep, [f.original], false);
+    expect(rifle.target).toBe(f.original.id);
+    expect(rifle.plasma?.phase).toBe("venting");
+    expect(f.system.plasmaVents).toBe(1);
+    const remaining = rifle.plasma?.remaining ?? 0;
+    f.step();
+    expect(rifle.plasma?.phase).toBe("venting");
+    expect(rifle.plasma?.remaining).toBeLessThan(remaining);
+    expect(f.system.plasmaVents).toBe(1);
+    expect(f.system.plasmaReleases).toBe(0);
+    expect(f.resources.power).toBe(capacity);
+  });
+
+  it("finishes a funded release and recovers while Off without starting another cycle", () => {
+    const off = fixture();
+    const auto = fixture();
+    const [rifle] = off.rifles;
+    for (const f of [off, auto]) {
+      f.advance(PLASMA_RIFLE.chargeSeconds);
+      expect(f.system.plasmaReleases).toBe(1);
+    }
+    const fundedPower = off.resources.power;
+    const halfRelease = PLASMA_RIFLE.firingSeconds / 2;
+    for (const phase of ["firing", "venting"]) {
+      off.step(halfRelease, [off.original], false);
+      auto.step(halfRelease);
+      expect(auto.rifles[0].plasma?.phase).toBe(phase);
+      expect(rifle.plasma?.phase).toBe(phase);
+      expect(rifle.plasma?.remaining).toBe(auto.rifles[0].plasma?.remaining);
+    }
+    expect(off.system.plasmaVents).toBe(1);
+    off.step(
+      PLASMA_RIFLE.ventSeconds + PLASMA_RIFLE.cooldownSeconds,
+      [off.original],
+      false,
+    );
+    off.step(substep, [off.original], false);
+    expect(rifle.plasma?.phase).toBe("idle");
+    expect(off.system.plasmaReleases).toBe(1);
+    expect(off.resources.power).toBe(fundedPower);
+  });
 
   it("vents a full lock that is replaced on the step release power recovers", () => {
     const f = fixture(["plasma-rifle", null], 13.5);

@@ -6,7 +6,14 @@
   "hosting": {
     "public": "apps/web/dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "cleanUrls": true
+    "cleanUrls": true,
+    "redirects": [
+      {
+        "source": "/credits",
+        "destination": "/field-guide/credits",
+        "type": 301
+      }
+    ]
   },
   "emulators": {
     "auth": { "port": 9099 },

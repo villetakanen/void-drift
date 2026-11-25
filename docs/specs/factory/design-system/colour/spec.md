@@ -1,7 +1,7 @@
 ---
 generated:
   by: "openai-codex/gpt-6.2-sol"
-  at: "2026-11-22T07:28:15Z"
+  at: "2026-11-23T14:50:01+02:00"
 verified: []
 ---
 
@@ -34,9 +34,8 @@ literal and never the palette name behind it.
   they render the same.
 - The shared [Tray](../tray/spec.md) is a scoped exception for resting navigation
   links: `--color-text` on `--color-void`, with `--color-selected` for current-page
-  text and edge. The exception covers the live Design system rail and the framed
-  example at `/lab/ds/tray`; other navigation, links and controls retain their
-  existing colour contracts.
+  text and edge. Other navigation, links and controls retain their existing
+  colour contracts.
 - Informational text never uses brand: eyebrows, tags, captions, descriptions, headings, values and
   feedback messages use the text roles.
 - Hover and selection tints mix the role with transparent (`color-mix(in lch, var(--color-selected)
@@ -138,8 +137,8 @@ Scenario: Identify a correctable blocking condition
   When its alert tint and status feedback render
   Then both use the shared alert role rather than a screen-local palette colour
 
-Scenario: Keep neutral navigation scoped to the Design system Tray
-  Given the live Design system rail or the framed Tray demo at /lab/ds/tray
+Scenario: Keep neutral navigation scoped to Tray
+  Given the shared Tray in a live rail or its framed demo at /lab/ds/tray
   When its navigation renders
   Then resting links use the text role on the void
   And current-page text and edge use the selected role

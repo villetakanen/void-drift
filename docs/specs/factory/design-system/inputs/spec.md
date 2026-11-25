@@ -1,17 +1,13 @@
 ---
-
-title: "Spec: Input presentation"
-status: draft
 generated:
-  by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:32:56+02:00"
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-25T08:37:38Z"
 verified:
-- by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:33:38+02:00"
-
+  - by: "human:ville-takanen"
+    at: "2026-11-25T09:16:37+02:00"
 ---
 
-# Spec: Input presentation
+# Input presentation
 
 ## Blueprint
 
@@ -123,6 +119,27 @@ arrangement, actions and lighting rules belong to the
 - `/lab/controls` demonstrates both sides in every lit state (none, `L`, `R`,
   `LR`, `LF`, `RF`) over a starfield, and lets a pointer press them.
 
+#### Deck flaps
+
+Pause and Weapons are mirrored panes of token-based glass, angled to follow
+the turn pads with a clear gap. Keep the uppercase pad-style markings level
+against the angled glass. Deck fit, touch size and the choice of state belong
+to [Game Screen](../../../game/game-screen/spec.md).
+
+| State | Marking | Glass treatment |
+| --- | --- | --- |
+| Pause | `PAUSE` | Surface glass without an outline or stripes |
+| Auto (operable or passive) | `WEAPONS / AUTO` | Surface glass, Surface outline, Hull stripes |
+| Off | `WEAPONS / OFF` | Dimmer Surface glass, heavier Text outline and Text stripes |
+| Emergency | `EMERGENCY / LOW ENERGY` | Warning glass, outline and stripes; reverse the stripe angle |
+
+The operable Weapons control pairs an upward Shift arrow (`⇧`) with `SHIFT`.
+Only operable flaps show focus, hover and press feedback; readouts do not.
+The [canonical example](/lab/ds/flight-controls) shows the production variants
+and keyboard focus without a flight simulation or editor.
+[`DeckFlap.svelte`](../../../../../apps/web/src/components/inputs/DeckFlap.svelte)
+owns exact geometry, token mixes and stripe spacing.
+
 ### Constraints
 
 - Tabs owns sibling panels and keeps tab semantics.
@@ -148,6 +165,14 @@ arrangement, actions and lighting rules belong to the
 ### Scenarios
 
 ```gherkin
+Scenario: Inspect shared deck flaps
+  Given the canonical deck-flap example
+  When I compare its Pause, Auto, Off and emergency specimens
+  Then the panes mirror one another, with level markings and the glass treatments above
+  And Pause has no stripes and emergency stripes run opposite Auto and Off
+  And the Shift cue appears on the operable Weapons specimens only
+  And keyboard focus is visible on the operable flaps, not the readouts
+
 Scenario: Choose a workspace with manual activation
   Given a manually activated tab row with the first tab selected
   When I press Right

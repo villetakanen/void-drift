@@ -39,13 +39,9 @@ test("Hangar test flight", async ({ page }, info) => {
   await capture(page, info, "hangar-test-flight");
 });
 
-test("production ship preview and assembled hulls", async ({ page }, info) => {
+test("assembled hulls in the Hangar and in flight", async ({ page }, info) => {
   await freeze(page);
   await page.setViewportSize({ width: 1440, height: 1100 });
-  await page.goto("/lab/entities/ship");
-  await page.getByLabel("Chassis").selectOption("corvette");
-  await page.clock.runFor(32);
-  await capture(page.locator("canvas").first(), info, "corvette-lab");
   for (const chassis of ["fighter", "scout", "corvette"]) {
     await page.goto("/hangar");
     await enablePreviewContent(page);

@@ -1,19 +1,13 @@
 ---
 
-title: "Spec: Actions"
-status: draft
 generated:
-  by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-20T11:57:07+02:00"
-verified:
-- by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:33:38+02:00"
-- by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-20T11:13:45+02:00"
+  by: "openai-codex/gpt-6"
+  at: "2026-11-24T15:54:03.685383+00:00"
+verified: []
 
 ---
 
-# Spec: Actions
+# Actions
 
 ## Blueprint
 
@@ -24,11 +18,11 @@ Commands, navigation links and fitting cards share recognizable action and avail
 ### Architecture
 
 Shared definitions live in `packages/core/src/lib/styles/buttons.css`,
-`tokens.css` and `apps/web/src/components/inputs/ButtonGroup.svelte`;
+`tokens.css` and `apps/web/src/components/inputs/ActionGroup.svelte`;
 `/lab/ds/actions` demonstrates action states and live group navigation. The
 accepted reference is `/lab/studies/buttons-2026-11-11#whole`.
 
-- Actions command; links belong in sentences. Use a single filled call to
+- Actions include commands and navigation. Commands use native buttons; navigation uses native links. Use a single filled call to
   action alongside normal actions. Buttons have cut corners, a minimum 44px
   target, and 8px vertical and 16px horizontal padding.
 - `.btn.btn-normal` has a regular label and a pane at elevation 2 on the
@@ -57,6 +51,7 @@ accepted reference is `/lab/studies/buttons-2026-11-11#whole`.
 - Bracket and underline changes ease over the fast duration; reduced motion removes transitions.
 - Ghost, danger and link-button variants, shared focus rings, disabled fade and
   pressed indicators remain available for their existing consumers.
+- Standalone action links have the same minimum height, padding, typography and group width as buttons, with underlined link appearance and a visible focus outline. Sentence links retain inline geometry.
 - Vertical groups retain 8px gaps. Existing strip groups remain on a void
   surface and stack below 580px of host width. Preserve DOM and tab order.
 
@@ -72,9 +67,9 @@ or blocked fill. An `unsanctioned-band` is as wide as the button corner cut,
 uses the host's `--btn-edge`, and follows that edge through dim, lit and red
 states. `/lab/ds/actions` demonstrates these shared definitions.
 
-#### Button-group navigation
+#### Action-group navigation
 
-- ButtonGroup composes native buttons and links styled with `.btn`, retaining
+- ActionGroup composes native buttons styled with `.btn`, button-styled links and standalone links styled with `.text-link.action-link`, retaining
   their native semantics and activation. Its wrapper is a group with an optional
   `label`; grouping supplies neither menu, toolbar nor application semantics.
 - `navigation="native"` is the default: layout only. Directional navigation is
@@ -103,7 +98,7 @@ states. `/lab/ds/actions` demonstrates these shared definitions.
 
 ### Constraints
 
-- Commands use buttons and sentence navigation uses links.
+- Commands use buttons; navigation uses links, in sentences or action groups.
 - A primary action is visually distinct from normal actions.
 - Hosts suppress unavailable activation while shared definitions own visual states.
 
@@ -126,7 +121,7 @@ states. `/lab/ds/actions` demonstrates these shared definitions.
 
 ```gherkin
 Scenario: Native grouping preserves browser navigation
-  Given a ButtonGroup with default navigation
+  Given a ActionGroup with default navigation
   When I press an arrow key on an action
   Then the group leaves the key unhandled
   And every available action remains in the native Tab order
@@ -181,4 +176,14 @@ Scenario: Inspect an unavailable action
   When a pointer moves over it
   Then its unavailable frame remains visible without hover feedback
   And activation remains suppressed
+```
+
+```gherkin
+Scenario: Navigation link in an action group
+  Given a vertical action group containing a button and a standalone link
+  Then the link occupies the same width and minimum height as the button
+  And it appears as underlined text
+  When arrow navigation moves from the button to the link
+  Then the link receives visible keyboard focus
+  And Enter follows its native destination
 ```

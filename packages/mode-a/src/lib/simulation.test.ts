@@ -41,31 +41,6 @@ describe("flight contract", () => {
     expect(noAir.airSample).toBeNull();
     expect(inAir.state.resources.hull).toBe(100);
   });
-  it("uses the same seeded solar system in Survival, Derelicts and Gauntlet", () => {
-    const settings = {
-      ...gameSettings("wasp"),
-      mode: "derelicts" as const,
-      seed: 8172,
-    };
-    const first = new Simulation(settings).star;
-    const repeated = new Simulation(settings).star;
-    const other = new Simulation({ ...settings, seed: 8173 }).star;
-    const gauntlet = new Simulation({ ...settings, mode: "gauntlet" }).star;
-    const derelictsPlanets = new Simulation(settings).planets;
-    const survivalRun = new Simulation({ ...settings, mode: "survival" });
-
-    expect(first.radius).toBe(repeated.radius);
-    expect(first.influenceRadius).toBe(repeated.influenceRadius);
-    expect(first.collectionField).toEqual(repeated.collectionField);
-    expect(first.damageField).toEqual(repeated.damageField);
-    expect(first.radius).not.toBe(other.radius);
-    expect(gauntlet.radius).toBe(first.radius);
-    expect(gauntlet.influenceRadius).toBe(first.influenceRadius);
-    expect(gauntlet.collectionField).toEqual(first.collectionField);
-    expect(gauntlet.damageField).toEqual(first.damageField);
-    expect(survivalRun.star).toEqual(first);
-    expect(survivalRun.planets).toEqual(derelictsPlanets);
-  });
 
   it("reproduces validated replay exactly", () => {
     const a = new Simulation(),

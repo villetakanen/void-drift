@@ -7,6 +7,7 @@ const labGroupSchema = z.enum([
   "design-system",
   "ships-and-world",
   "tools",
+  "design-tools",
   "studies",
 ]);
 export const labGroups: {
@@ -16,6 +17,7 @@ export const labGroups: {
   { id: "design-system", label: "Design system" },
   { id: "ships-and-world", label: "Ships and world" },
   { id: "tools", label: "Tools" },
+  { id: "design-tools", label: "Design tools" },
   { id: "studies", label: "Studies" },
 ];
 
@@ -99,8 +101,8 @@ export const labPages = z.array(labPageSchema).parse([
     href: "/lab/entities/derelict",
     title: "Derelict",
     purpose:
-      "Damage-driven shedding, fitted collisions and shared derelict artwork.",
-    group: "ships-and-world",
+      "Watch a staged point-defence encounter, hull damage and derelict breakup in flight.",
+    group: "tools",
     source: "production",
   },
   {
@@ -192,6 +194,15 @@ export const labPages = z.array(labPageSchema).parse([
     spec: "docs/specs/factory/design-system/inputs/spec.md#ring-slider",
   },
   {
+    href: "/lab/ds/flight-controls",
+    title: "Flight controls",
+    purpose: "Paired deck flaps: Pause, Weapons choices and low-energy status.",
+    group: "design-system",
+    source: "production",
+    defines: ["apps/web/src/components/inputs/DeckFlap.svelte"],
+    spec: "docs/specs/factory/design-system/inputs/spec.md#deck-flaps",
+  },
+  {
     href: "/lab/ds/actions",
     title: "Actions",
     purpose:
@@ -200,7 +211,7 @@ export const labPages = z.array(labPageSchema).parse([
     source: "production",
     defines: [
       "packages/core/src/lib/styles/buttons.css",
-      "apps/web/src/components/inputs/ButtonGroup.svelte",
+      "apps/web/src/components/inputs/ActionGroup.svelte",
     ],
     spec: "docs/specs/factory/design-system/actions/spec.md#architecture",
   },
@@ -270,13 +281,6 @@ export const labPages = z.array(labPageSchema).parse([
       "apps/web/src/components/lab/instrument/TimeGraph.svelte",
     ],
     spec: "docs/specs/factory/design-system/side-sheet/spec.md#architecture",
-  },
-  {
-    href: "/lab/entities/ship",
-    title: "Ships",
-    purpose: "The fleet: drawings, identity and fitted chassis.",
-    group: "ships-and-world",
-    source: "production",
   },
   {
     href: "/lab/entities/star",
@@ -367,8 +371,9 @@ export const labPages = z.array(labPageSchema).parse([
   {
     href: "/lab/mount-planner",
     title: "Mount planner",
-    purpose: "Place engine and weapon mounts; copy the plan.",
-    group: "tools",
+    purpose:
+      "Inspect fitted ships, place engine and weapon mounts, and copy the plan.",
+    group: "design-tools",
     source: "production",
   },
   {

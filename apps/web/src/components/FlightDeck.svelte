@@ -58,6 +58,7 @@ import Dialog from "./Dialog.svelte";
 import FlightContacts from "./FlightContacts.svelte";
 import GameFieldBackdrop from "./GameFieldBackdrop.svelte";
 import GameOver, { type GameOverOutcome } from "./GameOver.svelte";
+import DeckFlap from "./inputs/DeckFlap.svelte";
 import PreviewMarker from "./PreviewMarker.svelte";
 import RankedResult from "./RankedResult.svelte";
 import TitleScreen from "./TitleScreen.svelte";
@@ -133,6 +134,9 @@ const rankedRun = $derived(
     isScoredEligible(runLoadout),
 );
 let status = $state("MENU");
+let weaponsChoice = $state<Simulation["weaponsChoice"]>("auto");
+let weaponsEnergyEmergency = $state(false);
+let canToggleWeapons = $state(false);
 let paused = $state(false);
 let seconds = $state(0);
 let score = $state(0);
@@ -219,7 +223,8 @@ const adaptive = $derived(!landing);
 let sceneOpacity = $state(1);
 let reducedMotion = false;
 let stage: HTMLElement;
-let pauseButton: HTMLButtonElement;
+let pauseButton = $state<HTMLButtonElement>();
+let pendingWeaponsShift: string | undefined;
 function enterMenu() {
   runSetup = undefined;
   launchBlocked = false;
@@ -260,6 +265,7 @@ function reset(start = false, previousSeed?: number) {
   const arrival = start && !testFlight;
   const loadout = runLoadout ?? currentLoadout;
   const stock = stockSettings(loadout.chassis);
+  pendingWeaponsShift = undefined;
   input?.reset();
   action = null;
   accumulator = 0;
@@ -351,6 +357,9 @@ function sync() {
   activeLoadout = simulation.settings.loadout;
   spin = (simulation.angularMotion.velocity * 180) / Math.PI;
   status = simulation.state.status;
+  weaponsChoice = simulation.weaponsChoice;
+  weaponsEnergyEmergency = simulation.weaponsEnergyEmergency;
+  canToggleWeapons = simulation.canToggleWeapons;
   seconds = simulation.state.elapsedTime;
   score = simulation.survivalScore;
   derelictsResult = simulation.derelictsResult;
@@ -428,6 +437,7 @@ function returnToSource() {
   else enterMenu();
 }
 function suspend() {
+  pendingWeaponsShift = undefined;
   input?.reset();
   action = null;
   lastFrameTime = performance.now();
@@ -435,13 +445,21 @@ function suspend() {
 }
 function togglePause() {
   if (narrow || document.hidden) return;
+  pendingWeaponsShift = undefined;
   paused = !paused;
   input?.reset();
   lastFrameTime = performance.now();
 }
+function toggleWeapons() {
+  pendingWeaponsShift = undefined;
+  if (status !== "PLAYING" || paused || narrow || document.hidden) return;
+  if (simulation.toggleWeapons()) weaponsChoice = simulation.weaponsChoice;
+}
 function advance(state: FlightTickInput) {
   const before = simulation.wraps;
   simulation.step(state);
+  if (pendingWeaponsShift && !simulation.canToggleWeapons)
+    pendingWeaponsShift = undefined;
   frameCamera(before !== simulation.wraps);
   camera.update(STEP);
 }
@@ -664,15 +682,68 @@ onMount(() => {
     }
     frame = requestAnimationFrame(draw);
   }
+  // Live modifier flags cover Ctrl/Alt/Meta, but cannot distinguish both Shifts.
+  let heldShift: "ShiftLeft" | "ShiftRight" | undefined;
+  const acceptsWeaponsShift = (event: KeyboardEvent) =>
+    phase === "playing" &&
+    !paused &&
+    !narrow &&
+    !document.hidden &&
+    simulation.canToggleWeapons &&
+    !event.defaultPrevented &&
+    !event.isComposing &&
+    !event.ctrlKey &&
+    !event.altKey &&
+    !event.metaKey &&
+    !(
+      event.target instanceof HTMLElement &&
+      (event.target.isContentEditable ||
+        event.target.closest("input, select, textarea, [inert]"))
+    );
   const key = (event: KeyboardEvent) => {
-    if (event.code === "Escape" && status === "PLAYING" && !paused)
-      togglePause();
+    const { code } = event;
+    if (code === "ShiftLeft" || code === "ShiftRight") {
+      const otherShift = heldShift !== undefined && heldShift !== code;
+      heldShift = code;
+      if (otherShift || !acceptsWeaponsShift(event)) {
+        pendingWeaponsShift = undefined;
+      } else if (!event.repeat) {
+        pendingWeaponsShift = code;
+      }
+    } else {
+      if (!event.shiftKey) heldShift = undefined;
+      // Repeats from an already-held thrust key aren't a new chord.
+      const thrust = /^(Key[ADW]|Arrow(Left|Right|Up))$/.test(code);
+      if (!event.shiftKey || !thrust || !event.repeat)
+        pendingWeaponsShift = undefined;
+      if (code === "Escape" && status === "PLAYING" && !paused) togglePause();
+    }
+  };
+  const releaseKey = (event: KeyboardEvent) => {
+    const { code, shiftKey } = event;
+    if (!shiftKey) heldShift = undefined;
+    else if (code === "ShiftLeft") heldShift = "ShiftRight";
+    else if (code === "ShiftRight") heldShift = "ShiftLeft";
+
+    // Only release confirms that Shift was not the start of a chord (e.g. Shift+Tab).
+    const armed = pendingWeaponsShift === code;
+    if (armed || !shiftKey) pendingWeaponsShift = undefined;
+    if (armed && !shiftKey && acceptsWeaponsShift(event)) toggleWeapons();
+  };
+  const pointerPress = () => {
+    pendingWeaponsShift = undefined;
+  };
+  const interrupt = () => {
+    heldShift = undefined;
+    suspend();
   };
   const visibility = () => {
-    if (document.hidden) suspend();
+    if (document.hidden) interrupt();
   };
   window.addEventListener("keydown", key);
-  window.addEventListener("blur", suspend);
+  window.addEventListener("keyup", releaseKey);
+  window.addEventListener("pointerdown", pointerPress, true);
+  window.addEventListener("blur", interrupt);
   document.addEventListener("visibilitychange", visibility);
   frame = requestAnimationFrame(draw);
   return () => {
@@ -689,7 +760,9 @@ onMount(() => {
     motion.removeEventListener("change", updateMotion);
     input.destroy();
     window.removeEventListener("keydown", key);
-    window.removeEventListener("blur", suspend);
+    window.removeEventListener("keyup", releaseKey);
+    window.removeEventListener("pointerdown", pointerPress, true);
+    window.removeEventListener("blur", interrupt);
     window.removeEventListener("resize", measure);
     document.removeEventListener("visibilitychange", visibility);
   };
@@ -827,20 +900,22 @@ onMount(() => {
               {/if}
             {/if}
           </div>
-          <!-- Pause keeps its place outside active play, so the pads never move. -->
-          <button
-            type="button"
-            class="deck-button left"
-            class:standby={status !== "PLAYING"}
-            bind:this={pauseButton}
-            onclick={togglePause}
-          >
-            Pause
-          </button>
-          <!-- A placeholder until weapons get their own control. -->
-          <button type="button" class="deck-button right" disabled>
-            Weapons
-          </button>
+          <!-- Keep the same Pause node through the dialog's focus round trip. -->
+          <div class="deck-flap left" class:standby={status !== "PLAYING"}>
+            <DeckFlap
+              kind="pause"
+              abovePad
+              bind:button={pauseButton}
+              onactivate={togglePause}
+            />
+          </div>
+          <div class="deck-flap right">
+            <DeckFlap
+              kind={weaponsEnergyEmergency ? "emergency" : weaponsChoice}
+              abovePad
+              onactivate={canToggleWeapons ? toggleWeapons : undefined}
+            />
+          </div>
           <!-- A new run also drops pointer captures held by the old pads. -->
           {#key runSeed}
             <div class="deck-pads left">

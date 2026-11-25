@@ -1,3 +1,12 @@
+---
+generated:
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-25T08:37:38Z"
+verified:
+  - by: "human:ville-takanen"
+    at: "2026-11-25T09:16:37+02:00"
+---
+
 # Derelicts
 
 ## Blueprint
@@ -16,7 +25,7 @@ score.
 
 Derelicts is a mode of its own, as the [game contract](../spec.md) lists it.
 
-### Architecture and boundaries
+### Architecture
 
 - **Mode.** `FlightSettingsSchema` in
   `packages/mode-a/src/lib/schemas/flight.ts` names the mode.
@@ -36,13 +45,14 @@ Derelicts is a mode of its own, as the [game contract](../spec.md) lists it.
 - **Neighbours.**
   - The [derelict contract](../world/derelict/spec.md) owns what a derelict,
     a piece and an energy cell are.
-  - [Parts](../parts/spec.md) own weapons.
+  - [Parts](../parts/spec.md) own weapons; [Controls](../controls/spec.md#automatic-weapons-command)
+    owns the entry lock and player weapons command.
   - [Survival](../survival/spec.md) owns the endings this mode shares.
   - The [Hangar](../hangar/spec.md) owns the launch, and the
     [active ship](../active-ship/spec.md) what is flown.
   - The [game contract](../spec.md) owns modes, return and ranking.
 
-### Rules
+### Constraints
 
 - **Entry.** Derelicts starts from the Hangar and flies the active ship in its
   fitting. Every launch gets a fresh seeded system and arrives as a Survival
@@ -64,9 +74,11 @@ Derelicts is a mode of its own, as the [game contract](../spec.md) lists it.
   are set by the seed and never depend on where the player is or how they
   move. The number present at once is limited; an arrival that finds the limit
   reached is skipped, with no backlog.
-- **Flight.** Energy, hull, damage and weapons work as in any flight. There is
-  no protection: the [Survival endings](../survival/spec.md) end the run.
-- **No score.** The mode shows no score during flight or at game over. Game
+- **Flight.** The player's weapons obey the shared [arrival lock and weapons
+  command](../controls/spec.md#automatic-weapons-command). The lock does not
+  protect the ship from damage or energy loss; the [Survival endings](../survival/spec.md)
+  end the run.
+- **Results.** The mode shows no score during flight or at game over. Game
   over states the time survived and the number of derelicts the player
   destroyed, as plain facts without points. Nothing from a run is saved,
   submitted or carried to a later run.

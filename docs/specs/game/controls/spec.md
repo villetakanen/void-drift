@@ -1,3 +1,12 @@
+---
+generated:
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-25T08:37:38Z"
+verified:
+  - by: "human:ville-takanen"
+    at: "2026-11-25T09:16:37+02:00"
+---
+
 # Controls
 
 ## Blueprint
@@ -11,7 +20,7 @@ burn on its own side without crossing the screen, and the pads show which
 action is held. Every input source drives the same simulation, so replays and
 scores do not depend on how the player flew.
 
-### Architecture and boundaries
+### Architecture
 
 - `packages/core/src/lib/entities/Input.ts` resolves keyboard and pointer input
   into one of the five actions, exposes it for pad feedback, and writes the
@@ -28,7 +37,9 @@ scores do not depend on how the player flew.
 - [Options](../options/spec.md) owns the `invertControls` setting; this
   contract applies it.
 
-### Actions
+### Constraints
+
+#### Actions
 
 | Action     | Keyboard                           | Touch                                |
 | ---------- | ---------------------------------- | ------------------------------------ |
@@ -51,7 +62,32 @@ scores do not depend on how the player flew.
 - Thrust comes only from the pads; touches in the central fly area issue no
   action.
 
-### Touch pads
+#### Automatic weapons command
+
+- The pilot's choice is Auto or Off. Every new run and retry starts in Auto;
+  the choice is run-local and survives pause, resume and energy emergency.
+- Ranked and unranked Survival have no player toggle. Practice offers it as
+  soon as flight is active, with no arrival leg. In Derelicts and Gauntlet,
+  arrival starts with the player's weapons locked and their choice fixed at
+  Auto. The lock ends when the centre of the player's ship first crosses
+  inside the circular arena boundary (1,150 world units from the arena centre).
+  The toggle then becomes available subject to the other availability rules.
+- In active flight, click or tap the operable Weapons flap, or press and
+  release either Shift key on its own, to reverse the simulation's choice.
+  Shift acts once, on release; holding and repeat do not act. A chord does
+  not count: a held Ctrl, Alt, Meta or other Shift blocks it, and a different
+  key pressed before release cancels it, including Tab. Thrust already held
+  when Shift goes down may continue, including
+  repeat. A pointer press before release also cancels the shortcut; a click
+  or tap on Weapons still issues its own command.
+- An unavailable command is ignored, not queued. Standby, pause, [energy
+  emergency](../parts/spec.md#weapon-operation), loss of flight focus or
+  visibility, and run replacement cancel any pending Shift. Returning to
+  active, operable flight requires a fresh activation.
+- [Game Screen](../game-screen/spec.md) owns the flap readout; [Parts](../parts/spec.md#weapon-operation)
+  owns weapon execution and the energy check.
+
+#### Touch pads
 
 - Each side gutter holds one pad assembly across its full width: an upper turn
   pad (`L` or `R`) and a lower burn pad (`LF` or `RF`) in the bottom corner, nested at 84%
@@ -65,7 +101,7 @@ scores do not depend on how the player flew.
 - Independent pointers work together, on one side or both. Release,
   cancellation and lost pointer capture clear that pointer's press.
 
-### Feedback
+#### Feedback
 
 - Pads are borderless, disjoint panes of translucent glass that let the stars
   show through. At rest they are blue (`--color-elev-3`), the burn pad denser
@@ -101,8 +137,8 @@ scores do not depend on how the player flew.
 
 ### Regression guardrails
 
-- `InputState` and replay input chunks are unchanged; identical inputs replay
-  identically.
+- Recorded thrust inputs resolve to the same thrust actions on replay.
+  The weapons command is separate from recorded thrust input.
 - Keyboard play needs no pointer, and touch play needs no keyboard.
 - Blur, a hidden page, pause and the aspect gate clear every held key and press
   before another simulation step.
@@ -110,6 +146,87 @@ scores do not depend on how the player flew.
 ### Scenarios
 
 ```gherkin
+Scenario Outline: Each input reverses the same run-local choice
+  Given active flight in Practice with weapons in Auto
+  When I activate Weapons using <input>
+  Then weapons switch to Off
+  When I activate Weapons again using <input>
+  Then weapons switch to Auto
+
+  Examples:
+    | input                     |
+    | a standalone Shift release |
+    | a mouse click             |
+    | a touch tap               |
+
+Scenario: Release confirms a standalone Shift, including during thrust
+  Given operable Weapons in Auto and a thrust key already held
+  When I press and hold either Shift through keyboard repeat
+  Then thrust continues and the choice stays Auto
+  When I release Shift without another key or pointer press
+  Then weapons switch to Off once and thrust continues
+
+Scenario: Shift+Tab moves focus without changing weapons
+  Given operable Weapons in Auto
+  When I hold Shift, press Tab, then release Shift
+  Then focus moves backwards and weapons stay in Auto
+
+Scenario Outline: Only a fresh activation can act after an interruption
+  Given operable Weapons in Auto and a pending Shift press
+  When <interruption> occurs and ends before I release Shift
+  Then weapons stay in Auto through release
+  And a fresh standalone Shift press and release switches weapons Off
+
+  Examples:
+    | interruption                              |
+    | flight standby                            |
+    | pause                                     |
+    | energy emergency                          |
+    | a pointer press away from the Weapons flap |
+
+Scenario: Clicking Weapons with Shift held toggles once
+  Given operable Weapons in Auto and a pending Shift press
+  When I click Weapons and then release Shift
+  Then the click switches weapons Off and release leaves them Off
+
+Scenario Outline: Entry lock ends at arena crossing
+  Given a <mode> run in its arena entry leg with an otherwise valid shot
+  When I press Shift before the ship centre crosses into the arena
+  Then the choice stays Auto and the entry lock prevents the shot
+  When the ship centre crosses into the arena and I release Shift
+  Then ordinary weapon operation is allowed but the choice stays Auto
+  When I issue a fresh weapons command
+  Then the choice switches to Off
+
+  Examples:
+    | mode      |
+    | Derelicts |
+    | Gauntlet  |
+
+Scenario Outline: Survival has no toggle
+  Given active flight in a <run> Survival run
+  When I press Shift or click or tap the weapons status
+  Then automatic weapon operation remains selected
+
+  Examples:
+    | run      |
+    | ranked   |
+    | unranked |
+
+Scenario: Only a fresh run resets the choice
+  Given weapons are Off in active flight
+  When I pause and resume
+  Then weapons remain Off
+  When I start a new run or retry
+  Then weapons start in Auto
+
+Scenario: Emergency ignores commands without erasing the choice
+  Given weapons are Off in active flight
+  When energy emergency begins and I try Shift, mouse or touch
+  Then weapons remain Off and no command is queued
+  When the emergency ends
+  Then the operable flap returns in Off
+
 Scenario: Forward from two thumbs
   Given a touch player in flight
   When they hold the left and right upper pads

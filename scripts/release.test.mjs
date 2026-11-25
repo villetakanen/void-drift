@@ -25,7 +25,17 @@ function fixture(t) {
         rules: "firestore.rules",
         indexes: "firestore.indexes.json",
       },
-      hosting: { public: "apps/web/dist", cleanUrls: true },
+      hosting: {
+        public: "apps/web/dist",
+        cleanUrls: true,
+        redirects: [
+          {
+            source: "/credits",
+            destination: "/field-guide/credits",
+            type: 301,
+          },
+        ],
+      },
     }),
     "firestore.rules": "original rules",
     "firestore.indexes.json": "{}",
@@ -188,6 +198,17 @@ test("publication consumes the saved bundle without rebuilding or taking changed
       ]);
       const staged = dirname(args.at(-1));
       assert(staged.startsWith(join(directory, "publication-")));
+      assert.deepEqual(
+        JSON.parse(readFileSync(join(staged, "firebase.json"), "utf8")).hosting
+          .redirects,
+        [
+          {
+            source: "/credits",
+            destination: "/field-guide/credits",
+            type: 301,
+          },
+        ],
+      );
       assert.equal(
         readFileSync(join(staged, "firestore.rules"), "utf8"),
         "original rules",

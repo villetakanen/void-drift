@@ -61,8 +61,10 @@ import {
 } from "./practice-venus";
 import type { TargetingMetrics, WeaponEvent, WeaponState } from "./salvage";
 import {
+  clearsWeaponReserve,
   contactTime,
   type FlightTickInput,
+  fittedWeaponKinds,
   liveShipBody,
   SalvageSystem,
 } from "./salvage";
@@ -214,6 +216,40 @@ export class Simulation {
   private nextSurvivalPirateTick = Infinity;
   private survivalPiratesIssued = 0;
   private playerEntryComplete = false;
+  private playerWeaponsChoice: "auto" | "off" = "auto";
+  private readonly playerWeaponKinds: ReturnType<typeof fittedWeaponKinds>;
+  private readonly playerCapacity: number;
+  get weaponsChoice(): "auto" | "off" {
+    return this.playerWeaponsChoice;
+  }
+  get weaponsEnergyEmergency(): boolean {
+    return (
+      this.playerWeaponKinds.length > 0 &&
+      this.playerWeaponKinds.every(
+        (kind) =>
+          !clearsWeaponReserve(
+            kind,
+            this.state.resources.power,
+            this.playerCapacity,
+          ),
+      )
+    );
+  }
+  /** Simulation availability; the caller also respects UI pause and visibility. */
+  get canToggleWeapons(): boolean {
+    return (
+      this.state.status === "PLAYING" &&
+      this.settings.mode !== "survival" &&
+      this.playerEntryComplete &&
+      !this.weaponsEnergyEmergency
+    );
+  }
+  toggleWeapons(): boolean {
+    if (!this.canToggleWeapons) return false;
+    this.playerWeaponsChoice =
+      this.playerWeaponsChoice === "auto" ? "off" : "auto";
+    return true;
+  }
   private finalDerelictsResult: Readonly<DerelictsResult> | null = null;
   get derelictsResult(): Readonly<DerelictsResult> | null {
     return this.finalDerelictsResult;
@@ -351,8 +387,10 @@ export class Simulation {
         );
       }
     }
-    this.playerEntryComplete = !this.settings.arrival;
-    if (this.settings.arrival && this.settings.mode !== "practice") {
+    const hasArrival =
+      this.settings.arrival && this.settings.mode !== "practice";
+    this.playerEntryComplete = !hasArrival;
+    if (hasArrival) {
       const angle = arrivalBearing(this.settings.seed);
       this.ship.pos.set(
         960 + 1180 * Math.cos(angle),
@@ -385,8 +423,13 @@ export class Simulation {
     this.gauntletArrivalsIssued = this.opponents.length;
     this.opponentPlans = this.opponents.map(() => null);
     this.opponentCommands = this.opponents.map(() => NO_PILOT_COMMAND);
-    if (this.settings.loadout)
-      this.state.resources.power = buildStats(this.settings.loadout).capacity;
+    this.playerWeaponKinds = this.settings.loadout
+      ? fittedWeaponKinds(this.settings.loadout)
+      : [];
+    this.playerCapacity = this.settings.loadout
+      ? buildStats(this.settings.loadout).capacity
+      : this.state.resources.power;
+    this.state.resources.power = this.playerCapacity;
     // Survival and Derelicts mode each run the encounter with their own rules.
     if (
       this.settings.loadout &&
@@ -831,13 +874,14 @@ export class Simulation {
               this.ship,
               this.star,
               this.state.resources,
-              buildStats(this.settings.loadout).capacity,
+              this.playerCapacity,
               this.planets,
               roster,
               undefined,
               { shooterId: 900000 },
               acquisitions.get(this.salvage),
               { x: previousX, y: previousY, rotation: previousRotation },
+              this.weaponsChoice === "auto",
             );
           } else if (fleetPlayer && this.salvage) {
             this.salvage.stepPlasmaStreams(
@@ -891,7 +935,7 @@ export class Simulation {
           this.ship,
           this.star,
           this.state.resources,
-          buildStats(this.settings.loadout).capacity,
+          this.playerCapacity,
           previousX,
           previousY,
           Math.hypot(this.ship.pos.x - previousX, this.ship.pos.y - previousY) >
@@ -899,6 +943,8 @@ export class Simulation {
           this.planets,
           previousRotation,
           survivalTarget,
+          this.weaponsChoice === "auto" &&
+            (this.settings.mode !== "derelicts" || this.playerEntryComplete),
         );
       }
       if (

@@ -27,7 +27,7 @@ A session that resumes this board works like this:
 
 1. **Read first**: this board; the designer's findings and their
    [evidence](../reviews/2026-11-08-retro-0-6-0/designer-findings-evidence.md);
-   the [loop record](../loop-evidence/2026-11-08-retro-exploration.md) for
+   the [loop record](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-11-08-retro-exploration.md) for
    what the designer has said so far; `development.md` "Shared checkout".
 2. **Work with the designer, one question per turn.** The designer speaks to
    the session; answers are testimony, not decisions, until the designer
@@ -70,7 +70,7 @@ Stated by the designer on 8 November after the review (spoken note, quoted in
 [the retro README](../reviews/2026-11-08-retro-0-6-0/README.md#the-designers-findings)).
 Evidence gathered for each on 8 November:
 [designer-findings-evidence](../reviews/2026-11-08-retro-0-6-0/designer-findings-evidence.md).
-The designer's readings: [loop record](../loop-evidence/2026-11-08-retro-exploration.md).
+The designer's readings: [loop record](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-11-08-retro-exploration.md).
 
 - **A. Exploration stops when it turns into discussion.** Exploration is
   confirming guesses and guessing again when wrong; studies fail when they

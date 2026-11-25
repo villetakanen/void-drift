@@ -19,7 +19,7 @@ A steady G Sun offers collectable energy inside its gravitational well. The
 pilot trades income against the pull, exposure and terminal contact. Other
 stellar families and further Sun effect design are deferred. The accepted
 [study](../../../../../apps/web/src/pages/lab/studies/suns-2026-11-07.astro)
-retains experiments; the [closure](../../../../loop-evidence/2026-11-07-suns-closure.md)
+retains experiments; the [closure](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-11-07-suns-closure.md)
 records acceptance, not production validation.
 
 #### Yellow-family gameplay profile

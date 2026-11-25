@@ -1,0 +1,52 @@
+---
+import DeckFlap from "../../../components/inputs/DeckFlap.svelte";
+import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
+
+// Static specimens: Tab previews native focus without starting a run.
+const specimen = () => {};
+---
+
+<DesignSystemLayout title="Flight controls" wide>
+  <p>
+    Tab through the operable specimens to see keyboard focus. These examples do
+    not issue flight commands.
+  </p>
+  <div class="specimens">
+    <figure>
+      <DeckFlap kind="pause" onactivate={specimen} />
+      <figcaption>Pause</figcaption>
+    </figure>
+    <figure>
+      <DeckFlap kind="auto" onactivate={specimen} />
+      <figcaption>Operable Auto</figcaption>
+    </figure>
+    <figure>
+      <DeckFlap kind="off" onactivate={specimen} />
+      <figcaption>Operable Off</figcaption>
+    </figure>
+    <figure>
+      <DeckFlap kind="auto" />
+      <figcaption>Passive Auto</figcaption>
+    </figure>
+    <figure>
+      <DeckFlap kind="emergency" />
+      <figcaption>Energy emergency</figcaption>
+    </figure>
+  </div>
+</DesignSystemLayout>
+
+<style>
+.specimens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+figure {
+  margin: 0;
+  background: var(--color-void);
+  text-align: center;
+}
+figcaption {
+  padding: var(--spacing-sm);
+}
+</style>

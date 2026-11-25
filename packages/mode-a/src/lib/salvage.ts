@@ -40,8 +40,10 @@ import {
   buildStats,
   CHASSIS,
   defaultLoadout,
+  fittedParts,
   type Loadout,
   PARTS,
+  type PartId,
 } from "./schemas/loadout";
 import type { SalvagePhysicalState } from "./schemas/salvage";
 import {
@@ -277,15 +279,43 @@ function outside(x: number, y: number) {
   );
 }
 
-/**
- * The one firing gate for every weapon: the ship must hold at least the floor
- * fraction of its capacity and afford the shot, with more than 10 power available.
- * A refused shot takes no power and starts no cooldown.
- */
+function isFunctionalWeapon(
+  part: PartId | null,
+): part is Exclude<WeaponState["kind"], "rail"> {
+  return (
+    part === "light-ion-cannon" ||
+    part === "ion-point-defence" ||
+    part === "laser" ||
+    part === "plasma-rifle"
+  );
+}
+
+export function fittedWeaponKinds(loadout: Loadout) {
+  return fittedParts(loadout).filter(isFunctionalWeapon);
+}
+
+function plasmaReserve(capacity: number) {
+  return Math.max(10, capacity * WEAPONS.energyFloor);
+}
+
+function clearsIonReserve(power: number, capacity: number) {
+  return power > 10 && power + 1e-9 >= capacity * WEAPONS.energyFloor;
+}
+
+export function clearsWeaponReserve(
+  kind: WeaponState["kind"],
+  power: number,
+  capacity: number,
+): boolean {
+  return kind === "plasma-rifle"
+    ? power > plasmaReserve(capacity)
+    : clearsIonReserve(power, capacity);
+}
+
+/** Reserve and shot affordability are separate gates. */
 function canFire(resources: Resources, capacity: number, cost: number) {
   return (
-    resources.power > 10 &&
-    resources.power + 1e-9 >= capacity * WEAPONS.energyFloor &&
+    clearsIonReserve(resources.power, capacity) &&
     resources.power + 1e-9 >= cost
   );
 }
@@ -383,10 +413,7 @@ export class SalvageSystem {
       (ion.acceleration * ION_REFERENCE_MASS * WEAPONS.rail.recoilStrength) /
       buildStats(loadout).mass;
     this.weapons = buildMounts(loadout).flatMap((mount): WeaponState[] =>
-      mount.part === "light-ion-cannon" ||
-      mount.part === "ion-point-defence" ||
-      mount.part === "laser" ||
-      mount.part === "plasma-rifle"
+      isFunctionalWeapon(mount.part)
         ? [
             {
               mount,
@@ -994,6 +1021,7 @@ export class SalvageSystem {
     capacity: number,
     planets: readonly Planet[],
     acquisition: WeaponAcquisition,
+    allowFire: boolean,
   ) {
     const target = acquisition.targets.get(weapon);
     weapon.target = target?.id ?? null;
@@ -1013,6 +1041,7 @@ export class SalvageSystem {
     );
     this.angles[weapon.mount.key] = weapon.angle;
     if (
+      !allowFire ||
       !funded ||
       this.time + 1e-9 < weapon.readyAt ||
       Math.abs(angleDifference(desired, weapon.angle)) >
@@ -1074,20 +1103,26 @@ export class SalvageSystem {
     previousShip: { x: number; y: number; rotation: number } | undefined,
     vents: PendingPlasmaVent[],
     kicks: PendingPlasmaKick[],
+    allowFire: boolean,
   ) {
     const state = weapon.plasma;
     if (!state) return;
     let left = dt;
-    const reserve = Math.max(10, capacity * WEAPONS.energyFloor);
+    const reserve = plasmaReserve(capacity);
+    const target = allowFire ? weapon.target : null;
     while (true) {
-      if (state.phase === "charging" && state.targetId !== weapon.target) {
+      if (state.phase === "charging" && state.targetId !== target) {
         this.startPlasmaVent(state);
       }
       if (state.phase === "idle") {
-        if (weapon.target === null || left <= 0 || resources.power <= reserve)
+        if (
+          target === null ||
+          left <= 0 ||
+          !clearsWeaponReserve(weapon.kind, resources.power, capacity)
+        )
           break;
         state.phase = "charging";
-        state.targetId = weapon.target;
+        state.targetId = target;
       }
       if (state.phase === "charging") {
         const chargeTime = (1 - state.charge) * PLASMA_RIFLE.chargeSeconds;
@@ -1350,7 +1385,8 @@ export class SalvageSystem {
     capacity: number,
     planets: readonly Planet[],
     acquisition: WeaponAcquisition,
-    previousShip?: { x: number; y: number; rotation: number },
+    previousShip: { x: number; y: number; rotation: number } | undefined,
+    allowFire: boolean,
   ) {
     let turretsFunded = true;
     for (const weapon of this.weapons)
@@ -1369,6 +1405,7 @@ export class SalvageSystem {
           capacity,
           planets,
           acquisition,
+          allowFire,
         );
       else if (weapon.kind === "laser")
         this.fireRailOrLaser(
@@ -1380,6 +1417,7 @@ export class SalvageSystem {
           capacity,
           planets,
           acquisition,
+          allowFire,
         );
     let cannonsFunded = true;
     const vents: PendingPlasmaVent[] = [];
@@ -1387,6 +1425,7 @@ export class SalvageSystem {
     for (const weapon of this.weapons)
       if (weapon.kind === "light-ion-cannon") {
         if (
+          allowFire &&
           cannonsFunded &&
           acquisition.cannon &&
           this.time + 1e-9 >= weapon.readyAt
@@ -1409,6 +1448,7 @@ export class SalvageSystem {
           previousShip,
           vents,
           kicks,
+          allowFire,
         );
       } else if (weapon.kind === "rail")
         this.fireRailOrLaser(
@@ -1420,6 +1460,7 @@ export class SalvageSystem {
           capacity,
           planets,
           acquisition,
+          allowFire,
         );
     if (vents.length || kicks.length)
       this.resolvePlasmaForces(ship, dt, vents, kicks);
@@ -1434,6 +1475,7 @@ export class SalvageSystem {
     capacity: number,
     planets: readonly Planet[],
     acquisition: WeaponAcquisition,
+    allowFire: boolean,
   ) {
     if (weapon.kind !== "rail" && weapon.kind !== "laser") return;
     const config = WEAPONS[weapon.kind];
@@ -1460,6 +1502,7 @@ export class SalvageSystem {
     } else weapon.angle = weapon.mount.angle;
     this.angles[weapon.mount.key] = weapon.angle;
     if (
+      !allowFire ||
       this.time + 1e-9 < weapon.readyAt ||
       !canFire(resources, capacity, config.energy)
     )
@@ -1997,6 +2040,7 @@ export class SalvageSystem {
     policy?: { shooterId: number; aimId?: number },
     acquisition?: WeaponAcquisition,
     previousShip?: { x: number; y: number; rotation: number },
+    allowFire = true,
   ) {
     const targetList = Array.isArray(targets) ? targets : [targets];
     this.time += dt;
@@ -2039,6 +2083,7 @@ export class SalvageSystem {
         planets,
         selected,
         previousShip,
+        allowFire,
       );
       const births = new Map<SalvageBody, number>();
       this.sweepPlasmaStreams(
@@ -2135,6 +2180,7 @@ export class SalvageSystem {
     planets: readonly Planet[] = [],
     previousRotation = ship.rotation,
     hostile?: SalvageBody,
+    allowFire = true,
   ) {
     this.time += dt;
     this.plasmaContactEvents.length = 0;
@@ -2207,6 +2253,7 @@ export class SalvageSystem {
         y: wrapped ? ship.pos.y : previousY,
         rotation: previousRotation,
       },
+      allowFire,
     );
     for (const weapon of this.weapons) {
       if (!weapon.recoil) continue;

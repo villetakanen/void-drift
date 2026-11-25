@@ -31,6 +31,28 @@ test("title arrow navigation neither activates early nor traps keyboard focus", 
   await expect(page).toHaveURL(/\/hangar$/);
 });
 
+test("stray clicks on the title keep menu focus and select nothing", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const menu = page.getByRole("navigation", { name: "Title screen" });
+  const start = menu.getByRole("button", { name: "PRESS START" });
+  const heading = page.getByRole("heading", { name: "VOID DRIFT" });
+  await expect(start).toBeFocused();
+  await heading.click();
+  await page.getByRole("complementary", { name: "Title-screen hints" }).click();
+  const viewport = page.viewportSize();
+  if (!viewport) throw new Error("viewport required");
+  await page.mouse.click(viewport.width - 10, viewport.height - 10);
+  await heading.dblclick();
+  await expect(start).toBeFocused();
+  expect(await page.evaluate(() => String(getSelection()))).toBe("");
+  await page.keyboard.press("ArrowDown");
+  await expect(
+    menu.getByRole("link", { name: "HANGAR", exact: true }),
+  ).toBeFocused();
+});
+
 test("game-over Return restores the title menu", async ({ page }) => {
   await page.clock.install();
   await page.addInitScript(() => {

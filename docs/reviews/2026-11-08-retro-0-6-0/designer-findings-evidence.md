@@ -4,7 +4,7 @@ Gathered on 8 November 2026 from the loop records, the skills, the design
 system specification and the studies folder, in the exploration session that
 followed the review. Evidence only: the designer's readings of it are human
 feedback in the session's loop record,
-[2026-11-08-retro-exploration.md](../../loop-evidence/2026-11-08-retro-exploration.md).
+[2026-11-08-retro-exploration.md](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-11-08-retro-exploration.md).
 Counts are direct inspection of the tree at `a6a6dd7` on `feat/0-5-0`, with
 another session's uncommitted in-game-controllers files present and excluded
 where a first-commit date is used.

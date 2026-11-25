@@ -1,13 +1,10 @@
 ---
-
-title: "Spec: Lab"
-status: draft
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-21T18:27:12+00:00"
+  by: "openai/gpt-6.1-terra"
+  at: "2026-11-24T11:16:56+02:00"
 verified:
-- { by: "codex/gpt-6", at: "2026-11-19T16:50:31+02:00" }
-- { by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }
+  - by: "human:ville-takanen"
+    at: "2026-11-24"
 
 ---
 
@@ -17,61 +14,22 @@ verified:
 
 ### Context
 
-The Lab owns game developer tools for Void Drift. These include inspection,
-testing, configuration explorers, authoring utilities and other tooling needed
-to develop the game. These are examples, not a closed set of tool categories.
-The Lab can host game things; hosting them does not transfer their ownership.
+The Lab is a place to inspect, exercise, configure and author Void Drift's game
+systems during development. It provides tools for working with the game outside
+normal play.
 
-The three development tools are peers: Lab at `/lab`,
-[Studies](../studies/spec.md) at `/lab/studies`, and the
-[Design system](../factory/design-system/spec.md) at `/lab/ds`. URL nesting is a
-routing convention. Studies and the Design system are independent of the Lab.
+The Lab hosts game features; those features remain owned by the game.
+[Studies](../studies/spec.md) and the
+[Design system](../factory/design-system/spec.md) are separate development spaces.
 
 ### Architecture
 
-Lab tools live under `apps/web/src/pages/lab/`. The shared
-[page registry](../../../apps/web/src/data/lab-pages.ts) and navigation can
-connect all three development tools without establishing ownership between them.
+Lab tools live under `apps/web/src/pages/lab/` and compose shared game systems
+directly. A tool can run a game simulation without the player-facing game shell.
 
-LabLayout uses the shared [page header](../factory/design-system/page-header/spec.md)
-in its content column to the right of the navigation tray. The tray, its logo
-and the inspector retain their arrangement.
-
-Game contracts and implementations own the simulation, ships, worlds, effects,
-camera transforms and rendering that the Lab hosts. The Design system owns
-shared visual and interaction definitions. A Lab tool consumes these
-owners; it does not define a second version of their behaviour or appearance.
-Tools showing the game area use the game-owned
-[shared game field](../game/render/game-field/spec.md).
-
-The Lab owns its tools and their workflows, interfaces and local state. A tool
-may own test setup and execution, configuration exploration, authoring controls,
-measurements, camera selection or playback, according to its purpose. It owns the
-lifetime of resources it instantiates, while the hosted systems retain their
-behavioural contracts. It can run the production simulation without mounting
-the player-facing flight shell, Hangar or title screen.
-
-A tool can expose parameter variations or declared substitutions through its
-supported inputs. A rendering fixture can isolate layers and supply synthetic
-marks. Those conditions belong to the configured tool; they do not
-redefine the hosted game feature. Studies may embed Lab instruments, while
-Studies owns the investigation and its record.
-
-Changes to a hosted feature belong in its owning contract and shared
-implementation, with verification in affected game and tool consumers.
-Changes to developer-tool behaviour and workflows belong in the tool contract.
-
-Tool contracts: [workbench](workbench/spec.md),
-[motion](motion-instrument/spec.md),
-[Flight scene](flight-scene-instrument/spec.md),
-[Planet Inspector](planet-inspector/spec.md),
-[System instrument](system-instrument/spec.md),
-[sky](sky-instrument/spec.md),
-[gravity tuning](gravity-tuning/spec.md),
-[Render model](render-model/spec.md),
-[Render performance](render-performance/spec.md),
-[Gauntlet](gauntlet-bench/spec.md) and
-[Targeting](targeting-bench/spec.md).
+The game owns the behaviour of the systems a tool hosts. The Lab owns the tool's
+workflow, interface and local state. Shared interface components come from the
+[Design system](../factory/design-system/spec.md).
 
 ### Constraints
 
@@ -128,6 +86,13 @@ Scenario: Navigate between development tools
   When a reader opens Studies or Design system
   Then the destination follows its own contract
   And its route does not make it a Lab-owned feature
+
+Scenario: Navigate Lab tools
+  Given a Lab page at a viewport of at least 1280px
+  When I inspect the navigation beneath the full-width header
+  Then the shared Tray shows Index, the Lab's registry groups in order, and Back to Game
+  And only the deepest listed destination covering the current path is marked current, with Index current only at /lab
+  And the tray scrolls independently of the main stage
 
 Scenario: Change a hosted game feature
   Given a Lab inspector hosts a game effect

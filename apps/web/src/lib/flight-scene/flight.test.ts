@@ -1,9 +1,17 @@
+import { getPlanetInfluenceRadius } from "@void-drift/core";
 import { buildStats, Simulation, stockSettings } from "@void-drift/mode-a";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { ROCK_ATMOSPHERE_SCENE } from "../../components/studies/rock-atmospheres/fixture";
+import { TOTAL_TICKS } from "../instrument/burns";
 import { FlightSceneDocumentSchema } from "./config";
+import { DERELICT_INSTRUMENT_SCENE } from "./derelict-fixture";
 import { FlightRun } from "./flight";
 import { PRACTICE_FLIGHT_SCENE, STARTER_FLIGHT_SCENE } from "./starter";
+
+function required<T>(value: T | null | undefined): T {
+  if (value == null) throw new Error("Expected value to be present");
+  return value;
+}
 
 const doc = FlightSceneDocumentSchema.parse(STARTER_FLIGHT_SCENE);
 // Everything a flight has made at an instant: the ship's pose and velocity, the
@@ -29,6 +37,11 @@ describe("flight scene document", () => {
         .success;
     expect(accepts({})).toBe(true);
     expect(accepts({ extra: 1 })).toBe(false);
+    expect(accepts({ wreckSpin: -1 })).toBe(false);
+    expect(accepts({ wreckSpin: 2 })).toBe(true);
+    expect(accepts({ wreckSpin: 2.1 })).toBe(false);
+    expect(accepts({ wreckSpin: null })).toBe(false);
+    expect(accepts({ wreckSpin: Infinity })).toBe(false);
     expect(accepts({ opening: { tick: 99999 } })).toBe(false);
     expect(
       accepts({
@@ -40,6 +53,151 @@ describe("flight scene document", () => {
 });
 
 describe("flight run", () => {
+  it("stages default and zero wreck spin and replays rotation", () => {
+    for (const spin of [undefined, 0]) {
+      const staged = FlightSceneDocumentSchema.parse({
+        ...STARTER_FLIGHT_SCENE,
+        wreckSpin: spin,
+      });
+      expect(staged.wreckSpin).toBe(spin ?? 0.3);
+      const run = new FlightRun(staged, "course", "placed");
+      const rotation = () =>
+        required(required(run.sim.salvage).bodies.find((b) => b.id === 101))
+          .rotation;
+      run.seek(10);
+      const first = rotation();
+      if (spin === 0) expect(first).toBe(0);
+      else expect(first).toBeGreaterThan(0);
+      run.seek(20);
+      run.seek(10);
+      expect(rotation()).toBe(first);
+    }
+  });
+  it("takes the shipped derelict encounter through breakup and replays it", () => {
+    const encounter = FlightSceneDocumentSchema.parse(
+      DERELICT_INSTRUMENT_SCENE,
+    );
+    const run = new FlightRun(encounter, "course", "placed");
+    const step = vi.spyOn(run.sim, "step");
+    const wreck = () =>
+      required(
+        required(run.sim.salvage).bodies.find((b) => b.kind === "wreck"),
+      );
+    expect(run.sim.ship.vel).toMatchObject({ x: 0, y: 0 });
+    expect(wreck()).toMatchObject({ vx: 0, vy: 0 });
+    for (const point of [run.sim.ship.pos, wreck()]) {
+      expect(
+        Math.hypot(point.x - run.sim.star.pos.x, point.y - run.sim.star.pos.y),
+      ).toBeGreaterThan(run.sim.star.influenceRadius);
+      for (const planet of run.sim.planets)
+        expect(
+          Math.hypot(point.x - planet.pos.x, point.y - planet.pos.y),
+        ).toBeGreaterThan(getPlanetInfluenceRadius(planet));
+    }
+    const initialHull = required(run.targetHull(0)).current;
+    let shedding = false,
+      destroyed = false,
+      cell = false,
+      damaged = false;
+    let snapshot: unknown;
+    let middle = 0;
+    for (let tick = 1; tick <= TOTAL_TICKS; tick++) {
+      run.seek(tick);
+      const bodies = run.sim.salvage?.bodies ?? [];
+      expect(step).toHaveBeenLastCalledWith(
+        expect.objectContaining({ leftThruster: false, rightThruster: false }),
+      );
+      const hull = run.targetHull(0);
+      const intact = hull !== null && hull.current > 0;
+      damaged ||= intact && hull.current < initialHull;
+      if (
+        !middle &&
+        intact &&
+        bodies.some((body) => body.kind === "fragment")
+      ) {
+        shedding = true;
+        middle = tick;
+        snapshot = structuredClone({
+          bodies,
+          hull,
+          ship: run.sim.ship,
+          discharges: required(run.sim.salvage).pointDefenceDischarges,
+        });
+      }
+      destroyed ||= !intact;
+      cell ||= bodies.some((body) => body.kind === "cell");
+    }
+    run.seek(middle);
+    const fragment = required(
+      required(run.sim.salvage).bodies.find((body) => body.kind === "fragment"),
+    );
+    const position = { x: fragment.x, y: fragment.y };
+    run.seek(middle + 1);
+    const moved = required(
+      required(run.sim.salvage).bodies.find((body) => body.id === fragment.id),
+    );
+    expect(
+      Math.hypot(moved.x - position.x, moved.y - position.y),
+    ).toBeGreaterThan(0);
+    run.seek(TOTAL_TICKS);
+    expect(required(run.sim.salvage).pointDefenceDischarges).toBeGreaterThan(0);
+    expect({ shedding, destroyed, cell, damaged }).toEqual({
+      shedding: true,
+      destroyed: true,
+      cell: true,
+      damaged: true,
+    });
+    run.seek(middle);
+    expect({
+      bodies: run.sim.salvage?.bodies ?? [],
+      hull: run.targetHull(0),
+      ship: run.sim.ship,
+      discharges: required(run.sim.salvage).pointDefenceDischarges,
+    }).toEqual(snapshot);
+  });
+  it("damages a placed derelict with one Wasp ion point defence", () => {
+    const encounter = FlightSceneDocumentSchema.parse({
+      ...STARTER_FLIGHT_SCENE,
+      loadout: {
+        ...STARTER_FLIGHT_SCENE.loadout,
+        hull: [
+          "ion-point-defence",
+          ...STARTER_FLIGHT_SCENE.loadout.hull.slice(1),
+        ],
+      },
+      targets: [{ x: 460, y: 440 }],
+      encounter: { restTicks: 120 },
+    });
+    const run = new FlightRun(encounter, "course", "placed");
+    const initial = required(run.targetHull(0));
+    run.seek(120);
+    expect(required(run.targetHull(0)).current).toBeLessThan(initial.current);
+  });
+  it("exposes placed wreck hull and reconstructs it on backward seek", () => {
+    const run = new FlightRun(doc, "course", "placed");
+    const initial = run.targetHull(0);
+    expect(initial?.current).toBe(initial?.maximum);
+    expect(run.targetHull(-1)).toBeNull();
+    run.seek(100);
+    const selected = run.targetHull(0);
+    run.seek(200);
+    run.seek(100);
+    expect(run.targetHull(0)).toEqual(selected);
+  });
+  it("replays a staged firing encounter with an initial thruster rest", () => {
+    const encounter = FlightSceneDocumentSchema.parse({
+      ...STARTER_FLIGHT_SCENE,
+      encounter: { restTicks: 120 },
+    });
+    const run = new FlightRun(encounter, "course");
+    run.seek(300);
+    const expected = state(run);
+    const hull = run.targetHull(0);
+    run.seek(30);
+    run.seek(300);
+    expect(state(run)).toEqual(expected);
+    expect(run.targetHull(0)).toEqual(hull);
+  });
   it("opens and reconstructs the complete production Practice system", () => {
     const practice = FlightSceneDocumentSchema.parse(PRACTICE_FLIGHT_SCENE);
     const run = new FlightRun(practice, "course");

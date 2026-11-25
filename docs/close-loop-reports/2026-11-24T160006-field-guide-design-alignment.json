@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-11-24T160006-field-guide-design-alignment",
+  "recorded_at": "2026-11-24T16:00:06+00:00",
+  "work_ref": "docs/specs/game/field-guide/spec.md#presentation",
+  "intent": "User requested removal of the unsupported centred 1200px shell, alignment with the existing design-system page layout, shared correction of browser-default links, preservation of current metadata presentation, and a Maybe roadmap item for a future shared metadata treatment. Governing sources: docs/specs/game/field-guide/spec.md and docs/specs/factory/design-system/typography/spec.md.",
+  "result": "Observed uncommitted working-tree changes based on 61c886eb67722da7bc847cdd63caba0458fc4d36: apps/web/src/layouts/FieldGuideLayout.astro uses the shared PageHeader and Tray in a full-width header/250px rail/main grid, with a measured reading column and stacked narrow layout. apps/web/src/pages/field-guide/index.astro opts into shared prose. packages/core/src/lib/styles/typography.css supplies zero-specificity action-colour and focus-ring defaults for ordinary anchors. apps/web/src/pages/lab/typography.astro demonstrates links outside prose. The article provenance markup is unchanged; docs/roadmap.md lists article metadata under 0.8.0 Maybe. Field Guide, Typography, Page header and Tray specs describe adoption. Unrelated working-tree changes remain outside this task.",
+  "verification": "Observed in this chat during implementation: pnpm build, pnpm lint, pnpm check:repo (23 factory tests), git diff --check and individual checks of Field Guide, Typography, Page header and Tray specs passed. An initial unsupported Presentation heading failed spec lint and was corrected before those passes. Browser screenshots inspected the guide index and Credits at 1280x720 and Credits at 600x800; the latter stacked navigation above the article. The credits capture /private/tmp/field-guide-credits.jpg is temporary, not durable repository evidence. The canonical typography page was opened, but its captured tree did not include the hydrated typography instrument, so full instrument rendering is not established. User accepted the appearance with “Looks good” before requesting closeout; this is design acceptance, not human playtesting. No retained raw check logs, automated visited-link/focus assertions, comprehensive consumer regression checks, deployment checks, or new tests were produced. Global CSS expresses visited-link coverage; screenshots alone do not establish every visited state.",
+  "findings": [
+    {
+      "classification": "reusable_improvement",
+      "summary": "A prose-scoped link rule leaves ordinary links elsewhere without the shared action colour. The Field Guide index and article return navigation demonstrate why a shared low-specificity anchor default must cover non-prose consumers while allowing component-owned overrides.",
+      "evidence": [
+        {
+          "locator": "61c886eb67722da7bc847cdd63caba0458fc4d36:packages/core/src/lib/styles/typography.css",
+          "supports": "Before this change, shared action-colour rules selected only prose or document-prose descendants.",
+          "kind": "observed"
+        },
+        {
+          "locator": "apps/web/src/pages/field-guide/[slug].astro",
+          "supports": "Return links sit outside the prose wrapper; the initial browser screenshot showed browser-default blue and purple links.",
+          "kind": "observed"
+        },
+        {
+          "locator": "packages/core/src/lib/styles/typography.css",
+          "supports": "Working-tree :where(a:any-link) default now covers ordinary anchors without increasing specificity above component styles.",
+          "kind": "observed"
+        }
+      ],
+      "prior_reports": [],
+      "evidence_status": "new"
+    },
+    {
+      "classification": "reusable_improvement",
+      "summary": "The parent spec subtree remains non-clean despite clean edited spec directories. This run corroborates the earlier distinction between scoped verification and unrelated migration debt.",
+      "evidence": [
+        {
+          "locator": "docs/specs/factory/design-system/",
+          "supports": "Session check reported five provenance errors in untouched artwork, choices, game-field-backdrop, identity and inputs specs; all four edited spec directory checks passed. Raw logs were not retained.",
+          "kind": "observed"
+        },
+        {
+          "locator": "docs/close-loop-reports/2026-11-23T151138-lab-tray.json",
+          "supports": "Earlier closeout reports the same scoped-check versus subtree-debt distinction; its original checks were not rerun here.",
+          "kind": "reported"
+        }
+      ],
+      "prior_reports": [
+        "docs/close-loop-reports/2026-11-23T151138-lab-tray.json"
+      ],
+      "evidence_status": "supports"
+    }
+  ]
+}

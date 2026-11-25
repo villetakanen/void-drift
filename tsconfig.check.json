@@ -13,7 +13,8 @@
     "apps/web/src/**/*.ts",
     "tests/**/*.ts",
     "playwright*.config.ts",
-    "apps/web/src/vite-env.d.ts"
+    "apps/web/src/vite-env.d.ts",
+    "apps/web/.astro/types.d.ts"
   ],
   "exclude": ["node_modules", "**/dist", "apps/web/src/**/*.test.ts"]
 }

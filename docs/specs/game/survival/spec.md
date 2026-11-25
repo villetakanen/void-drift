@@ -1,8 +1,10 @@
 ---
 generated:
-  by: "codex/gpt-6.2-sol"
-  at: "2026-11-21T19:41:06+00:00"
-verified: []
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-25T08:40:18Z"
+verified:
+  - by: "human:ville-takanen"
+    at: "2026-11-25T09:16:37+02:00"
 ---
 
 # Survival
@@ -33,6 +35,9 @@ Ranked Survival uses `RANKED_SURVIVAL_ENCOUNTER` and unranked Survival uses
 `SURVIVAL_ENCOUNTER` from the [encounter configuration](../../../../packages/mode-a/src/lib/schemas/salvage.ts).
 
 ### Constraints
+
+- [Controls](../controls/spec.md#automatic-weapons-command) owns Weapons toggle
+  availability by mode; [Game Screen](../game-screen/spec.md) owns the readout.
 
 - **A fresh system.** Every Survival launch gets a fresh seed. The seed decides
   the yellow-family star profile, mercurial radius, retained planets' starting

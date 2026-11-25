@@ -518,8 +518,9 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
         Practice: fly a repeatable star system with full health and energy.
         Derelicts: survive, destroy wrecks and collect energy. Gauntlet: an
         unranked seven-enemy encounter. Survival is ranked while Playground is
-        Off and your active setup is eligible. Pause to resume or abort back to
-        the Hangar.
+        Off and your active setup is eligible. Press Shift to toggle automatic
+        weapons in Practice, or once inside the arena in Derelicts and Gauntlet.
+        Pause to resume or abort back to the Hangar.
       </p>
     </div>
   </main>

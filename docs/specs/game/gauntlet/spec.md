@@ -1,16 +1,10 @@
 ---
-title: "Spec: Gauntlet"
-status: draft
 generated:
-  by: "openai-codex/gpt-6-luna"
-  at: "2026-11-19T21:40:00+02:00"
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-25T08:37:38Z"
 verified:
-  - by: "openai-codex/gpt-6"
-    at: "2026-11-19T17:43:55+02:00"
-  - by: "openai-codex/gpt-6.1-terra"
-    at: "2026-11-19T21:31:01+02:00"
-  - by: "openai-codex/gpt-6"
-    at: "2026-11-19T21:48:28+02:00"
+  - by: "human:ville-takanen"
+    at: "2026-11-25T09:16:37+02:00"
 ---
 
 # Gauntlet
@@ -54,9 +48,9 @@ Living pirate actors supply the pirate entries in [flight contacts](../render/fl
   clearance from all live bodies. Issued arrivals are tracked independently of
   living enemies. Each actor has stable identity and private pilot, weapon and
   effect state, and a distinct planning slot.
-- Opening weapon lock applies only to the player character (PC), and releases
-  when the PC's own entry completes. An enemy with a valid firing solution may
-  fire during that lock, including while approaching. Ordinary range,
+- Enemies are unaffected by the player's [arrival lock and weapons command](../controls/spec.md#automatic-weapons-command).
+  An enemy with a valid firing solution may fire during the player's lock,
+  including while approaching. Ordinary range,
   obstruction, energy and weapon-readiness rules still apply. Reinforcement
   arrival does not alter other actors' firing eligibility or existing shots.
 - Clearing all living enemies before the seventh arrival does not end the run.
@@ -113,14 +107,12 @@ Feature: Gauntlet
     Then the arriving enemy has the same identity and entry configuration
     And it has clearance from live bodies
 
-  Scenario: PC-only opening weapon lock
+  Scenario: Enemy fire while the player is still arriving
     Given the PC is completing its own entry
     And an enemy has a valid firing solution
     When the enemy is ready and has sufficient energy
     Then the enemy may fire under ordinary range and obstruction rules
-    And the PC remains locked until its own entry completes
-    When the PC completes its own entry
-    Then it may fire under the ordinary weapon rules
+    And the player's weapons remain locked under the shared arrival rule
 
   Scenario: Reinforcement during combat
     Given existing actors are exchanging fire
