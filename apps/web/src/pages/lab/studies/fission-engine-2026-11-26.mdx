@@ -2,14 +2,9 @@
 layout: ../../../layouts/StudyLayout.astro
 title: Fission engine
 phase: scope
-status: open
+status: accepted
 question: How should the fission engine work in flight, and what should its burn look like and leave behind?
 ---
-
-import InstrumentBand from '../../../components/lab/instrument/InstrumentBand.astro';
-import MasterSpecimen from '../../../components/studies/fission-engine-2026-11-26/MasterSpecimen.astro';
-import FittingBench from "../../../components/studies/fission-engine-2026-11-26/FittingBench.svelte";
-import KickBench from '../../../components/studies/fission-engine-2026-11-26/KickBench.svelte';
 
 <section>
 
@@ -54,7 +49,10 @@ only as coordinate lists in its engine art. The SVG master holds them
 unchanged and in drawing order, following the conventions of the service
 ion’s master.
 
-<MasterSpecimen />
+<figure>
+  <img src="/studies/fission-engine-2026-11-26/02-1-body.jpg" alt="The catalogue body alongside the four lighting poses of its SVG master." loading="lazy" style="max-width: 100%; height: auto;" />
+  <figcaption>Catalogue and master at the same scale. [Fission engine SVG master](/studies/fission-engine-2026-11-26/02-1-fission-master.svg).</figcaption>
+</figure>
 
 The master is 22 engine units long and 9.6 wide, with the nose towards +x.
 The lime emitter bar at the rear takes the fission accent, `#c6ff32`, from the
@@ -360,7 +358,10 @@ The field is the default arena with its star at the smallest of its family
 and no planets. The ship starts 1,100 u from the star, whose gravity reaches
 124 u.
 
-<InstrumentBand><KickBench client:visible /></InstrumentBand>
+<figure>
+  <img src="/studies/fission-engine-2026-11-26/02-5-wasp.webp" alt="A Wasp accelerates in five discrete kicks, with a channel blast at each ignition." loading="lazy" style="max-width: 100%; height: auto;" />
+  <figcaption>First 1.5 s of B1, one fission Wasp, 78 u/s per kick at 0.30 s intervals. This early rule requires room for a whole kick.</figcaption>
+</figure>
 
 ### 02.6 / Swapping ion for fission
 
@@ -399,7 +400,10 @@ Fission charges once per engine that fires, including the last partial kick.
 A held pair waits until both kicks are affordable. The battery graph shows
 when a fitting can sustain its rhythm and when it has to wait.
 
-<InstrumentBand><FittingBench client:visible /></InstrumentBand>
+<figure>
+  <img src="/studies/fission-engine-2026-11-26/02-6-fittings.jpg" alt="Six fitted ships on B2, with ignition marks on speed traces and a shared time cursor across acceleration, turn and battery." loading="lazy" style="max-width: 100%; height: auto;" />
+  <figcaption>B2 at 6.25 s, a quarter-second into the left-pad turn. All six fittings use the initial 02.6 tuning.</figcaption>
+</figure>
 
 </section>
 
