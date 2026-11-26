@@ -29,7 +29,7 @@ art. Neither its chamber nor any of its eight assemblies is accepted.
 
 ### Wasp: a continuing surface needs more than matching colour
 
-[Wasp 02.1–02.6](../../apps/web/src/pages/lab/studies/lhi-wasp.astro)
+[Wasp 02.1–02.6](../../apps/web/src/pages/lab/studies/lhi-wasp.mdx)
 starts from a supplied silhouette, slots and stabilizer positions. The selected
 Gull-wing 08 carries a particular nose, forward cockpit and three-ribbon wing
 structure. Rear development separates a slender chassis from outboard wings;
@@ -39,7 +39,7 @@ The decisive 02.5–02.6 refinement concerns the side and rear winglets. Their
 matching shades suggested the same level and angle, but a point-sized connection
 and differently angled trailing edges disrupted that reading. The selected 06.9
 combines a broader physical bridge with parallel trailing edges. The
-[comparison geometry](../../apps/web/src/components/studies/WaspAb306Refinements.astro)
+[captured comparison](../../apps/web/public/studies/lhi-wasp/02-6-winglet-refinements.png)
 records those changes explicitly. Colour, contour, shared edges and surface
 continuity work together here; “add another pale polygon” does not describe the
 construction.
@@ -91,12 +91,12 @@ hexagonal shapes did not establish convincing construction. The subsequent
 explicitly contrasts that earlier substance with bars carrying bright edges.
 Neither failed study establishes an accepted universal construction rule.
 
-[Utility machinery](../../apps/web/src/pages/lab/studies/utility-machinery-2026-11-02.astro)
+[Utility machinery](../../apps/web/src/pages/lab/studies/utility-machinery-2026-11-02.mdx)
 separates family character from the eventual clear structural accent. The family
 permits different silhouettes. Its resting drawings are a bounded acceptance,
 not evidence that the same bridge belongs on every kind of machinery.
 
-[Potential Well 02.1–02.8](../../apps/web/src/pages/lab/studies/resource-capacity-2026-11-02.astro)
+[Potential Well 02.1–02.8](../../apps/web/src/pages/lab/studies/resource-capacity-2026-11-02.mdx)
 settles an evocative fictional identity—multiple containment units holding
 potential—while deliberately leaving the science unexplained. Layered rims and
 bevelled rails are rejected as artificially extruded. Broad slopes around dark

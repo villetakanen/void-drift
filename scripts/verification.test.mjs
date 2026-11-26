@@ -227,7 +227,9 @@ test("a stalled emulator lifecycle is stopped and reported without losing eviden
 import { mkdirSync, writeFileSync } from "node:fs";
 import { runBackend } from ${JSON.stringify(backendRunner)};
 mkdirSync("artifacts/verification/timeout", { recursive: true });
-const report = await runBackend("artifacts/verification/timeout", { timeoutMs: 300, graceMs: 1000 });
+// Allow the fixture process to start and install its SIGINT handler before
+// exercising shutdown. This deadline is not a performance assertion.
+const report = await runBackend("artifacts/verification/timeout", { timeoutMs: 1500, graceMs: 1000 });
 writeFileSync("artifacts/verification/latest.json", JSON.stringify(report));
 process.exitCode = report.lifecycle.status === "passed" ? 0 : 1;
 `,

@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "run_id": "381b0c1e-2de0-4a45-805c-dcffa4bb1968",
+  "recorded_at": "2026-11-26T15:36:40Z",
+  "loop": "Compact six legacy Lab studies into static MDX with Playwright evidence",
+  "worked": [
+    "Capturing the evidence before deleting the study code let me preserve the accepted comparisons, the Wasp flight replay, and the reasons stopped studies did not advance.",
+    "Verifying the rendered records with JavaScript disabled checked the practical reader experience, including index navigation, image loading, and Wasp video metadata. The interactive Potential Well tool remained available on its separate Lab page.",
+    "Reusing the frontmatter validation kept each migrated study title, question, phase, and status in one source without changing public routes or introducing a content collection."
+  ],
+  "issues": [
+    {
+      "area": "project",
+      "observation": "The first Wasp index verification found no entry after the legacy metadata was removed; the shared index file contained concurrent Fission study changes and no Wasp insertion.",
+      "effect": "I reapplied the Wasp insertion around the concurrent changes and reran the JavaScript-disabled verification.",
+      "interpretation": "Concurrent edits explain the observed file state, but I did not establish how the Wasp insertion disappeared."
+    },
+    {
+      "area": "project",
+      "observation": "The controller capture tried to click a radio underneath its visible label, and the Potential Well fleet still included a sticky toolbar across the hulls.",
+      "effect": "I used the visible controller label and recaptured the fleet with the toolbar hidden after inspecting the image.",
+      "interpretation": "The capture steps needed to account for the rendered controls, not just the target locators."
+    },
+    {
+      "area": "context",
+      "observation": "Several remaining Astro studies shared the same first tracked commit and timestamp.",
+      "effect": "Git history did not provide a unique oldest study within that batch, so I treated the matching early-November pages as tied.",
+      "interpretation": null
+    }
+  ]
+}

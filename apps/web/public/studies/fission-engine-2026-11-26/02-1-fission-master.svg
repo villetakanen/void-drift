@@ -1,0 +1,141 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="-13 -6 24 48"
+  color="#c6ff32"
+  data-part="fusion"
+>
+  <title>Fission engine, SVG master</title>
+  <!--
+    Fission engine (catalog id "fusion"): SVG master drafted in study
+    fission-engine-2026-11-26, step 02.1. Engine units, +x forward (nose
+    right), +y the engine's right side on a nose-up ship. Poses: 0 catalog,
+    1 and 2 side lighting, 3 aft lighting. Polygons marked data-face are the
+    faces the game draws today, in order, copied without change from
+    packages/mode-a/src/lib/engine-art.ts. The emitter face is currentColor;
+    the root colour is the game's fission accent.
+  -->
+  <g data-pose="0" transform="translate(0 0)">
+    <polygon
+      data-face
+      points="2,-2.7 -7,-2.7 -7,-1.8 2,-1.8"
+      fill="rgb(173,190,194)"
+    />
+    <polygon
+      data-face
+      points="2,1.8 -7,1.8 -7,2.7 2,2.7"
+      fill="rgb(86,95,97)"
+    />
+    <polygon data-face points="5,0 10,0 7,-3" fill="rgb(80,85,93)" />
+    <polygon data-face points="5,0 7,-3 2,-3" fill="rgb(95,101,110)" />
+    <polygon data-face points="5,0 2,-3 0,0" fill="rgb(101,107,116)" />
+    <polygon data-face points="5,0 0,0 2,3" fill="rgb(27,29,31)" />
+    <polygon data-face points="5,0 2,3 7,3" fill="rgb(40,43,46)" />
+    <polygon data-face points="5,0 7,3 10,0" fill="rgb(63,67,73)" />
+    <polygon data-face points="-8,0 -4,0 -6,-4.8" fill="rgb(97,103,112)" />
+    <polygon data-face points="-8,0 -6,-4.8 -10,-4.8" fill="rgb(93,99,108)" />
+    <polygon data-face points="-8,0 -10,-4.8 -12,-3" fill="rgb(65,70,76)" />
+    <polygon data-face points="-8,0 -12,-3 -12,3" fill="rgb(27,29,31)" />
+    <polygon data-face points="-8,0 -12,3 -10,4.8" fill="rgb(27,29,31)" />
+    <polygon data-face points="-8,0 -10,4.8 -6,4.8" fill="rgb(27,29,31)" />
+    <polygon data-face points="-8,0 -6,4.8 -4,0" fill="rgb(35,37,41)" />
+    <polygon data-face points="-10,-3.5 -12,-3 -12,3 -10,3.5" fill="#12171e" />
+    <polygon
+      data-face
+      points="-11.5,-2.2 -10.7,-2.2 -10.7,2.2 -11.5,2.2"
+      fill="currentColor"
+    />
+  </g>
+  <g data-pose="1" transform="translate(0 12)">
+    <polygon
+      data-face
+      points="2,-2.7 -7,-2.7 -7,-1.8 2,-1.8"
+      fill="rgb(179,197,201)"
+    />
+    <polygon
+      data-face
+      points="2,1.8 -7,1.8 -7,2.7 2,2.7"
+      fill="rgb(80,88,90)"
+    />
+    <polygon data-face points="5,0 10,0 7,-3" fill="rgb(58,61,66)" />
+    <polygon data-face points="5,0 7,-3 2,-3" fill="rgb(79,84,91)" />
+    <polygon data-face points="5,0 2,-3 0,0" fill="rgb(93,99,108)" />
+    <polygon data-face points="5,0 0,0 2,3" fill="rgb(27,29,31)" />
+    <polygon data-face points="5,0 2,3 7,3" fill="rgb(27,29,31)" />
+    <polygon data-face points="5,0 7,3 10,0" fill="rgb(38,40,44)" />
+    <polygon data-face points="-8,0 -4,0 -6,-4.8" fill="rgb(82,88,95)" />
+    <polygon data-face points="-8,0 -6,-4.8 -10,-4.8" fill="rgb(101,107,116)" />
+    <polygon data-face points="-8,0 -10,-4.8 -12,-3" fill="rgb(86,92,100)" />
+    <polygon data-face points="-8,0 -12,-3 -12,3" fill="rgb(40,42,46)" />
+    <polygon data-face points="-8,0 -12,3 -10,4.8" fill="rgb(27,29,31)" />
+    <polygon data-face points="-8,0 -10,4.8 -6,4.8" fill="rgb(27,29,31)" />
+    <polygon data-face points="-8,0 -6,4.8 -4,0" fill="rgb(27,29,31)" />
+    <polygon data-face points="-10,-3.5 -12,-3 -12,3 -10,3.5" fill="#12171e" />
+    <polygon
+      data-face
+      points="-11.5,-2.2 -10.7,-2.2 -10.7,2.2 -11.5,2.2"
+      fill="currentColor"
+    />
+  </g>
+  <g data-pose="2" transform="translate(0 24)">
+    <polygon
+      data-face
+      points="2,-2.7 -7,-2.7 -7,-1.8 2,-1.8"
+      fill="rgb(158,173,177)"
+    />
+    <polygon
+      data-face
+      points="2,1.8 -7,1.8 -7,2.7 2,2.7"
+      fill="rgb(102,112,114)"
+    />
+    <polygon data-face points="5,0 10,0 7,-3" fill="rgb(96,102,111)" />
+    <polygon data-face points="5,0 7,-3 2,-3" fill="rgb(101,107,117)" />
+    <polygon data-face points="5,0 2,-3 0,0" fill="rgb(97,103,112)" />
+    <polygon data-face points="5,0 0,0 2,3" fill="rgb(43,46,50)" />
+    <polygon data-face points="5,0 2,3 7,3" fill="rgb(65,69,76)" />
+    <polygon data-face points="5,0 7,3 10,0" fill="rgb(85,90,98)" />
+    <polygon data-face points="-8,0 -4,0 -6,-4.8" fill="rgb(101,107,116)" />
+    <polygon data-face points="-8,0 -6,-4.8 -10,-4.8" fill="rgb(76,80,87)" />
+    <polygon data-face points="-8,0 -10,-4.8 -12,-3" fill="rgb(40,43,46)" />
+    <polygon data-face points="-8,0 -12,-3 -12,3" fill="rgb(27,29,31)" />
+    <polygon data-face points="-8,0 -12,3 -10,4.8" fill="rgb(27,29,31)" />
+    <polygon data-face points="-8,0 -10,4.8 -6,4.8" fill="rgb(27,29,31)" />
+    <polygon data-face points="-8,0 -6,4.8 -4,0" fill="rgb(61,64,70)" />
+    <polygon data-face points="-10,-3.5 -12,-3 -12,3 -10,3.5" fill="#12171e" />
+    <polygon
+      data-face
+      points="-11.5,-2.2 -10.7,-2.2 -10.7,2.2 -11.5,2.2"
+      fill="currentColor"
+    />
+  </g>
+  <g data-pose="3" transform="translate(0 36)">
+    <polygon
+      data-face
+      points="2,-2.7 -7,-2.7 -7,-1.8 2,-1.8"
+      fill="rgb(173,190,194)"
+    />
+    <polygon
+      data-face
+      points="2,1.8 -7,1.8 -7,2.7 2,2.7"
+      fill="rgb(86,95,97)"
+    />
+    <polygon data-face points="5,0 10,0 7,-3" fill="rgb(80,85,93)" />
+    <polygon data-face points="5,0 7,-3 2,-3" fill="rgb(95,101,110)" />
+    <polygon data-face points="5,0 2,-3 0,0" fill="rgb(101,107,116)" />
+    <polygon data-face points="5,0 0,0 2,3" fill="rgb(27,29,31)" />
+    <polygon data-face points="5,0 2,3 7,3" fill="rgb(40,43,46)" />
+    <polygon data-face points="5,0 7,3 10,0" fill="rgb(63,67,73)" />
+    <polygon data-face points="-8,0 -4,0 -6,-4.8" fill="rgb(97,103,112)" />
+    <polygon data-face points="-8,0 -6,-4.8 -10,-4.8" fill="rgb(93,99,108)" />
+    <polygon data-face points="-8,0 -10,-4.8 -12,-3" fill="rgb(65,70,76)" />
+    <polygon data-face points="-8,0 -12,-3 -12,3" fill="rgb(27,29,31)" />
+    <polygon data-face points="-8,0 -12,3 -10,4.8" fill="rgb(27,29,31)" />
+    <polygon data-face points="-8,0 -10,4.8 -6,4.8" fill="rgb(27,29,31)" />
+    <polygon data-face points="-8,0 -6,4.8 -4,0" fill="rgb(35,37,41)" />
+    <polygon data-face points="-10,-3.5 -12,-3 -12,3 -10,3.5" fill="#12171e" />
+    <polygon
+      data-face
+      points="-11.5,-2.2 -10.7,-2.2 -10.7,2.2 -11.5,2.2"
+      fill="currentColor"
+    />
+  </g>
+</svg>

@@ -1,0 +1,56 @@
+---
+layout: ../../../layouts/StudyLayout.astro
+title: "LHI Wasp: single-engine practice vessel"
+phase: scope
+status: accepted
+question: How should low-poly facets structure the LHI Wasp silhouette around one rear engine, two wing equipment mounts, and four turning stabilizers?
+---
+
+**Accepted · 1 November 2026.** The Wasp separates turning from forward thrust: one stern engine pushes the ship, and four recessed stabilizers turn it. The study kept that layout fixed and explored how to give the practice hull a distinct silhouette without making the tail look bulky.
+
+<h2 id="ab306-refinements">Hull · 02.1–02.6</h2>
+
+The gull-wing study kept variant **08**’s clipped nose, forward canopy and three-ribbon wings, but rejected its broad tail. **08.09** narrowed the wing-to-tail bridge; **AB-3** simplified its busy facets into a truncated wedge. **AB3-06** moved the stabilizer cheek higher, but its winglets still pinched at a single vertex. The approved **06.9** joined them along a shared edge and aligned their trailing edges so that the side and rear winglets read as one surface.
+
+![Nine AB3-06 refinements, with the approved 06.9 hull in the last card.](/studies/lhi-wasp/02-6-winglet-refinements.png)
+
+*02.6 compares bare hulls with the same cyan-slate palette and dark canopy. The accepted silhouette is 49.5 units long by 36 wide; the study used a bare mass of 60.*
+
+<h2 id="side-slot-positioner">Fitting · 02.7, 02.8 and 02.11</h2>
+
+| Fixture | Accepted position or rule |
+| --- | --- |
+| Wing Equipment 01 and 02 | `(−12, −1.5)` and `(+12, −1.5)`; independent, optional weapon or utility mounts. Casings tuck below the wings in flight while barrels can extend forward. |
+| Rear Engine 03 | `(0, 17.5)`; required engine, drawn above the hull and slits. |
+| Front stabilizers | `(±4.4, −18.5)` at `+8.5°`. |
+| Rear stabilizers | `(±4.9, 13.5)` at `−10°`. |
+
+Positions use the study drawing’s nose-up coordinates. All four slits are always fitted and draw behind mounted parts. The clearance comparison used Light Ion, Heavy Ion, Light Fusion and Heavy Plasma in the aft mount.
+
+![Four aft engine options on the accepted hull and stabilizer layout.](/studies/lhi-wasp/02-8-stabilizer-clearance.png)
+
+![Builder blueprint with three independent mounts and an asymmetric wing fitting.](/studies/lhi-wasp/02-11-builder.png)
+
+![Flight rendering of the same fitting, with the side equipment tucked behind the wings.](/studies/lhi-wasp/02-11-layering.png)
+
+*02.11 uses the study’s railgun, battery and Light Ion fitting to compare the builder overlay with the flight draw order. It is not the starter fitting.*
+
+<h2 id="flight-demo">Flight · 02.9–02.10</h2>
+
+Both controls together (`LR`) fire the rear engine. Left alone fires front-right and rear-left; right alone fires front-left and rear-right. The opposite pair brakes residual spin on release. The study used 0.22 Light Ion strength per slit and drew plumes above the fitted ship.
+
+<video controls playsInline preload="metadata" style={{ width: "100%" }} src="/studies/lhi-wasp/02-9-flight-replay.webm" aria-label="Wasp prototype replay with straight burns, coasts, and stabilizer turns"></video>
+
+*02.9: the prototype’s 14-second scripted sequence with a single Heavy Plasma engine, hull and effects visible at 2.4×. It starts with two seconds of forward burn, then alternates coasts, single-control turns and further burns. This is enlarged demonstration footage, not gameplay-scale validation.*
+
+<h3 id="path-comparison">Course comparison</h3>
+
+![At seven seconds the four test fittings show different paths, speeds, acceleration and turn rates under the same Course input.](/studies/lhi-wasp/02-10-course.png)
+
+*02.10: the B1 Course at 7 seconds compares Wasp Light Ion, Wasp Heavy Ion, Fighter with four Ions and Fighter with two side Ions. Single-control segments pivot the Wasp without main thrust; the Fighter uses its directional engines. The study also explored Turn and Weave. These prototype traces illustrate the control difference; they do not establish gameplay balance.*
+
+## What adoption touched
+
+The study identified three assumptions to revisit: loadouts requiring a linked side-engine pair, steering and effects assuming only one pair of stabilizers, and the renderer drawing wing equipment above the hull. Acceptance scoped the hull, controls and layering, not a change to global gravity or friction. The [Hangar](/hangar) shows the current game rather than these frozen prototypes.
+
+*Evidence reconstructed from the surviving study at `1b760f86` with Playwright on 26 November 2026 at a 1440 × 1000 viewport. The full study text and prototype code remain in that revision.*

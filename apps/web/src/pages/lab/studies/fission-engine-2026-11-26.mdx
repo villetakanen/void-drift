@@ -1,0 +1,178 @@
+---
+layout: ../../../layouts/StudyLayout.astro
+title: Fission engine
+phase: exploration
+status: open
+question: How should the fission engine work in flight, and what should its burn look like and leave behind?
+---
+
+import InstrumentBand from '../../../components/lab/instrument/InstrumentBand.astro';
+import BurnLightBench from '../../../components/studies/fission-engine-2026-11-26/BurnLightBench.svelte';
+import MasterSpecimen from '../../../components/studies/fission-engine-2026-11-26/MasterSpecimen.astro';
+
+<section>
+
+## 01 / Develop the problem
+
+Only the fission engine’s body is taken as given: the part keeps the look it
+has in the part catalogue. Everything else about it is open.
+
+Today the engine is an unsanctioned part that thrusts in short pushes with a
+wait between them: 0.18 s of thrust in every 0.45 s, at about 1.9 times a
+Light ion’s thrust. It paints the amber default beam and in flight looks like
+an ion engine that flickers. The study takes that behaviour as an early
+hypothesis: the engine probably thrusts in pulses, and whether it should is
+part of what is studied here.
+
+The inspiration is the Thraddash Torch from Star Control 2. Its afterburner
+throws the ship forward and leaves a line of fire behind it that harms ships
+that touch it. The drone launcher study gave fission a detonation light: a
+white flash, then green that lingers along spark tracks. The engine has no
+light of its own yet. Odd side effects are welcome.
+
+- Does the engine thrust in pulses, and what does one burn do to the ship?
+- What does the burn leave in the world, and whom does that affect?
+- How does the engine’s light relate to the drone’s detonation, and stay apart
+  from ion and plasma light?
+- Which specs would own the result?
+
+An [earlier study](/lab/studies/fission-light-2026-11-11) tried one light for
+the pulse alone. This study takes the whole engine.
+
+</section>
+
+<section>
+
+## 02 / Explore
+
+### 02.1 / The catalogue body as an SVG master
+
+The engine’s body is 17 flat faces in each of four lightings: the catalogue
+pose, two side-lit poses and one lit from aft. Until now those faces existed
+only as coordinate lists in the game’s engine art. This step copies them,
+unchanged and in drawing order, into one SVG master that follows the
+conventions of the service ion’s master.
+
+<MasterSpecimen />
+
+The master is 22 engine units long and 9.6 wide, with the nose towards +x.
+The lime emitter bar at the rear takes the fission accent, `#c6ff32`, from the
+file’s root colour, the way the game supplies it when drawing.
+
+Read back through the game’s engine-master converter, the file returns the
+same faces, colours and order that the game draws today, in all four poses.
+The game does not read the master yet. The body’s form is unchanged.
+
+### 02.2 / What kind of engine is fission?
+
+This step is research on paper. It compares how each engine family answers the
+pilot’s input today, then sets out options for fission. Nothing is built and
+no option is selected.
+
+The figures are the catalogue’s on 26 November 2026. Thrust is given as a
+multiple of the Light ion’s.
+
+| Engine | Mass | Thrust | Draw | Cruise | Response |
+| --- | --- | --- | --- | --- | --- |
+| Service ion | 7 | 0.33× | 0.58 | +1 | steady |
+| Light ion | 10 | 1× | 1.75 | +8 | steady |
+| Heavy ion | 20 | 1.75× | 3.5 | +11 | steady |
+| Plasma | 24 | 1.5× | 5 | +9 | charged, 0.2 s |
+| Fission | 16 | 1.9× per push, 0.76× averaged | 3 | +17 | pulsed |
+
+An ion engine thrusts while the input is held and stops when it is released.
+The three ions are one engine at three sizes. Plasma gives no thrust or
+steering until the input has been held through its charge, then burns
+strongly; releasing discards the charge. The pilot chooses when to commit.
+
+Fission pushes on its own clock while held. Releasing cuts a push short and
+the wait still runs. The pilot decides nothing that an ion pilot does not, and
+gets less average thrust than a Light ion. Its catalogue figures point
+elsewhere: the highest cruise contribution of any engine, at middling mass and
+draw.
+
+#### How a burn answers the input
+
+| Option | While held | On release | What the pilot decides |
+| --- | --- | --- | --- |
+| Clocked pushes, as today | Pushes repeat on the engine’s clock | The push is cut short; the wait still runs | When to hold, as with an ion |
+| Whole burns | Burns repeat | A lit burn runs to its end | Whether to light the next burn |
+| One burn per press | One burn; holding adds nothing | Nothing changes | Every burn |
+
+With whole burns or one burn per press, thrust arrives in fixed amounts. Fine
+corrections become hard, and a side-mounted pair turns the ship in kicks. The
+three families would then differ in when thrust obeys: ion at once, plasma
+after a wait, fission with no way to cancel. The flight pads are held, which
+favours repeating burns over a press for each.
+
+The Thraddash Torch suggests a fourth arrangement: an ordinary drive with the
+burn as an extra on top. A fission engine could give weak steady thrust and
+add burns to it. That would make it two engines in one part.
+
+#### What a burn leaves behind
+
+Today every engine’s light is painted where it was emitted and fades there. It
+affects nothing.
+
+| Option | Effect | Consequence |
+| --- | --- | --- |
+| Light only | None | Fission differs from ion and plasma in appearance and rhythm alone |
+| A wake that harms other ships | Damage to a ship that crosses it | The engine is also a rear weapon. Pirates chase the pilot in Survival and Gauntlet, so it would work without being aimed, and outside the weapons toggle |
+| A wake that harms everything | Damage to any ship or drone, the pilot’s included | A tight turn crosses the pilot’s own wake, and a returning drone flies up it to be recovered |
+
+A burn that stays at a place has the same nature as the drone’s detonation:
+one fission event at a point. The engine would lay a row of smaller ones.
+
+#### What a burn costs
+
+| Option | Consequence |
+| --- | --- |
+| Draw while firing, as today | Fission is priced like every other engine, at 3 |
+| A price per burn | Each burn is a countable spend, and a burn the ship cannot pay for does not light |
+
+#### Open after this step
+
+- Does the pilot author each burn, or does holding repeat them?
+- Is a wake that harms an engine’s business? The catalogue separates engines
+  from weapons, and weapon rules own damage.
+- If the wake harms, whom, for how long, and does it spare the ship that made
+  it?
+
+### 02.3 / What one push shows
+
+The first look at the engine’s light keeps the flight the game has today:
+0.18 s of thrust in every 0.45 s. A Fighter carries Fission in its left aft
+slot and Service ions in its linked side slots, and flies the instrument’s
+burns. Only the fission engine’s light is replaced. The Service ions and
+stabilizers keep the game’s light.
+
+The light is taken from the drone’s fission burst: a white flash with no
+gathering, green that stays on the FX surface, and pale tips on LFX. Three
+ideas each say something different about a push.
+
+| Idea | What it says | FX, light that stays | LFX, light of the moment |
+| --- | --- | --- | --- |
+| Thrown matter | A push is one event that throws matter aft | A copy of the flash, and a green track along each spark’s travel | A white flash for two ticks, and a pale tip on each spark |
+| Burning path | A push burns for its whole 0.18 s | A green bar along the path the nozzle travels | A white core at the nozzle while thrust lasts |
+| Marked place | A push happens at a place, and the place stays marked | A copy of the flash, and a green glow fed at that point for 0.75 s | A white flash for two ticks |
+
+Game today shows the amber beam on the same flight.
+
+The flash is 7 u in radius, about half the Fighter’s width. Thrown matter
+sends six sparks into a cone 32° either side of the exhaust, at 110 to 160 u/s
+for 0.3 to 0.55 s, and each forks a third of the way along, as the drone’s
+sparks do. The bar is 6 u wide. Sparks and marks stay where they were made
+and do not carry the ship’s speed. The light affects nothing it touches.
+
+Three things to look for. Does the push read as the cause of the ship’s jump
+forward? Does the green hold apart from the Service ion’s mint beside it? What
+is left one cycle later, when the next push begins?
+
+On burn B1 at 1.9 s, with the ship at speed, the surface holds different
+amounts of each idea. A bar has faded by the next push, so Burning path does
+not build a line behind the ship. Marked place shows two glows at once. Thrown
+matter shows one fan near the ship and a faint older one.
+
+<InstrumentBand><BurnLightBench client:visible /></InstrumentBand>
+
+</section>

@@ -330,38 +330,6 @@ export const studies = z.array(studySchema).parse([
       "What makes a gravity coil read as substantial technical machinery beside a ship’s engines?",
   },
   {
-    slug: "resource-capacity-2026-11-02",
-    title: "Ship reserves: capacity made physical",
-    status: "accepted",
-    phase: "scope",
-    question:
-      "What basic piece of equipment lets a ship carry more of what keeps it running?",
-  },
-  {
-    slug: "energy-support-2026-11-02",
-    title: "Extra energy: potential made physical",
-    status: "stopped",
-    phase: "exploration",
-    question:
-      "What kind of object makes extra energy feel like an opportunity, and belongs above or below a ship?",
-  },
-  {
-    slug: "utility-machinery-2026-11-02",
-    title: "Utility machinery: objects with weight",
-    status: "accepted",
-    phase: "scope",
-    question:
-      "What gives a family of utility machinery volume, character and a convincing place alongside the ships and engines?",
-  },
-  {
-    slug: "open-frame-machinery-2026-11-02",
-    title: "Open-frame machinery",
-    status: "stopped",
-    phase: "exploration",
-    question:
-      "Can exposed working parts give four utilities a shared character alongside Void Drift’s ships and engines?",
-  },
-  {
     slug: "ship-utility-language-2026-11-02",
     title: "The visual language of ship utilities",
     status: "stopped",
@@ -376,22 +344,6 @@ export const studies = z.array(studySchema).parse([
     phase: "exploration",
     question:
       "How should four utility devices express their roles and remain recognizable above or below a ship?",
-  },
-  {
-    slug: "in-game-controllers",
-    title: "In-game controllers: side-margin angled thrust flaps",
-    status: "accepted",
-    phase: "scope",
-    question:
-      "How should the 60°-angled L/F and R/F side-margin touch flaps be sized and layered across phone, tablet, and desktop screens?",
-  },
-  {
-    slug: "lhi-wasp",
-    title: "LHI Wasp: single-engine practice vessel",
-    status: "accepted",
-    phase: "scope",
-    question:
-      "How should low-poly facets structure the LHI Wasp silhouette around one rear engine, two wing equipment mounts, and four turning stabilizers?",
   },
   {
     slug: "lab-instrument-2026-11-01",
