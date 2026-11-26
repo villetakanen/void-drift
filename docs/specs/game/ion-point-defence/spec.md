@@ -1,165 +1,78 @@
 ---
 generated:
-  by: "openai-codex/gpt-6.2-sol"
-  at: "2026-11-25T08:37:38Z"
+  by: "openai-codex/gpt-6"
+  at: "2026-11-26T13:28:47Z"
 verified:
   - by: "human:ville-takanen"
-    at: "2026-11-25T09:16:37+02:00"
+    at: "2026-11-26T13:29:55Z"
 ---
 
 # Ion Point Defence
 
+## Context
+
+Pilots fit a turret that tracks nearby material and fires a short instant ray from the [Light Ion Cannon](../light-ion-cannon/spec.md) family. Its form, mounting, turning and rhythm come from the accepted [Ion Point Defence study](../../../../apps/web/src/pages/lab/studies/ion-point-defence-2026-11-08.astro).
+
 ## Blueprint
-
-### Context
-
-A baseline automatic turret implements the accepted
-[Ion Point Defence study](../../../../apps/web/src/pages/lab/studies/ion-point-defence-2026-11-08.astro).
-It sits in a weapon slot, turns its round base towards the closest target and fires
-a short instant ray of the [Light Ion Cannon](../light-ion-cannon/spec.md) family.
-The accepted form, turning, firing rhythm and mounting remain fixed during integration.
 
 ### Architecture
 
-`packages/mode-a/src/lib/schemas/loadout.ts` validates the genuine
-`ion-point-defence` part in version-2 saved fittings. Existing compatible weapon,
-equipment and universal slots accept it; support and engine slots reject it. The
-fitting has 10 mass and zero idle draw. `schemas/salvage.ts` owns its validated
-weapon definition: reach, tracking range, turn rate, alignment tolerance, cooldown,
-damage bands, energy and retention margin are defined together.
+The [Hangar](../hangar/spec.md) offers the 10-mass `ion-point-defence` in weapon, equipment and universal slots. Support and engine slots reject it. Version-2 fittings persist and launch without migration. On a new device only the Wasp starts with one. The builder lists 8–24 damage/s, three shots/s, 200 units and 0.1p/shot.
 
-`point-defence-art.ts`, beside `ion-cannon-art.ts`, owns the turret geometry
-converted from the supplied
-[concept SVG](../../../../apps/web/public/studies/ion-point-defence-2026-11-08/concept.svg):
-the cannon's barrel width, colours and crossbar with the shorter barrel, channel and
-side housing, on two concentric base discs scaled to an 8-unit flight diameter.
-The base carries six rim slots and one pale index mark. The pivot is the base centre;
-the channel-tip muzzle derives from the same geometry. Canvas artwork, catalogue SVG
-and `build-renderer.ts` consume that owner. Production mount layering applies, so
-mounts drawn beneath a hull partly or wholly hide the turret.
+`point-defence-art.ts` supplies Canvas, catalogue SVG and build rendering with one centre pivot and channel-tip muzzle. The [concept SVG](../../../../apps/web/public/studies/ion-point-defence-2026-11-08/concept.svg) retains the cannon’s barrel width, colours and crossbar with a shorter barrel, channel and side housing. Six rim slots and one pale index mark turn with the barrel on two concentric discs, 8 units across in flight. Base lighting stays fixed to the ship. Preview and Plan use the mount direction. Flight uses each mount’s simulated angle and hull layering, including fully hidden turrets.
 
-`salvage.ts` owns targeting, turning, power, cooldown, physical contact and damage.
-The cannon's instant contact takes the part's reach rather than being duplicated.
-Each turret's angle reaches `build-renderer.ts` through the existing per-mount
-weapon angles. `salvage-renderer.ts` owns the 200-unit ion profile; `FlightFx`
-composes it in play, the equipment encounter and the mixed-effects Lab. Presentation
-cannot apply damage. Existing Hangar persistence and launch handoff carry the part
-without a storage migration. The [Hangar](../hangar/spec.md) and
-[effects](../../factory/effects/spec.md) contracts describe its fitting and LFX.
+`schemas/salvage.ts` defines weapon tuning. `salvage.ts` resolves turning and funded shots using the cannon’s instant-contact query with turret reach. `salvage-renderer.ts` supplies the light profile to `FlightFx`. Disabling effects preserves gameplay. The [equipment encounter](../../../../apps/web/src/pages/lab/utility-artwork.astro) and study show switching, tracking beyond reach, first contact, ship rotation and a hidden Scout turret. The mixed-effects Lab Weapons workload runs turrets beside cannons.
 
 ### Constraints
 
-#### Form and turning
+Each pivot tracks within 300 units to the closest visible collision point of a live wreck, fragment, eligible enemy ship or hostile [drone](../drone-launcher/spec.md). For wrecks and fragments use remaining polygon material. Stars and planets block the pivot-to-point segment. Collectible energy is transparent to acquisition and fire. [Fleet targeting](../targeting/spec.md) captures each pivot’s target and aim point before firing, selecting the nearest candidate and resolving ties by lower object ID. Keep an eligible target until a challenger is at least 10 units closer.
 
-- Rim slots, index mark, barrel and housing turn together about the pivot. Base
-  lighting stays fixed to the ship and does not turn with the turret.
-- Preview and Plan draw the turret along its mount direction. In flight it is drawn
-  at its simulated angle, under the same layering as other fittings.
-- The turret angle is relative to the ship. Each update it turns towards the bearing
-  of its target's aim point by at most 180°/s × dt, cancelling the ship's own
-  rotation within that limit. Without a target it holds its current angle.
-  Flight start and reset return it to the mount direction.
+Turn towards the captured bearing by at most 180°/s × dt relative to the ship, compensating for hull rotation within that limit. Hold the angle without a target. Start and reset at the mount direction.
 
-#### Targeting
+A ready turret within 2° of the bearing fires only if the first physical contact from its muzzle along the barrel is damageable and within 200 units. Each shot checks the world left by earlier shots, stops at first contact even on another body, applies integer damage once and starts the impact plume there. A blocked or empty ray spends nothing and starts no cooldown.
 
-- Candidates are live wrecks and fragments within 300 units of the pivot, measured
-  to the closest point of their actual shared polygon collision geometry. Collectible
-  energy is never a candidate. A candidate needs an unobstructed segment from the
-  pivot to that closest point; star and planet circles block it.
-- The aim point is that closest point. The closest candidate is selected; equal
-  distances resolve to the lower object id. The fleet acquisition pass captures the target identity and aim point for each pivot before any ship fires.
-- A turret retains its current target while it remains a candidate, unless another
-  candidate is at least 10 units closer. Each turret chooses independently.
-- Candidates are tracked without firing until the barrel's first contact from the
-  muzzle lies within reach, so the turret is already aimed when they arrive.
+| Muzzle-to-contact distance | Damage |
+| --- | --- |
+| 0 to <50 | 8 |
+| 50 to <100 | 6 |
+| 100 to <150 | 4 |
+| 150 to 200 inclusive | 2 |
 
-#### Firing
+Each shot debits 0.1p and starts that turret’s ⅓-second cooldown (0.3p/s continuously firing). Idle and tracking draw zero. [Shared weapon operation](../parts/spec.md#weapon-operation) governs Auto, the reserve and funding order after life support and engines. Lasers keep their threat priority and saved rail guns stay inert. Keyboard and landscape touch use the normal flight loop and gravity and friction retain their tuning.
 
-- A ready turret fires when its barrel is within 2° of the aim point's bearing and
-  the first physical contact along the barrel from its muzzle is damageable material
-  within 200 units. Contact with a star or planet first, or no contact within
-  200 units, means no discharge, no cost and no cooldown. Collectible energy is
-  transparent to the ray.
-- Damage uses actual muzzle-to-first-contact distance: [0,50) → 8; [50,100) → 6;
-  [100,150) → 4; [150,200] → 2. Internal boundaries use the lower-damage band; the
-  200 endpoint is included.
-- First contact stops the ray, applies integer damage once and starts the existing
-  impact plume at that contact. The contact may be material other than the target.
-- Each discharge debits 0.1p and starts its own 1/3-second cooldown: three shots/s,
-  0.3p/s continuous per turret, none while idle. Every discharge is subject to
-  [shared weapon operation, reserve and affordability](../parts/spec.md#weapon-operation).
-  Tracking consumes no power.
-- Power is drawn in this order: life support, engines, defence weapons, guns.
-  Defence weapons are point defences and lasers; guns are Light Ion Cannons. Saved rail guns are disabled and draw no weapon power.
-  Within an update, defence weapons resolve before any gun, each class in stable
-  build-mount order, each shot querying contact in the world left by earlier shots.
-  Each class draws on the power the earlier classes leave. Insufficient power stops
-  funding the remaining turrets without starting their cooldowns.
-- The builder shows 8–24 damage/s, three shots/s, 200 units and 0.1p/shot.
+For 80 ms, topmost light follows the current muzzle and heading even beneath a hull. Clip the cached 200-unit blue cannon profile with its transparent tip to the lesser of discharge distance and current obstruction. This visual query deals no damage. The cannon retains its 300-unit profile. Only the 65% dispersal enters persistent FX under the shared [decay, pause, camera, wrap and reset rules](../../factory/effects/spec.md).
 
-#### Light
-
-- For 80 ms after discharge, fresh topmost LFX follows the current muzzle and turret
-  heading, also from a muzzle under the hull. Its length is capped by both discharge
-  distance and current physical obstruction; this query does no damage.
-- A cached 200-unit blue profile keeps the cannon's light profile and its own
-  transparent tip; a hit clips it rather than stretching it. The cannon's 300-unit
-  profile is unchanged. Only the 65% dispersal stamps into persistent FX under the
-  shared decay, pause, camera, wrap and reset semantics.
-
-## Contract
-
-### Definition of Done
-
-- Automated tests cover fitting acceptance and rejection, saved-build parsing,
-  geometry–muzzle agreement and the turret drawn at its weapon angle.
-- Automated tests cover closest-target choice and ties, the retention margin,
-  energy exclusion, star and planet blocking, turn-rate limits with a turning ship,
-  2° gating, tracking beyond reach without firing, band boundaries, first-contact
-  stopping, cooldown, scarce power across turrets and cannons, and pause or reset.
-- Production LFX lifecycle and effects-disabled gameplay equivalence are checked.
-- The Hangar offers the part with its builder text in compatible slots only.
-- A playable production encounter in the equipment Lab
-  (`apps/web/src/pages/lab/utility-artwork.astro`) and the study shows target
-  switching, a target out of reach, a hit stopped at first contact, a turning ship
-  and a hidden turret on Scout.
-- The mixed-effects Lab Weapons workload includes turrets beside cannons.
-
-### Regression guardrails
-
-Existing saves parse; a new device's Wasp is fitted with one point defence and no other chassis is by default; the laser's threat priority,
-the Light Ion Cannon keeps its contract and saved rail guns remain inert. Keyboard and landscape touch
-continue through the normal flight loop. Gravity and friction constants stay fixed.
-
-### Scenarios
+## Scenarios
 
 ```gherkin
-Scenario: The turret switches to a clearly closer target
-  Given a turret retaining a fragment 80 units away
-  When a wreck's collision geometry comes within 65 units with a clear line
-  Then the turret selects the wreck and turns towards it at no more than 180°/s
-  And fires only once its barrel is within 2° of the wreck's aim point
+Feature: Ion Point Defence
 
-Scenario: A target beyond reach is tracked without firing
-  Given a ready turret whose only candidate lies 250 units away
-  When updates run with enough power
-  Then the turret aligns with the candidate
-  And no discharge, power debit or cooldown occurs until first contact is within 200 units
+  Scenario: The turret switches to a clearly closer target
+    Given a turret retaining a fragment 80 units away
+    When a hostile drone’s collision geometry comes within 70 units with a clear line
+    Then the turret selects the drone and turns towards it at no more than 180°/s
+    And fires only once its barrel is within 2° of the drone’s aim point
 
-Scenario: A planet blocks the shot
-  Given a fragment within 200 units whose closest point is behind a planet
-  When the firing update runs
-  Then the fragment is not a candidate and the turret does not fire
+  Scenario: A target beyond reach is tracked without firing
+    Given a ready turret whose only candidate lies 250 units away
+    When updates run with enough power
+    Then the turret aligns with the candidate
+    And no discharge, power debit or cooldown occurs until first contact is within 200 units
 
-Scenario: Defence draws power before guns
-  Given a ready cannon and an aligned turret with a target in reach and 0.15p available
-  When the firing update runs
-  Then the turret fires and leaves 0.05p
-  And the cannon remains ready without starting its cooldown
+  Scenario: A planet blocks the shot
+    Given a fragment within 200 units whose closest point is behind a planet
+    When the firing update runs
+    Then the fragment is not a candidate and the turret does not fire
 
-Scenario: Power funds only one turret
-  Given two ready, aligned turrets with targets in reach and 0.15p available
-  When the firing update runs
-  Then the first turret in mount order fires and leaves 0.05p
-  And the second remains ready without starting its cooldown
+  Scenario: Defence draws power before guns
+    Given a ready cannon and an aligned turret with a target in reach and 10.15p available in Auto
+    When the firing update runs
+    Then the turret fires and leaves 10.05p
+    And the cannon remains ready without starting its cooldown
+
+  Scenario: Power funds only one turret
+    Given two ready, aligned turrets with targets in reach and 10.15p available in Auto
+    When the firing update runs
+    Then the first turret in mount order fires and leaves 10.05p
+    And the second remains ready without starting its cooldown
 ```

@@ -1,13 +1,11 @@
 ---
 
-title: "Spec: Mounted weapon targeting"
-status: draft
 generated:
   by: "openai-codex/gpt-6"
-  at: "2026-11-19T14:30:18+02:00"
+  at: "2026-11-26T13:25:12Z"
 verified:
-- by: "openai-codex/gpt-6"
-  at: "2026-11-19T14:31:53+02:00"
+  - by: "human:ville-takanen"
+    at: "2026-11-26T13:27:13Z"
 legacy:
   generator_model: "GPT-6 (Codex)"
   reviewer: "Ville Takanen"
@@ -16,183 +14,64 @@ legacy:
 
 ---
 
-# Spec: Mounted weapon targeting
+# Mounted weapon targeting
+
+## Context
+
+Players and opponents need predictable mounted weapon fire as ships, fittings and fragments multiply. All shooters acquire at one instant per combat substep, independent of camera, render rate and effects settings.
 
 ## Blueprint
 
-### Context
-
-All active ships obtain their mounted weapon targets from one acquisition pass
-over the encounter per combat substep. This includes the player and both
-pirates in Gauntlet. Fitting another weapon or introducing another shooter
-adds selection work but never another traversal of the encounter. Target
-selection runs on simulation time. Camera position, render rate and effects
-settings have no bearing on eligibility.
-
 ### Architecture
 
-[`simulation.ts`](../../../../packages/mode-a/src/lib/simulation.ts) owns encounter
-membership and the combat clock. [`salvage.ts`](../../../../packages/mode-a/src/lib/salvage.ts)
-owns mounted weapon acquisition, aiming, funding and contact resolution. The
-fleet selector in
-[`targeting.ts`](../../../../packages/mode-a/src/lib/targeting.ts) consumes a
-common encounter view before individual weapons execute.
-[`derelict-collision.ts`](../../../../packages/mode-a/src/lib/derelict-collision.ts)
-supplies reference geometry for wrecks and fragments. Weapon-specific
-thresholds belong to their owning weapon contracts.
+[Simulation](../../../../packages/mode-a/src/lib/simulation.ts) owns the combat clock and encounter roster. Each live ship has one physical adapter and stable ID. Refresh membership, geometry, motion, poses and blockers each substep. Across substeps retain targets by ID only.
 
-The encounter supplies live body identities, geometry, motion, occluders and
-the intended opponents for each shooter. Each active firing or tracking rule
-supplies its origin, orientation, reach and previous target where applicable.
-Idle point defence can track while it cools. An empty Practice encounter and a
-ship carrying only disabled fittings require no acquisition work.
+[Targeting](../../../../packages/mode-a/src/lib/targeting.ts) registers all firing, tracking, launcher and drone pursuit requests before visiting bodies. Each request supplies shooter, eligible opponents, origin, orientation, reach and any previous target. Cooling point defence can still track. During each body visit, reject impossible candidates before exact tests and share matching requests and geometry. Ready Light Ion Cannons on one chassis share a trigger. Turrets use their own pivots.
 
-The combat substep owns one roster shared by all shooters. Each participating
-live ship has one physical body adapter and a stable encounter ID. Each shooter
-supplies its identity and encounter eligibility policy against that roster.
-Exclude the shooter from its own contacts and acquisitions. Other ships can
-physically intercept regardless of whether that shooter may acquire them.
-Preserve existing encounter-owned derelict material and celestial blocking.
-
-A roster's membership and pose references are valid for its substep. Refresh
-them before the next substep, including spawns, deaths and pose changes. A
-retained weapon target uses a stable ID, and a substep aim point is a captured
-coordinate. Neither retains a roster index or mutable adapter across substeps.
-Physical contact observes current damageability at discharge. Roster
-preparation and selection are separate operations with independently
-observable costs.
-
-Register current requests before visiting bodies. Evaluate each body against
-the relevant requests during its visit, sharing eligibility and geometric
-work where inputs match. All ready Light Ion Cannons on one chassis share a
-trigger. Two turrets at different pivots can have different winners. Return a
-trigger or a stable target identity and aim point as the weapon requires.
-Selection does not spend power, rotate barrels, deal damage or run the enemy
-pilot.
+Selection returns a trigger or stable target ID and captured aim coordinate. Piloting runs separately. [Salvage](../../../../packages/mode-a/src/lib/salvage.ts) handles aiming, power, cooldowns and attributed damage in defence-before-guns and mount funding order. Each discharge resolves from its actual muzzle against current damageable bodies, derelict material and celestial blockers. The shooter excludes itself from acquisition and contact. Other ships can intercept even when allied.
 
 ### Constraints
 
-- The reference rules below support offline comparisons of acquisition
-  quality. Production selection may estimate geometric overlap, distance, aim
-  point and threat time. Shooter and body eligibility, priority classes and
-  deterministic tie breaking still apply. For example, two nearby fragments
-  can exchange rank when their estimated distances are close. A collectible
-  cannot become a target through approximation.
+Apply each weapon’s visibility rule from its specified origin. Skip blocked candidates and collectibles. Encounter eligibility, priority classes and deterministic tie breaks apply to production and offline reference selection. Permuting body order preserves the result. Production may estimate overlap, distance, aim point and threat time.
 
-#### Reference selection
+| Weapon | Reference selection |
+| --- | --- |
+| [Light Ion Cannon](../light-ion-cannon/spec.md) | Trigger on visible damageable material touching the closed forward rectangle. Test ship circles against the rectangle, wrecks and fragments against [remaining material](../../../../packages/mode-a/src/lib/derelict-collision.ts). An offset muzzle may miss. |
+| [Ion Point Defence](../ion-point-defence/spec.md) | Nearest visible eligible material to the pivot, lower ID on ties. Keep an eligible target until a challenger is at least 10 units closer. |
+| Laser | Prioritise an incoming fragment on a collision course, then a wreck, then another eligible contact. Retain an eligible target in the winning class. Otherwise rank by threat time or distance as applicable, then stable ID. |
+| [Plasma rifle](../plasma-rifle/spec.md) | Retain a visible eligible ship or wreck centre inside the fixed muzzle sector. Otherwise choose by distance, then stable ID. |
+| [Drone Launcher](../drone-launcher/spec.md) | Check launch eligibility from the carrier. In flight, retain an eligible enemy in pursuit range. On first acquisition or target loss, choose the nearest eligible enemy in range from the drone’s centre, lower ID on ties. The launcher spec defines ranges and fallback. |
 
-| Active weapon     | Reference selection                                                                                                                                                                                                                                                      |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Light Ion Cannon  | Find visible damageable material touching the ship's forward rectangle, including its boundary. Test live ship circles against the actual rectangle and wrecks and fragments against their remaining material. An offset muzzle can legitimately miss after acquisition. |
-| Ion Point Defence | Choose the nearest eligible visible material from each turret pivot. Resolve equal distances by lower body ID. Retain the current eligible target unless a challenger is at least 10 units closer.                                                                       |
-| Laser             | Preserve the defensive priority of an incoming fragment on a collision course, then a wreck, then another eligible contact. Retain an eligible target in the winning priority class. Resolve a fresh choice by threat time or distance as applicable, then by stable ID. |
-| Plasma rifle      | Retain a visible eligible ship or wreck centre inside the fixed muzzle sector. A fresh selection uses distance, then stable ID. See the [rifle acquisition contract](../plasma-rifle/spec.md).                                                                           |
+With B encounter bodies, all requests together make at most B acquisition visits per substep, counting visits wherever candidates are enumerated. Comparisons can scale with bodies times requests. Never rebuild candidate arrays per mount. Empty Practice or disabled-only fittings require no acquisition work. With zero requests, acquisition visits, comparisons and candidate preparation are zero. Charge preparation needed solely for physical queries to physical work. An entirely idle substep may skip the roster.
 
-Encounter policy applies independently for each shooter. A pirate can intend
-to fire at the player while an allied pirate intersects the barrel. Collectible
-energy cannot trigger a shot. Apply each weapon's visibility rule from its
-specified origin. A blocked body cannot conceal an eligible runner-up simply
-by ranking closer.
+At the production simulation boundary record roster builds, live adapters and preparation time, active requests, visits, comparisons, exact material and visibility tests, temporary allocations and acquisition time. Measure physical contact and visual beam clipping separately.
 
-## Contract
+Compare equal seeded baseline workloads on the same device and build settings with matching ships, fittings and body populations. Include an empty encounter, dense fragments with multiple mounts and two-opponent [Gauntlet](../gauntlet/spec.md) with quarter-step combat. Report device, body and mount counts, median and p95 acquisition and total simulation times, and real-flight p95 frame interval. Numeric limits live with the implementation.
 
-### Definition of Done
+On identical seeds, compare production with the exact offline reference for missed or extra triggers, target switches, aim direction and acquisition time. Distinguish close calls from systematic misses, target chatter and shots through gaps when choosing the least costly acceptable approximation. Run the reference only offline.
 
-- Take acquisition inputs at one defined instant per combat substep. Fire in
-  the existing defence-before-guns and mount funding order. Resolve each
-  discharge from its actual muzzle against current physical bodies and
-  celestial blockers. A shot may hit a different body from the selected
-  target. Damage, breakup and power use remain ordered even when several
-  weapons acquired together. Physical contact queries and visual beam clipping
-  are separate costs and are reported separately.
-- Keep the trigger or aim point from acquisition for the rest of the substep.
-  If an earlier weapon destroys the selected body, a later weapon can still
-  fire toward the recorded position under its normal alignment, contact,
-  funding and cooldown rules. A cannon that discharges into empty space spends
-  its normal shot cost. A turret whose firing rule requires physical contact
-  still checks the barrel line. Destruction requires no target revalidation or
-  replacement search. Newly born fragments can intercept immediately and
-  first participate in selection on the next substep.
-- Count roster builds and live body adapters prepared per fleet substep,
-  together with preparation time. An active 16-Wasp fleet prepares one roster
-  with at most 16 live-ship adapters for the whole fleet. Reusing the roster
-  for 32 weapons leaves construction independent of weapon count.
-- A substep with no acquisition requests performs zero acquisition visits,
-  comparisons and acquisition-only candidate preparation. A physical query
-  that still needs encounter bodies accounts for that preparation under
-  physical work. A substep with neither kind of request need not build a
-  roster.
-- Instrument the production simulation boundary. With acquisition requests
-  and B encounter bodies, the outer candidate traversal visits at most B
-  bodies across all shooters combined. Count visits inside any helper that
-  enumerates candidates. A second traversal hidden behind a per-weapon list,
-  sort or mode adapter fails this criterion. Verify zero visits with no
-  requests.
-- Record active requests, candidate/request comparisons, exact material tests,
-  visibility tests, temporary allocations, acquisition time and
-  physical-contact time. A single traversal can still cost B times the number
-  of requests. Reject impossible candidates cheaply before exact geometry,
-  share identical requests and avoid rebuilding candidate arrays per mount.
-- Compare equal seeded workloads against the recorded baseline on the same
-  device and build settings, with the same active ships, fittings and body
-  populations. Include an empty encounter, a dense fragment field with
-  multiple mounts, and Gauntlet with two opponents and quarter-step combat.
-  Report median and p95 acquisition and total simulation time, plus p95 frame
-  interval in real flight. Report body and mount counts and the device with
-  the timings.
-- This contract defines the acquisition workloads and measurement comparisons;
-  numeric performance thresholds are maintained with the implementation.
-- Compare the approximate selector with the reference offline on identical
-  seeded encounters. Record missed and extra triggers, target switches,
-  differences in aim direction and acquisition time. Inspect whether
-  differences cluster around close calls or systematically miss threats,
-  chatter between targets or fire through obvious gaps. Use this comparison to
-  choose the cheapest acceptable approximation; the reference adds no work in
-  flight.
-- Exercise a cannon circle just outside the far corner, a tangent, a rear-edge
-  overlap, a wreck with an empty gap, an occluded best candidate, two
-  independent turret pivots and an allied interceptor. Permuting the body list
-  must preserve the selected results. Verify volley capture, scarce-power
-  order and the agreed same-substep destruction rule.
-
-### Regression guardrails
-
-- Exact reference geometry is available offline for quality comparisons.
-  Production can approximate eligible material while preserving encounter
-  policy and deterministic selection.
-- Candidate visits are counted at the point of traversal across all shooters.
-  Physical-contact and rendering queries are measured independently.
-- Barrel alignment, discharge funding, cooldowns, damage attribution and
-  physical blockers follow the owning weapon contracts.
-
-### Scenarios
+## Scenarios
 
 ```gherkin
-Scenario: The next substep refreshes the roster
-  Given one shared roster includes a ship that is destroyed before the next substep
-  When surviving shooters request targets in the next substep
-  Then they read the refreshed membership and poses
-  And no retained target can resolve to a different ship through a reused roster position
+Feature: Mounted weapon targeting
 
-Scenario: Several mounts share one view of the encounter
-  Given 16 ships each carry two tracking turrets
-  When the fleet acquires targets during a combat substep
-  Then at most 16 encounter bodies are visited for acquisition
-  And each turret receives the result for its own pivot
+  Scenario: Two turrets per Wasp
+    Given 16 Wasps with two tracking turrets each and no other bodies
+    When the fleet acquires targets
+    Then one roster with at most 16 live adapters serves all 32 mounts in at most 16 visits
+    And turrets at different pivots can select different bodies
 
-Scenario: An earlier shot destroys a cannon's trigger
-  Given two ready funded cannons acquired a volley from the same trigger
-  When the first cannon destroys the triggering body
-  Then the second cannon can fire on its stored trigger without reacquiring
-  And the second shot resolves against the current physical scene
+  Scenario: Cannon reference geometry at the boundary
+    Given a ready cannon with one visible candidate
+    When a ship circle touches the rectangle tangentially or overlaps its rear edge
+    Then the reference triggers
+    But a circle just outside the far corner or a wreck with only empty space inside does not trigger
 
-Scenario: An ally intercepts a pirate shot
-  Given a pirate may acquire the player and an allied pirate crosses its barrel
-  When the pirate fires at the player
-  Then the ally may intercept the shot
-  And the ally cannot trigger acquisition for that pirate
+  Scenario: An earlier discharge destroys the selected body
+    Given several mounts captured a trigger or aim point before firing
+    When the first discharge breaks the target apart
+    Then later mounts use their captured result without searching again
+    And a funded, aligned cannon spends its normal shot cost even on a miss
+    And a contact-dependent turret still checks its barrel line
+    And new fragments can intercept immediately and become acquisition candidates next substep
 ```
-
-The owning weapon contracts define detailed geometry, firing and resource
-behavior. [Light Ion Cannon](../light-ion-cannon/spec.md) · [Ion Point
-Defence](../ion-point-defence/spec.md) · [Gauntlet](../gauntlet/spec.md)

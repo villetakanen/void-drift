@@ -1,10 +1,10 @@
 ---
 generated:
-  by: "openai-codex/gpt-6.2-sol"
-  at: "2026-11-25T06:39:42Z"
+  by: "openai-codex/gpt-6"
+  at: "2026-11-26T13:16:07Z"
 verified:
   - by: "human:ville-takanen"
-    at: "2026-11-25T09:16:37+02:00"
+    at: "2026-11-26T13:31:07Z"
 legacy_reviewer: "Ville Takanen (undated)"
 ---
 
@@ -26,9 +26,9 @@ The [Playground contract](../experimental/spec.md) governs ranked fitting eligib
 
 #### Automatic charge cycle
 
-Each mount starts idle. With an acquired ship or wreck it charges against that ID for 0.7 simulation seconds at 5 power/s. Defence weapons execute first; guns draw from the remaining power in fitted slot order. An idle or partly charged rifle can fund charging only from power above the greater of 10 power and 10% of fitted capacity. Pay only for charge actually accumulated. When available power runs out, hold the accumulated charge while the same target remains eligible. Idle, holding, venting and cooldown consume zero rifle power.
+Each mount starts idle. With an acquired ship or wreck it charges against that ID for 0.7 simulation seconds at 5 power/s. Defence weapons execute first; guns draw from the remaining power in fitted slot order. Each charge increment must pass the [weapon reserve rule](../parts/spec.md#weapon-operation) for its cost. Pay only for charge actually accumulated. When available power runs out, hold the accumulated charge while the same target remains eligible. Idle, holding, venting and cooldown consume zero rifle power.
 
-On reaching full charge with the same target, release as soon as 3.5 power can be debited while preserving that reserve (13.5 available for a 10-power reserve). Record exactly one release per funded cycle and spend the 3.5 immediately. The firing phase lasts 0.7 s even if the target leaves. A completed firing phase opens the paired vents for 0.3 s before the 2.1 s cooldown. The complete charge and release cost 7 power.
+On reaching full charge with the same target, hold at exactly 13.5 power and release as soon as available power exceeds 13.5. Record exactly one release per funded cycle and spend the 3.5 immediately. The firing phase lasts 0.7 s even if the target leaves. A completed firing phase opens the paired vents for 0.3 s before the 2.1 s cooldown. The complete charge and release cost 7 power.
 
 Loss or replacement of the charging target before release starts venting. Switching [weapon operation](../parts/spec.md#weapon-operation) Off counts as target loss for an unreleased charge, including a full charge waiting for funding. It starts the same vent, with normal push and area damage. A release that is already funded finishes its firing, venting and recovery as usual. Low energy alone is not target loss and holds charge while the target remains valid and weapons are in Auto. Drain the remaining stored charge over the same 0.3 s vent cycle used after firing. A returning target cannot interrupt venting or the subsequent 2.1 s cooldown. At the end of recovery any currently eligible target can start a fresh charge. Each fitted rifle owns its timers and charge. Pausing freezes them; a fresh encounter starts idle.
 
@@ -140,7 +140,7 @@ Feature: Plasma rifle
     Given an Auto rifle is partway charged against an eligible target
     When power falls to the reserve while that target stays valid
     Then the rifle retains its charge without venting
-    And it can resume charging when power rises above reserve
+    And it can resume charging when power exceeds 10 plus the cost of the next charge increment
 ```
 
 #### Acquisition examples
