@@ -17,6 +17,7 @@ import {
   FlightSceneDocumentSchema,
 } from "../../../lib/flight-scene";
 import { TOTAL_TICKS } from "../../../lib/instrument/burns";
+import { ArmedEncounter, type EncounterSettings } from "./armed-encounter";
 import {
   AI_FLIGHT,
   COMMANDS,
@@ -133,7 +134,7 @@ function paint(ctx: CanvasRenderingContext2D, parts: Face[]) {
     ctx.fill(face.path);
   }
 }
-function drawDrone(ctx: CanvasRenderingContext2D) {
+export function drawDrone(ctx: CanvasRenderingContext2D) {
   droneFaces ??= faces(droneSvg);
   ctx.save();
   ctx.rotate(Math.PI / 2);
@@ -147,6 +148,7 @@ export function flightExperiment(
   input: unknown,
   report: (text: string) => void = () => {},
   pilotOptions?: PilotOptions,
+  hitOptions?: EncounterSettings,
 ): FlightExperiment {
   const options = FlightOptionsSchema.parse(input);
   const beam = droneBeam(options.plumeSize);
@@ -154,9 +156,11 @@ export function flightExperiment(
     nozzleBack + Math.hypot(48 * beam.length + 4, 6 * beam.width);
   const maxLaunches = pilotOptions ? 1 : Math.ceil((TOTAL_TICKS * STEP) / 2);
   return {
-    label: pilotOptions
-      ? "Drone flight 02.5 · pursuit, return and drift"
-      : `Drone flight 02.4 · ${options.style} steering and ion plume`,
+    label: hitOptions
+      ? "02.10 · powered intercept"
+      : pilotOptions
+        ? "Drone flight 02.5 · pursuit, return and drift"
+        : `Drone flight 02.4 · ${options.style} steering and ion plume`,
     create(sim) {
       applyYellowFamilyProfile(
         sim.star,
@@ -165,6 +169,7 @@ export function flightExperiment(
       );
       // An empty launch course: retain the real stellar well, omit planetary wells.
       sim.planets.length = 0;
+      const encounter = hitOptions ? new ArmedEncounter(hitOptions) : undefined;
       const mount = buildMounts(loadout).find((m) => m.key === "aft-0");
       if (!mount) throw new Error("Fighter aft mount missing");
       const releases: DroneFlight[] = [];
@@ -217,7 +222,9 @@ export function flightExperiment(
         },
         step(current, tick) {
           const time = tick * STEP;
-          enemy = enemyRoute(time, pilotOptions?.encounter);
+          encounter?.target.advance();
+          enemy =
+            encounter?.targetPose ?? enemyRoute(time, pilotOptions?.encounter);
           const carrier = carrierPose(current.ship);
           const launchDistance = Math.hypot(
             enemy.x - carrier.x,
@@ -241,26 +248,34 @@ export function flightExperiment(
                 options.releaseSeconds + releases.length * 2,
               );
           }
-          drones = releases.map((release) =>
-            stepDrone(
-              release,
-              previous,
-              carrier,
-              time,
-              STEP,
-              rail,
-              options,
-              pilotOptions
-                ? (body, spin) =>
-                    pilot.command(body, spin, enemy, carrier, tick)
-                : undefined,
-            ),
-          );
+          drones = encounter?.spent
+            ? []
+            : releases.map((release) =>
+                stepDrone(
+                  release,
+                  previous,
+                  carrier,
+                  time,
+                  STEP,
+                  rail,
+                  options,
+                  pilotOptions
+                    ? (body, spin) =>
+                        pilot.command(body, spin, enemy, carrier, tick)
+                    : undefined,
+                ),
+              );
+          const fired = encounter?.step(current, drones[0], tick);
+          if (encounter?.spent) drones = encounter.visibleHull();
           previous = carrier;
           const pause =
             time >= options.releaseSeconds + (releases.length - 1) * 2 + 1;
           const latest = drones.at(-1);
-          if (pilotOptions && latest?.powered) {
+          if (fired !== undefined)
+            report(
+              `Detonation at ${(fired * STEP).toFixed(2)} s · ${hitOptions?.range} u trigger · ${hitOptions?.response}`,
+            );
+          else if (pilotOptions && latest?.powered) {
             const state = pilot.state;
             report(
               `${state.mode} · ${latest.command} · drive ${(latest.output * 100).toFixed(0)}%\nEnemy ${state.enemyDistance.toFixed(0)} u · carrier ${state.carrierDistance.toFixed(0)} u\nSpeed ${Math.hypot(latest.vx, latest.vy).toFixed(0)} u/s · spin ${((latest.angularVelocity * 180) / Math.PI).toFixed(0)}°/s\n${state.mode === "Drift" ? "Main drive off · stabilizing" : `Plan ${COMMANDS[state.command].name} → ${COMMANDS[state.continuation].name} · next look in ${Math.max(0, state.nextPlan - tick)} ticks`}`,
@@ -298,7 +313,8 @@ export function flightExperiment(
                     enemyLoadout,
                     enemy.x,
                     enemy.y,
-                    Math.atan2(enemy.vy, enemy.vx),
+                    encounter?.target.sim.ship.rotation ??
+                      Math.atan2(enemy.vy, enemy.vx),
                     BUILD_FLIGHT_SCALE,
                   );
                 }
@@ -351,8 +367,27 @@ export function flightExperiment(
               }
             },
           },
+          ...(encounter
+            ? [
+                {
+                  id: "intercept-light",
+                  name: "Detonation",
+                  layer: "lfx" as const,
+                  space: "world" as const,
+                  draws: "Live flash and sparks",
+                  source: "study/drone-launcher/armed-encounter.ts",
+                  draw(
+                    frame: import("@void-drift/mode-a").FlightFrame,
+                    ctx: CanvasRenderingContext2D,
+                  ) {
+                    encounter.live(ctx, frame.camera.getViewRect());
+                  },
+                },
+              ]
+            : []),
         ],
         fx(ctx, pass) {
+          encounter?.fx(ctx, pass);
           for (const drone of drones) {
             if (
               !(drone.output > 0) ||

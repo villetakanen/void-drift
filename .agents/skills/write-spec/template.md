@@ -3,6 +3,7 @@ generated:
   by: <producer/version or human:id>
   at: "<current RFC 3339 timestamp>"
 verified: []
+# Architecture and Constraints are optional subheadings of Blueprint. Use either, both, or plain prose.
 ---
 
 # Row export
@@ -12,6 +13,12 @@ verified: []
 Readers need a file containing only the rows they select in a table.
 
 ## Blueprint
+
+### Architecture
+
+The table supplies the selected rows. The exporter checks the selection size before writing the file.
+
+### Constraints
 
 An export of up to 20 selected rows produces a file containing those rows. If more than 20 are selected, the reader sees an error and no file is created.
 

@@ -10,7 +10,12 @@ import {
   DEFAULT_STAGING,
   StagingSchema,
 } from "./fission-charge";
-import { DEFAULT_LIGHT, FissionLightSchema, InkSchema } from "./fission-light";
+import {
+  DEFAULT_LIGHT,
+  FissionLightSchema,
+  InkSchema,
+  LIGHT_STORAGE_KEY,
+} from "./fission-light";
 
 // Drone launcher 02.7: a bare fission charge, with one group of controls for
 // each thing its light has to say. The values stay in this browser; Export
@@ -21,18 +26,41 @@ let {
   label?: string;
 } = $props();
 const uid = $props.id();
-const storageKey = "void-drift:drone-launcher:02-7-fission-light";
 
 let light = $state(structuredClone(DEFAULT_LIGHT));
 let staging = $state({ ...DEFAULT_STAGING });
 let shown = $state({ world: true, fx: true, lfx: true });
 let measurements = $state("");
 let restored = false;
+let scene: FlightSceneInstrument;
+let preview = $state("My settings");
+const parts = [
+  "Expanding circle",
+  "Flash",
+  "Ships",
+  "Sparks",
+  "Afterglow",
+  "Scene",
+] as const;
+type Part = (typeof parts)[number];
+let part = $state<Part>("Expanding circle");
+function inspect(next: Part) {
+  part = next;
+  const moment = {
+    "Expanding circle": 72,
+    Flash: 60,
+    Ships: 64,
+    Sparks: 72,
+    Afterglow: 88,
+    Scene: 66,
+  };
+  scene.inspectTick(moment[next]);
+}
 
 const parsed = $derived(FissionLightSchema.safeParse($state.snapshot(light)));
 const experiment = $derived(
   chargeExperiment(
-    parsed.success ? parsed.data : DEFAULT_LIGHT,
+    preview === "My settings" && parsed.success ? parsed.data : DEFAULT_LIGHT,
     StagingSchema.parse({ ...staging }),
     (value) => (measurements = value),
   ),
@@ -40,7 +68,7 @@ const experiment = $derived(
 
 onMount(() => {
   try {
-    const saved = localStorage.getItem(storageKey);
+    const saved = localStorage.getItem(LIGHT_STORAGE_KEY);
     const stored = saved
       ? FissionLightSchema.safeParse(JSON.parse(saved))
       : null;
@@ -56,8 +84,8 @@ $effect(() => {
   try {
     // Untouched values are not stored, so a changed default still arrives.
     if (value === JSON.stringify(DEFAULT_LIGHT))
-      localStorage.removeItem(storageKey);
-    else localStorage.setItem(storageKey, value);
+      localStorage.removeItem(LIGHT_STORAGE_KEY);
+    else localStorage.setItem(LIGHT_STORAGE_KEY, value);
   } catch {
     /* As above. */
   }
@@ -77,210 +105,280 @@ function exportLight() {
 </script>
 
 <FlightSceneInstrument
+  bind:this={scene}
   config={CHARGE_SCENE}
   {label}
   {experiment}
-  {measurements}
   layers={shown}
   fixedBurn
-  summary={`A bare charge every 2.5 s · ${light.ink} ink · three ships at rest\nFull flash inside ${light.reach.fatal} u · nothing beyond ${light.reach.limit} u · no damage simulated`}
 >
   {#snippet pane()}
-    <h3>Layers shown</h3>
-    <div class="row">
-      <label for={`${uid}-world`}
-        >World <Switch id={`${uid}-world`} bind:checked={shown.world} /></label
-      >
-      <label for={`${uid}-fx`}
-        >FX <Switch id={`${uid}-fx`} bind:checked={shown.fx} /></label
-      >
-      <label for={`${uid}-lfx`}
-        >LFX <Switch id={`${uid}-lfx`} bind:checked={shown.lfx} /></label
-      >
-    </div>
-    <p>
-      LFX carries what is lit at this instant: the flash, the flash frame and
-      the faces of the ships. FX carries what stays: the afterglow, the shell’s
-      wake and the sparks’ trails.
-    </p>
+    <h3>Compare the explosion</h3>
     <SegmentedControl
-      label="Ink"
-      options={InkSchema.options}
-      bind:value={light.ink}
+      label="Preview"
+      options={["Starting values", "My settings"]}
+      bind:value={preview}
       stretch
     />
-
-    <h3>Nothing, then everything</h3>
-    <p>The flash at the source. It has no build-up.</p>
-    <RingSlider
-      label="Source size"
-      min={4}
-      max={40}
-      step={1}
-      unit="u"
-      bind:value={light.flash.size}
-    />
-    <RingSlider
-      label="Flash lasts"
-      min={1}
-      max={6}
-      step={1}
-      unit="ticks"
-      bind:value={light.flash.ticks}
-    />
-    <RingSlider
-      label="Flash strength"
-      min={0}
-      max={1.5}
-      step={0.05}
-      digits={2}
-      bind:value={light.flash.strength}
-    />
-
-    <h3>What it reaches</h3>
     <p>
-      A ship inside the fatal radius takes the whole flash. Farther out it takes
-      less, by the square of the distance, down to nothing at the limit.
+      Pick a part to pause where it is visible. Switch previews to compare the
+      same moment.
     </p>
-    <RingSlider
-      label="Fatal radius"
-      min={10}
-      max={120}
-      step={2}
-      unit="u"
-      bind:value={light.reach.fatal}
-    />
-    <RingSlider
-      label="Reach limit"
-      min={60}
-      max={400}
-      step={5}
-      unit="u"
-      bind:value={light.reach.limit}
-    />
-    <label for={`${uid}-guides`} class="toggle"
-      >Show both radii
-      <Switch id={`${uid}-guides`} bind:checked={staging.guides} /></label
-    >
-    <RingSlider
-      label="Flash frame over the space"
-      min={0}
-      max={1}
-      step={0.05}
-      digits={2}
-      bind:value={light.frame.strength}
-    />
+    <fieldset class="parts" aria-label="Part to inspect">
+      {#each parts as item}
+        <button
+          type="button"
+          class="btn"
+          aria-pressed={part === item}
+          onclick={() => inspect(item)}
+        >
+          {item}
+        </button>
+      {/each}
+    </fieldset>
+    <h3>{part}</h3>
+    <fieldset disabled={preview === "Starting values" && part !== "Scene"}>
+      {#if part === "Expanding circle"}
+        <p>
+          One pale line travels out from the flash and fades as it reaches the
+          outer radius.
+        </p>
+        <label for={`${uid}-ring`} class="toggle"
+          >Show radiation pulse
+          <Switch id={`${uid}-ring`} bind:checked={light.shell.ring} /></label
+        >
+        {#if light.shell.ring}
+          <RingSlider
+            label="Outline width"
+            min={0.5}
+            max={8}
+            step={0.5}
+            digits={1}
+            unit="u"
+            bind:value={light.shell.outlineWidth}
+          />
+        {/if}
+        <RingSlider
+          label="Pulse and impact brightness"
+          min={0}
+          max={2}
+          step={0.05}
+          digits={2}
+          bind:value={light.shell.strength}
+        />
+        <RingSlider
+          label="Time to reach the outer edge"
+          min={10}
+          max={120}
+          step={1}
+          unit="ticks"
+          bind:value={light.shell.ticks}
+        />
+        <RingSlider
+          label="Outer radius"
+          min={60}
+          max={400}
+          step={5}
+          unit="u"
+          bind:value={light.reach.limit}
+        />
+      {:else if part === "Flash"}
+        <p>
+          At detonation, a bright spot lights up at the centre and a much larger
+          disc lights the space around it.
+        </p>
+        <RingSlider
+          label="Bright spot radius"
+          min={4}
+          max={40}
+          step={1}
+          unit="u"
+          bind:value={light.flash.size}
+        />
+        <RingSlider
+          label="Bright spot brightness"
+          min={0}
+          max={1.5}
+          step={0.05}
+          digits={2}
+          bind:value={light.flash.strength}
+        />
+        <RingSlider
+          label="Bright spot duration"
+          min={1}
+          max={6}
+          step={1}
+          unit="ticks"
+          bind:value={light.flash.ticks}
+        />
+        <RingSlider
+          label="Filled disc brightness"
+          min={0}
+          max={1}
+          step={0.05}
+          digits={2}
+          bind:value={light.frame.strength}
+        />
+      {:else if part === "Ships"}
+        <p>
+          The side facing the explosion lights up. Nearby ships catch more
+          light.
+        </p>
+        <RingSlider
+          label="Distance that receives full light"
+          min={10}
+          max={120}
+          step={2}
+          unit="u"
+          bind:value={light.reach.fatal}
+        />
+        <RingSlider
+          label="Ship glow brightness"
+          min={0}
+          max={1.5}
+          step={0.05}
+          digits={2}
+          bind:value={light.answer.strength}
+        />
+        <RingSlider
+          label="Ship glow duration"
+          min={4}
+          max={90}
+          step={1}
+          unit="ticks"
+          bind:value={light.answer.ticks}
+        />
+      {:else if part === "Sparks"}
+        <p>
+          Sparks fly out from the centre. Lit ships also throw sparks back
+          towards it.
+        </p>
+        <RingSlider
+          label="Sparks from the centre"
+          min={0}
+          max={64}
+          step={1}
+          bind:value={light.shell.fragments}
+        />
+        <RingSlider
+          label="Sparks from a fully lit ship"
+          min={0}
+          max={24}
+          step={1}
+          bind:value={light.answer.spall}
+        />
+        <label for={`${uid}-split`} class="toggle"
+          >Sparks divide once
+          <Switch id={`${uid}-split`} bind:checked={light.shell.split} /></label
+        >
+      {:else if part === "Afterglow"}
+        <p>A patch of light stays at the centre after the flash.</p>
+        <RingSlider
+          label="Centre glow brightness"
+          min={0}
+          max={2}
+          step={0.05}
+          digits={2}
+          bind:value={light.residue.strength}
+        />
+        <RingSlider
+          label="Centre glow duration"
+          min={0}
+          max={180}
+          step={2}
+          unit="ticks"
+          bind:value={light.residue.ticks}
+        />
+      {:else}
+        <p>
+          The dashed circles are distance guides. Hide them to see just the
+          explosion.
+        </p>
+        <label for={`${uid}-guides`} class="toggle"
+          >Show distance guides
+          <Switch id={`${uid}-guides`} bind:checked={staging.guides} /></label
+        >
+        <p>Visible layers</p>
+        <div class="row">
+          <label for={`${uid}-world`}
+            >World
+            <Switch id={`${uid}-world`} bind:checked={shown.world} /></label
+          >
+          <label for={`${uid}-fx`}
+            >FX <Switch id={`${uid}-fx`} bind:checked={shown.fx} /></label
+          >
+          <label for={`${uid}-lfx`}
+            >LFX <Switch id={`${uid}-lfx`} bind:checked={shown.lfx} /></label
+          >
+        </div>
 
-    <h3>Matter answers</h3>
-    <p>The side of each ship that faced the flash keeps glowing and sheds.</p>
-    <RingSlider
-      label="Glow strength"
-      min={0}
-      max={1.5}
-      step={0.05}
-      digits={2}
-      bind:value={light.answer.strength}
-    />
-    <RingSlider
-      label="Glow lasts"
-      min={4}
-      max={90}
-      step={1}
-      unit="ticks"
-      bind:value={light.answer.ticks}
-    />
-    <RingSlider
-      label="Sparks thrown back"
-      min={0}
-      max={24}
-      step={1}
-      bind:value={light.answer.spall}
-    />
-
-    <h3>The remains leave</h3>
-    <p>
-      The shell is the only part that travels. A ship answers again as it
-      passes.
-    </p>
-    <RingSlider
-      label="Shell reaches the limit in"
-      min={10}
-      max={120}
-      step={1}
-      unit="ticks"
-      bind:value={light.shell.ticks}
-    />
-    <RingSlider
-      label="Shell strength"
-      min={0}
-      max={2}
-      step={0.05}
-      digits={2}
-      bind:value={light.shell.strength}
-    />
-    <RingSlider
-      label="Sparks leaving with it"
-      min={0}
-      max={64}
-      step={1}
-      bind:value={light.shell.fragments}
-    />
-    <label for={`${uid}-split`} class="toggle"
-      >Sparks divide once
-      <Switch id={`${uid}-split`} bind:checked={light.shell.split} /></label
-    >
-
-    <h3>The place stays wrong</h3>
-    <p>How long the source keeps feeding light into the surface.</p>
-    <RingSlider
-      label="Afterglow fed for"
-      min={0}
-      max={180}
-      step={2}
-      unit="ticks"
-      bind:value={light.residue.ticks}
-    />
-    <RingSlider
-      label="Afterglow strength"
-      min={0}
-      max={2}
-      step={0.05}
-      digits={2}
-      bind:value={light.residue.strength}
-    />
-
-    <div class="row">
+        <p>{measurements}</p>
+      {/if}
+    </fieldset>
+    <details>
+      <summary>Colour and saved settings</summary>
+      <fieldset disabled={preview === "Starting values"}>
+        <SegmentedControl
+          label="Colour"
+          options={InkSchema.options}
+          bind:value={light.ink}
+          stretch
+        />
+      </fieldset>
+      <p>Your settings are saved in this browser.</p>
+      <button type="button" class="btn" onclick={exportLight}>
+        Export my settings
+      </button>
       <button
         type="button"
         class="btn"
         onclick={() => {
           light = structuredClone(DEFAULT_LIGHT);
-          staging = { ...DEFAULT_STAGING };
+          preview = "My settings";
         }}
       >
-        Reset values
+        Reset my settings
       </button>
-      <button type="button" class="btn" onclick={exportLight}>
-        Export values
-      </button>
-    </div>
-    <p>The values stay in this browser. Export keeps a record for the study.</p>
+    </details>
   {/snippet}
 </FlightSceneInstrument>
 
 <style>
+.parts,
 .row {
   display: flex;
   flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+button[aria-pressed="true"] {
+  color: var(--color-elev-1);
+  background: var(--color-accent, #cbef57);
+}
+fieldset {
+  display: grid;
   gap: var(--spacing-md);
-  align-items: center;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+fieldset:disabled {
+  opacity: 0.6;
+}
+fieldset p {
+  margin: 0;
 }
 label {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--spacing-sm);
 }
-.toggle {
-  justify-content: space-between;
+details {
+  margin-top: var(--spacing-lg);
+}
+summary {
+  cursor: pointer;
+  margin-bottom: var(--spacing-md);
 }
 </style>

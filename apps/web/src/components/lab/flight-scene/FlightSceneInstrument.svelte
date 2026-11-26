@@ -300,6 +300,11 @@ onMount(() => {
     releaseMaterials?.();
   };
 });
+/** Pause on a particular simulation tick for a study comparison. */
+export function inspectTick(at: number) {
+  playing = false;
+  tick = Math.max(0, Math.min(TOTAL_TICKS, Math.round(at)));
+}
 </script>
 
 {#if doc}

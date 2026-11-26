@@ -28,14 +28,19 @@ function fields(text) {
   for (const input of lines.slice(1, end)) {
     const line = withoutComment(input);
     if (!line.trim()) continue;
-    const match = /^([\w-]+):(?:\s+(.*))?$/.exec(line);
+    const match =
+      /^(["']?)(generated|verified|status|title)\1[ \t]*:(?:\s+(.*))?$/.exec(
+        line,
+      );
     if (match) {
-      key = match[1];
+      key = match[2];
       if (values.has(key)) throw Error(`duplicate field ${key}`);
-      values.set(key, match[2] || "");
+      values.set(key, match[3] || "");
     } else if (key && /^(\s|-\s)/.test(line)) {
       values.set(key, `${values.get(key)}\n${line}`);
-    } else throw Error(`invalid frontmatter line ${line}`);
+    } else {
+      key = undefined;
+    }
   }
   return values;
 }
@@ -93,16 +98,10 @@ export function provenance(text, spec = false, lean = false) {
         "verified events require a human:<id> actor with a nonempty identifier",
       );
   }
-  if (spec) {
+  if (spec && !lean) {
     if (fm.has("status")) throw Error("spec status metadata is forbidden");
     if (fm.has("title"))
       throw Error("spec title metadata is forbidden; use the H1 feature name");
-    if (lean) {
-      for (const key of fm.keys()) {
-        if (key !== "generated" && key !== "verified")
-          throw Error(`spec frontmatter must omit ${key}`);
-      }
-    }
   }
   return { generated, verified };
 }

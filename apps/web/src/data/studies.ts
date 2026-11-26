@@ -12,8 +12,8 @@ export const studies = z.array(studySchema).parse([
   {
     slug: "drone-launcher-2026-11-25",
     title: "Drone launcher",
-    phase: "exploration",
-    status: "open",
+    phase: "scope",
+    status: "accepted",
     question:
       "How should the drone launcher’s manufacture, launch, pursuit and energy recovery work and read in flight?",
   },

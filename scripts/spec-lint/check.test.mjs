@@ -226,11 +226,6 @@ test("lean format enforces the feature name, scenario boundaries and single veri
       "verified: [{ by: human:a, at: 2026-11-19 }, { by: human:b, at: 2026-11-20 }]",
       /at most one human/,
     ],
-    [
-      "verified: []",
-      "verified: []\nrevision: 2",
-      /frontmatter must omit revision/,
-    ],
   ]) {
     const result = lint(leanSpec.replace(from, to));
     assert.equal(result.status, 1, result.stderr + result.stdout);
@@ -242,6 +237,22 @@ const currentSpec = leanSpec.replace(
   "Readers can export selected rows.",
   "## Context\n\nReaders can export selected rows.\n\n## Blueprint\n\nThe exporter writes one row per selection.",
 );
+
+test("project fields coexist with required provenance in both lean formats", (t) => {
+  const lint = fixture(t);
+  for (const source of [leanSpec, currentSpec]) {
+    const metadata =
+      "title: Export\nstatus: draft\ncatalog.owner: reporting\nrelease:\n  verified: []";
+    const extended = source.replace("generated:", `${metadata}\ngenerated:`);
+    const result = lint(extended);
+    assert.equal(result.status, 0, result.stderr + result.stdout);
+    const missing = lint(
+      extended.replace("\nverified: []", "\nreviewed_by: []"),
+    );
+    assert.equal(missing.status, 1, missing.stderr + missing.stdout);
+    assert.match(missing.stdout, /expected verified events/);
+  }
+});
 
 test("current specs require substantive Context, Blueprint and Scenarios in order", (t) => {
   const lint = fixture(t);

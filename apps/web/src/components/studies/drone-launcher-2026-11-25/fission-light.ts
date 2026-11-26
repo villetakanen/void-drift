@@ -50,6 +50,8 @@ export const FissionLightSchema = z
       .strict(),
     shell: z
       .object({
+        ring: z.boolean().default(false),
+        outlineWidth: z.number().min(0.5).max(8).default(1.5),
         /** Ticks the shell takes from the source to the reach limit. */
         ticks: z.number().int().min(10).max(120),
         strength: z.number().min(0).max(2),
@@ -69,6 +71,8 @@ export const FissionLightSchema = z
   })
   .strict();
 export type FissionLight = z.infer<typeof FissionLightSchema>;
+
+export const LIGHT_STORAGE_KEY = "void-drift:drone-launcher:02-7-fission-light";
 
 export const DEFAULT_LIGHT = FissionLightSchema.parse({
   version: 1,
@@ -138,6 +142,40 @@ export function chargeLife(light: FissionLight) {
 const HIT_TICKS = 4;
 const SPARK_SIZE = 1.5;
 
+export const TipShape = z.enum(["Round", "Stretched", "No tip"]);
+export const SparkSettingsSchema = z
+  .object({
+    shape: TipShape.default("Round"),
+    softEdge: z.boolean().default(true),
+    width: z.number().min(0.5).max(10).default(4.5),
+    tipSize: z.number().min(0.25).max(3).default(1),
+    speed: z.number().min(0.25).max(3).default(1),
+    forkAt: z.number().min(5).max(100).default(45),
+    forkSpread: z.number().min(0).max(3).default(1),
+    firstSpeed: z.number().min(0.1).max(3).default(1.05),
+    secondSpeed: z.number().min(0.1).max(3).default(0.6),
+    trackLight: z.number().min(0).max(2).default(1),
+    tipLight: z.number().min(0).max(2).default(1),
+    fade: z.number().min(0).max(100).default(0),
+  })
+  .strict();
+export const INITIAL_SPARK = SparkSettingsSchema.parse({});
+export const ACCEPTED_SPARKS = SparkSettingsSchema.parse({
+  width: 4.5,
+  trackLight: 1,
+  fade: 40,
+  shape: "Round",
+  tipSize: 0.7,
+  softEdge: true,
+  tipLight: 1,
+  speed: 1,
+  forkAt: 32,
+  forkSpread: 0.8,
+  firstSpeed: 1.05,
+  secondSpeed: 0.35,
+});
+type SparkSettings = z.infer<typeof SparkSettingsSchema>;
+
 interface Spark {
   x: number;
   y: number;
@@ -169,6 +207,7 @@ export class FissionSparks {
   static readonly CAPACITY = 256;
   private readonly sparks: Spark[] = [];
   private next = random(1);
+  constructor(private readonly settings: SparkSettings = INITIAL_SPARK) {}
   get count() {
     return this.sparks.length;
   }
@@ -196,7 +235,8 @@ export class FissionSparks {
           ? (i + 0.5) / count - 0.5 + (this.next() - 0.5) / count
           : this.next() - 0.5;
       const direction = angle + along * spread * 2;
-      const velocity = speed[0] + (speed[1] - speed[0]) * this.next();
+      const velocity =
+        (speed[0] + (speed[1] - speed[0]) * this.next()) * this.settings.speed;
       this.add({
         x,
         y,
@@ -222,44 +262,122 @@ export class FissionSparks {
       spark.py = spark.y;
       spark.x += spark.vx * dt;
       spark.y += spark.vy * dt;
-      if (!spark.splits || spark.age < spark.life * 0.45) continue;
+      const fork = this.settings;
+      if (!spark.splits || spark.age < (spark.life * fork.forkAt) / 100)
+        continue;
       // One becomes a faster and a slower spark on diverging courses.
       spark.splits = false;
-      const turn = 0.22 + 0.2 * this.next();
+      const turn = (0.22 + 0.2 * this.next()) * fork.forkSpread;
       const cos = Math.cos(turn),
         sin = Math.sin(turn);
       const { vx, vy } = spark;
-      spark.vx = (vx * cos - vy * sin) * 1.05;
-      spark.vy = (vx * sin + vy * cos) * 1.05;
+      spark.vx = (vx * cos - vy * sin) * fork.firstSpeed;
+      spark.vy = (vx * sin + vy * cos) * fork.firstSpeed;
       this.add({
         ...spark,
-        vx: (vx * cos + vy * sin) * 0.6,
-        vy: (-vx * sin + vy * cos) * 0.6,
+        vx: (vx * cos + vy * sin) * fork.secondSpeed,
+        vy: (-vx * sin + vy * cos) * fork.secondSpeed,
         life: spark.age + (spark.life - spark.age) * 0.7,
       });
     }
   }
+  /** A soft footprint along this tick's travel. Older footprints fade in FX. */
+  stampGlints(ctx: CanvasRenderingContext2D, pass: FxPass, ink: Ink) {
+    const tail = stamp("residue", ink, false);
+    for (const spark of this.sparks) {
+      if (!pass.visible(spark.x, spark.y, 12) || !pass.budget.take()) continue;
+      const remaining = 1 - spark.age / spark.life;
+      const dx = spark.x - spark.px;
+      const dy = spark.y - spark.py;
+      const width = 1.2 + 2.2 * remaining;
+      const length = Math.hypot(dx, dy) + 2 * width;
+      ctx.save();
+      ctx.translate((spark.x + spark.px) / 2, (spark.y + spark.py) / 2);
+      ctx.rotate(Math.atan2(dy, dx));
+      ctx.globalAlpha = Math.min(1, pass.opacity * 2.5 * remaining);
+      ctx.drawImage(tail, -length / 2, -width, length, width * 2);
+      ctx.restore();
+    }
+  }
+
+  drawHeads(
+    ctx: CanvasRenderingContext2D,
+    ink: Ink,
+    view: { x: number; y: number; width: number; height: number },
+    tunedTips = false,
+  ) {
+    if (tunedTips && this.settings.shape === "No tip") return;
+    const softHead = tunedTips
+      ? this.settings.softEdge && stamp("tip", ink, true)
+      : stamp("flash", ink, true);
+    ctx.save();
+    ctx.fillStyle = css(pale(INKS[ink].hot));
+    for (const spark of this.sparks) {
+      const settings = tunedTips ? this.settings : INITIAL_SPARK;
+      const r = (1 + 1.6 * (1 - spark.age / spark.life)) * settings.tipSize;
+      const length = settings.shape === "Stretched" ? r * 2.5 : r;
+      if (
+        spark.x + length < view.x ||
+        spark.x - length > view.x + view.width ||
+        spark.y + length < view.y ||
+        spark.y - length > view.y + view.height
+      )
+        continue;
+      ctx.globalAlpha = Math.min(
+        1,
+        settings.tipLight * (1 - (spark.age / spark.life) ** 2),
+      );
+      ctx.save();
+      ctx.translate(spark.x, spark.y);
+      ctx.rotate(Math.atan2(spark.vy, spark.vx));
+      if (softHead) {
+        ctx.drawImage(softHead, -length, -r, 2 * length, 2 * r);
+      } else {
+        ctx.beginPath();
+        ctx.ellipse(0, 0, length, r, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+
   /**
    * Fresh emission for one tick: the path each spark travelled, so a fast
    * spark leaves a streak and not a row of dots. Each spark counts against
    * the scene's decoration.
    */
-  stamp(ctx: CanvasRenderingContext2D, pass: FxPass, colour: string) {
-    ctx.beginPath();
-    let any = false;
+  stamp(
+    ctx: CanvasRenderingContext2D,
+    pass: FxPass,
+    ink: Ink,
+    greenTracks = false,
+  ) {
+    const ramp = SPARK_RAMPS[ink];
+    const paths: Path2D[] = [];
     for (const spark of this.sparks) {
       if (!pass.visible(spark.x, spark.y, 8) || !pass.budget.take()) continue;
-      ctx.moveTo(spark.px, spark.py);
-      ctx.lineTo(spark.x, spark.y);
-      any = true;
+      if (greenTracks) {
+        paintTrack(ctx, pass, ink, spark, this.settings);
+        continue;
+      }
+      const stage = Math.min(
+        ramp.length - 1,
+        Math.floor((spark.age / spark.life) * ramp.length),
+      );
+      paths[stage] ??= new Path2D();
+      const path = paths[stage];
+      path.moveTo(spark.px, spark.py);
+      path.lineTo(spark.x, spark.y);
     }
-    if (!any) return;
     ctx.globalAlpha = Math.min(1, pass.opacity * 2.5);
-    ctx.strokeStyle = colour;
     ctx.lineWidth = SPARK_SIZE;
-    // Butt ends: consecutive ticks meet without doubling the light at the joint.
     ctx.lineCap = "butt";
-    ctx.stroke();
+    for (const [stage, path] of paths.entries()) {
+      if (!path) continue;
+      ctx.strokeStyle = ramp[stage];
+      ctx.stroke(path);
+    }
   }
 }
 
@@ -284,7 +402,78 @@ const pale = (c: Rgb): Rgb => [
 ];
 const css = (c: Rgb, alpha = 1) => `rgba(${c[0]},${c[1]},${c[2]},${alpha})`;
 
-type StampKind = "flash" | "glow" | "frame";
+// The FX surface keeps earlier, hotter segments as each spark cools.
+function sparkRamp(ink: Ink) {
+  const { hot, mid, deep } = INKS[ink];
+  return Array.from({ length: 8 }, (_, stage) => {
+    const stops = [WHITE, hot, mid, deep];
+    const position = (stage / 7) * 3;
+    const index = Math.min(2, Math.floor(position));
+    const fraction = position - index;
+    return css(
+      [0, 1, 2].map((channel) =>
+        Math.round(
+          stops[index][channel] * (1 - fraction) +
+            stops[index + 1][channel] * fraction,
+        ),
+      ) as [number, number, number],
+    );
+  });
+}
+const SPARK_RAMPS = {
+  Greener: sparkRamp("Greener"),
+  "Body accent": sparkRamp("Body accent"),
+};
+
+// The strip spans exactly one tick of travel. Adjacent ticks meet at full
+// brightness down the centre, while its sides fall away into transparency.
+const tracks = new Map<Ink, HTMLCanvasElement>();
+function paintTrack(
+  ctx: CanvasRenderingContext2D,
+  pass: FxPass,
+  ink: Ink,
+  spark: Spark,
+  settings: SparkSettings,
+) {
+  let track = tracks.get(ink);
+  if (!track) {
+    track = document.createElement("canvas");
+    track.width = 1;
+    track.height = 64;
+    const brush = track.getContext("2d");
+    if (!brush) throw new Error("Spark track needs Canvas 2D");
+    const profile = brush.createLinearGradient(0, 0, 0, track.height);
+    const { mid, deep } = INKS[ink];
+    profile.addColorStop(0, css(deep, 0));
+    profile.addColorStop(0.32, css(mid, 0.45));
+    profile.addColorStop(0.5, css(mid));
+    profile.addColorStop(0.68, css(mid, 0.45));
+    profile.addColorStop(1, css(deep, 0));
+    brush.fillStyle = profile;
+    brush.fillRect(0, 0, 1, track.height);
+    tracks.set(ink, track);
+  }
+  const dx = spark.x - spark.px,
+    dy = spark.y - spark.py;
+  ctx.save();
+  ctx.translate(spark.px, spark.py);
+  ctx.rotate(Math.atan2(dy, dx));
+  const fade = 1 - ((settings.fade / 100) * spark.age) / spark.life;
+  ctx.globalAlpha = Math.min(
+    1,
+    pass.opacity * 2.5 * settings.trackLight * fade,
+  );
+  ctx.drawImage(
+    track,
+    0,
+    -settings.width / 2,
+    Math.hypot(dx, dy),
+    settings.width,
+  );
+  ctx.restore();
+}
+
+type StampKind = "tip" | "flash" | "glow" | "residue" | "frame";
 const STAMP_SIZE = 192;
 const stamps = new Map<string, HTMLCanvasElement>();
 /** Gradients run only here, once per kind, ink and layer. */
@@ -300,15 +489,19 @@ function stamp(kind: StampKind, ink: Ink, liveLight: boolean) {
   const tone = (c: Rgb) => (liveLight ? pale(c) : c);
   const { hot, mid, deep } = INKS[ink];
   const light = ctx.createRadialGradient(half, half, 0, half, half, half);
-  if (kind === "flash") {
+  if (kind === "tip") {
+    light.addColorStop(0, css(tone(hot)));
+    light.addColorStop(0.55, css(tone(hot)));
+    light.addColorStop(1, css(tone(hot), 0));
+  } else if (kind === "flash") {
     // A point too bright to have a shape: white well past its centre.
     light.addColorStop(0, css(WHITE, 1));
     light.addColorStop(0.18, css(WHITE, 0.9));
     light.addColorStop(0.4, css(tone(hot), 0.55));
-    light.addColorStop(0.7, css(tone(mid), 0.18));
+    light.addColorStop(0.62, css(tone(mid), 0.24));
     light.addColorStop(1, css(tone(mid), 0));
-  } else if (kind === "glow") {
-    light.addColorStop(0, css(tone(hot), 0.95));
+  } else if (kind === "glow" || kind === "residue") {
+    light.addColorStop(0, css(tone(kind === "residue" ? mid : hot), 0.95));
     light.addColorStop(0.25, css(tone(mid), 0.7));
     light.addColorStop(0.65, css(tone(deep), 0.2));
     light.addColorStop(1, css(tone(deep), 0));
@@ -323,6 +516,50 @@ function stamp(kind: StampKind, ink: Ink, liveLight: boolean) {
   ctx.fillRect(0, 0, STAMP_SIZE, STAMP_SIZE);
   stamps.set(key, canvas);
   return canvas;
+}
+
+const waveImages = new Map<Ink, HTMLCanvasElement>();
+function waveImage(ink: Ink) {
+  const cached = waveImages.get(ink);
+  if (cached) return cached;
+  const image = document.createElement("canvas");
+  image.width = image.height = 512;
+  const ctx = image.getContext("2d");
+  if (!ctx) throw new Error("Fission light needs Canvas 2D");
+  const r = image.width / 2;
+  const colour = pale(INKS[ink].mid);
+  const front = ctx.createRadialGradient(r, r, 0, r, r, r);
+  for (const [at, alpha] of [
+    [0, 0],
+    [0.85, 0],
+    [0.93, 0.18],
+    [0.975, 0.85],
+    [1, 0],
+  ]) {
+    front.addColorStop(at, css(colour, alpha));
+  }
+  ctx.fillStyle = front;
+  ctx.fillRect(0, 0, image.width, image.height);
+  const arcs = ctx.createConicGradient(0, r, r);
+  for (const [at, alpha] of [
+    [0, 0],
+    [0.09, 0.85],
+    [0.2, 0],
+    [0.37, 0],
+    [0.48, 1],
+    [0.62, 0],
+    [0.75, 0],
+    [0.82, 0.55],
+    [0.96, 0],
+    [1, 0],
+  ]) {
+    arcs.addColorStop(at, css(WHITE, alpha));
+  }
+  ctx.globalCompositeOperation = "destination-in";
+  ctx.fillStyle = arcs;
+  ctx.fillRect(0, 0, image.width, image.height);
+  waveImages.set(ink, image);
+  return image;
 }
 
 function disc(
@@ -382,8 +619,7 @@ export function stampCharge(
     !pass.budget.take(true)
   )
     return;
-  const ink = INKS[light.ink];
-  const { flash, shell, residue, answer } = light;
+  const { flash, residue, answer } = light;
   ctx.save();
   // The flash leaves its copy in the surface, as the rifle's eruption does.
   if (age < flash.ticks) {
@@ -405,7 +641,7 @@ export function stampCharge(
     );
     disc(
       ctx,
-      stamp("glow", light.ink, false),
+      stamp("residue", light.ink, false),
       charge.x,
       charge.y,
       flash.size * (1.8 - 0.8 * t),
@@ -419,22 +655,6 @@ export function stampCharge(
     ctx.globalAlpha = Math.min(1, level * pass.opacity * 1.2);
     faceGlow(ctx, stamp("glow", light.ink, false), solid, charge);
   }
-  // The shell's coloured band and its fading wake. Its narrow bright core is
-  // live light, so the two together are drawn as the impact plume is.
-  const radius = shellRadius(light, age);
-  if (radius !== null && shell.strength > 0) {
-    const t = age / shell.ticks;
-    const travel = (light.reach.limit - flash.size) / shell.ticks;
-    const thinning = Math.sqrt(flash.size / Math.max(radius, flash.size));
-    ctx.globalAlpha = Math.min(
-      1,
-      shell.strength * thinning * (1 - 0.5 * t) * pass.opacity,
-    );
-    ctx.strokeStyle = css(t < 0.5 ? ink.mid : ink.deep);
-    // The band covers the distance travelled this tick, so the wake is whole.
-    ctx.lineWidth = Math.max(3, travel);
-    shellStroke(ctx, charge, radius - ctx.lineWidth / 2);
-  }
   ctx.restore();
 }
 
@@ -445,6 +665,7 @@ export function drawCharge(
   solids: readonly Solid[],
   light: FissionLight,
   tick: number,
+  luminous = false,
 ) {
   const age = tick - charge.tick;
   if (age < 0 || age > chargeLife(light)) return;
@@ -498,58 +719,68 @@ export function drawCharge(
       flash.size * (1 + 0.35 * age),
     );
   }
-  // A thin live front on the shell, so its edge stays crisp while it travels.
-  const radius = shellRadius(light, age);
-  if (radius !== null && shell.strength > 0) {
-    const t = age / shell.ticks;
-    const thinning = Math.sqrt(flash.size / Math.max(radius, flash.size));
-    ctx.globalAlpha = Math.min(1, shell.strength * thinning * 1.6 * (1 - t));
-    ctx.strokeStyle = css(pale(INKS[light.ink].hot));
-    ctx.lineWidth = 1.5;
-    shellStroke(ctx, charge, radius);
+  if ((luminous || shell.ring) && age < shell.ticks && shell.strength > 0) {
+    const radius = shellRadius(light, age);
+    if (radius !== null) {
+      ctx.globalAlpha = Math.min(
+        1,
+        0.3 * shell.strength * (1 - age / shell.ticks),
+      );
+      if (luminous) {
+        disc(ctx, waveImage(light.ink), charge.x, charge.y, radius);
+      } else {
+        ctx.strokeStyle = css(pale(INKS[light.ink].mid));
+        ctx.lineWidth = shell.outlineWidth;
+        shellStroke(ctx, charge, radius);
+      }
+    }
   }
   ctx.restore();
 }
 
-/** The colour the family's sparks are stamped in. */
-export const sparkColour = (ink: Ink) => css(INKS[ink].hot);
+/** All 02.9 sources launch the same kind of particle. The hit determines
+ * where it starts, its direction and how many sparks are released. */
+function emitBurst(
+  sparks: FissionSparks,
+  light: FissionLight,
+  x: number,
+  y: number,
+  angle: number,
+  spread: number,
+  count: number,
+) {
+  const { shell, flash, reach } = light;
+  const speed = ((reach.limit - flash.size) / shell.ticks) * 60;
+  const seconds = shell.ticks / 60;
+  sparks.emit(
+    x,
+    y,
+    angle,
+    spread,
+    count,
+    [speed * 0.8, speed * 1.02],
+    [seconds * 0.45, seconds * 0.95],
+    shell.split,
+  );
+}
 
-/** Sparks that leave with the shell and those a lit solid throws back. */
 export function emitFlashSparks(
   sparks: FissionSparks,
   charge: Charge,
   solids: readonly Solid[],
   light: FissionLight,
 ) {
-  const { shell, answer, flash, reach } = light;
+  const { shell, answer } = light;
   sparks.seed(charge.seed);
-  const speed = ((reach.limit - flash.size) / shell.ticks) * 60;
-  const seconds = shell.ticks / 60;
-  sparks.emit(
-    charge.x,
-    charge.y,
-    0,
-    Math.PI,
-    shell.fragments,
-    [speed * 0.8, speed * 1.02],
-    [seconds * 0.45, seconds * 0.95],
-    shell.split,
-  );
+  emitBurst(sparks, light, charge.x, charge.y, 0, Math.PI, shell.fragments);
   for (const solid of solids) {
     const distance = distanceTo(solid, charge);
     const count = Math.round(answer.spall * dose(light, distance));
     if (!count) continue;
     const toward = Math.atan2(charge.y - solid.y, charge.x - solid.x);
-    sparks.emit(
-      solid.x + Math.cos(toward) * solid.radius * 0.6,
-      solid.y + Math.sin(toward) * solid.radius * 0.6,
-      toward,
-      0.9,
-      count,
-      [30, 110],
-      [0.25, 0.55],
-      shell.split,
-    );
+    const x = solid.x + Math.cos(toward) * solid.radius * 0.6;
+    const y = solid.y + Math.sin(toward) * solid.radius * 0.6;
+    sparks.emit(x, y, toward, 0.9, count, [30, 110], [0.25, 0.55], shell.split);
   }
 }
 
@@ -559,6 +790,7 @@ export function emitShellSparks(
   charge: Charge,
   solid: Solid,
   light: FissionLight,
+  sharedHitSparks = false,
 ) {
   const distance = distanceTo(solid, charge);
   const blow =
@@ -567,14 +799,9 @@ export function emitShellSparks(
   const count = Math.round(8 * Math.min(1, blow));
   if (!count) return;
   const away = Math.atan2(solid.y - charge.y, solid.x - charge.x);
-  sparks.emit(
-    solid.x - Math.cos(away) * solid.radius * 0.5,
-    solid.y - Math.sin(away) * solid.radius * 0.5,
-    away,
-    1.2,
-    count,
-    [50, 150],
-    [0.2, 0.45],
-    false,
-  );
+  const x = solid.x - Math.cos(away) * solid.radius * 0.5;
+  const y = solid.y - Math.sin(away) * solid.radius * 0.5;
+  if (sharedHitSparks)
+    emitBurst(sparks, light, x, y, away + Math.PI, 0.9, count);
+  else sparks.emit(x, y, away, 1.2, count, [50, 150], [0.2, 0.45], false);
 }

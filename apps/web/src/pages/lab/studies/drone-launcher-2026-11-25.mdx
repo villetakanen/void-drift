@@ -3,12 +3,10 @@ layout: ../../../layouts/StudyLayout.astro
 ---
 
 import MasterSpecimen from '../../../components/studies/drone-launcher-2026-11-25/MasterSpecimen.astro';
-import FlightBench from '../../../components/studies/drone-launcher-2026-11-25/FlightBench.svelte';
-import FissionBench from '../../../components/studies/drone-launcher-2026-11-25/FissionBench.svelte';
-import InstrumentBand from '../../../components/lab/instrument/InstrumentBand.astro';
-import SizingBench from '../../../components/studies/drone-launcher-2026-11-25/SizingBench.svelte';
 
 <section>
+
+**Accepted for 0.7.x Playground adoption.** The [powered intercept](#powered-intercept) records the selected behaviour in flight. [Game fit](#game-fit) gives the combat rules and the [adoption map](#adoption-map) records the fitting scope.
 
 ## 01 / Develop the problem
 
@@ -83,7 +81,7 @@ targets and other weapon effects.
 
 ### Open design questions
 
-- **Timing and commitment.** How long does manufacture take, when is potential
+- **Manufacturing and launch timing.** How long does manufacture take, when is potential
   spent, and what happens if the target is lost before launch? What pace do
   successive launches give the weapon?
 - **Capacity and recovery.** Is the active limit per launcher or per ship? How
@@ -153,8 +151,6 @@ length while preserving the master’s proportions. Each of the Fighter’s four
 slots can hold a launcher, either reference weapon, or remain empty. The forward
 pair sits under the hull; the aft pair is exposed. Both views use the shared
 Fighter rendering and its actual slot positions and layering.
-
-<SizingBench client:load />
 
 The [supplied sizing](/studies/drone-launcher-2026-11-25/02-2-sizing.json)
 is 17 world units long, with its attachment 68% of the way from nose to rear.
@@ -272,9 +268,7 @@ are production targeting decisions.
 
 </section>
 
-<InstrumentBand>
-  <FlightBench client:visible label="Drone flight · pursuit, return and drift" />
-</InstrumentBand>
+
 
 <section>
 
@@ -299,13 +293,6 @@ Return at about 3.73 s. It approaches the moving carrier over the remaining
 course, reaching about 3 u separation and 41 u/s against the carrier’s 40 u/s
 at 14 s. This demonstrates approach and settling, not recovery.
 
-Use 1× to inspect the whole encounter. Higher magnifications are close inspections
-and can take objects outside the carrier’s view. The blue dashed circle shows
-pursuit range; if return range differs, a yellow circle shows that second
-radius. Distances, current command and spin distinguish the decision from the
-inertia that follows it. Changing a range or encounter reconstructs the same
-selected instant, so the new conditions are applied from the start.
-
 The controller uses the pirate pilot’s bounded planning approach: eight
 Off/Left/Right/Forward command sequences, a 1.2 s prediction, and a 0.3 s first
 command followed by coasting or forward thrust. It looks again every eight
@@ -328,49 +315,21 @@ selection among several enemies and detonation remain later questions.
 
 <section>
 
-### 02.6 / Outside readings of the fission family
+### 02.6 / What colour is a fission explosion?
 
-The drone's attack is a nuclear explosion, and 01 puts it in one family with
-the fission engine's push. Before a detonation is built into the bench, three
-models were asked for a look for that family: Gemini Neon, GPT Astra 6.2 and
-Fable 5.2. Each worked outside the repository. This step keeps their material,
-sorts the ideas in it, and reads each idea against the project's recorded art
-direction and its effects code. It selects nothing. The flight bench stays in
-02.5.
+A white flash gives the detonation its first instant. What colour should be left in
+your eye after it? Two sketches below explore green in different places. In
+*Double flash*, a green glow lingers at the source. In *Daughter Tracks*, the
+green travels away along the paths of the sparks.
 
-Their brief is not part of this record. All three work from the same supplied
-facts: the World, FX, FX glow and LFX layers with their blends, the 0.1 second
-FX half-life, and an engine that thrusts for 0.18 seconds in every 0.45.
-Gemini and Fable also quote the working colours of
-[fission light 02.1](/lab/studies/fission-light-2026-11-11#detonation). None of
-them saw the ships, the launcher and drone masters, the plasma studies or the
-effects code. The ships in their pictures are invented.
+<details>
+<summary>Reference material from three AI models</summary>
 
-**The designer's reading on receiving them, 26 November 2026:** none of the
-three understands the game's art and art direction. The plasma studies are the
-clearest reference for the difference.
+- [Gemini Neon concept and preview](/studies/drone-launcher-2026-11-25/02-6-sources/gemini-neon/design-study.md)
+- [GPT Astra sketches, including Daughter Tracks](/studies/drone-launcher-2026-11-25/02-6-sources/gpt-astra-6-2/index.html)
+- [Fable motion sketches, including Double flash](/studies/drone-launcher-2026-11-25/02-6-sources/fable-5-2/index.html)
 
-#### The material
-
-| Source | Proposes | Original files |
-| --- | --- | --- |
-| Gemini Neon | One look for engine and drone: a starburst flash, a stepped shock ring and a shatter of debris. | [Study](/studies/drone-launcher-2026-11-25/02-6-sources/gemini-neon/design-study.md) · [concept sheet](/studies/drone-launcher-2026-11-25/02-6-sources/gemini-neon/fission-concept-sheet.jpg) · [live preview](/studies/drone-launcher-2026-11-25/02-6-sources/gemini-neon/preview.html) · [readme](/studies/drone-launcher-2026-11-25/02-6-sources/gemini-neon/README.md) |
-| GPT Astra 6.2 | Three looks: Spall Press, Carbon Paper and Daughter Tracks. It would build Spall Press. | [Study](/studies/drone-launcher-2026-11-25/02-6-sources/gpt-astra-6-2/study.md) · [the same study as a page](/studies/drone-launcher-2026-11-25/02-6-sources/gpt-astra-6-2/index.html) · three timing sheets, shown below |
-| Fable 5.2 | Four looks: Double flash, Plate shadow, Chain and Standing shells. It picks Double flash. | [Page with live canvases](/studies/drone-launcher-2026-11-25/02-6-sources/fable-5-2/index.html) · [its drawing code](/studies/drone-launcher-2026-11-25/02-6-sources/fable-5-2/sim.js) |
-
-The files are stored as received. Fable's page names its model; the Gemini
-sheet carries a Google content signature and the GPT sheets an OpenAI one.
-Fable's page requests web fonts from Google when it is opened.
-
-The pictures are different kinds of evidence. The Gemini and GPT sheets are
-generated images. They show an intention, with soft clouds, glows and smears
-that none of the game's layers produced. Gemini's own Canvas preview of its
-proposal looks unlike its sheet. Fable's strips are drawn by its page through a
-copy of the layer stack at 2 px per world unit. That copy fades faster than the
-game: every twelfth tick it adds a 30% black fill to clear residue, and the
-game's surface has no such cleanup.
-
-<details open>
+<details>
 <summary>Gemini Neon · concept sheet and its own Canvas preview</summary>
 
 <figure>
@@ -384,7 +343,7 @@ game's surface has no such cleanup.
 
 </details>
 
-<details open>
+<details>
 <summary>GPT Astra 6.2 · three timing sheets</summary>
 
 <figure>
@@ -402,7 +361,7 @@ game's surface has no such cleanup.
 
 </details>
 
-<details open>
+<details>
 <summary>Fable 5.2 · four proposals, engine pulse above drone detonation</summary>
 
 <figure>
@@ -428,287 +387,209 @@ game's surface has no such cleanup.
 
 </details>
 
-#### Six ideas in ten proposals
-
-| Idea | Proposals | What it claims |
-| --- | --- | --- |
-| Flash, ring and debris | Gemini | A white first frame that decays quickly through a colour ramp. Size is shown by the count and density of stamps. |
-| A fixed order in time | Fable, Double flash | Every fission event goes white, then dark, then green. A larger event has a longer dark gap. |
-| The blast shows the solids it lights | GPT, Carbon Paper · Fable, Plate shadow | The light holds a dark print of the stern or the vanished drone, or every ship cuts a shadow wedge out of it. |
-| Tracks that fork | GPT, Daughter Tracks · Fable, Chain | Thin straight tracks that end by splitting into a longer and a shorter branch. Two models arrived at this separately. |
-| A plate that breaks | GPT, Spall Press | A broad plate across the nozzle fractures into unequal pieces. |
-| A counted footprint | Fable, Standing shells | The whole extent is visible on the first tick, and time is read from where the hot band stands. |
-
-Under the looks, the three agree on several points.
-
-- **The blast belongs to a point in the world.** On a push, the ship leaves
-  the light. On a detonation, the light leaves the point where the drone was.
-  Fission light 02.1 has the same premise.
-- **Stamping has to stop early.** GPT's arithmetic: at a 0.1 second half-life a
-  stamp keeps half its light after six ticks and a quarter after twelve. An
-  engine that stamps through all eleven ticks of a push is still lit well into
-  the wait.
-- **Size can be told by something other than radius:** the length of a gap, the
-  number of forks, a ring count, one more fracture.
-- **A drawn extent promises a danger radius.** GPT and Fable both ask whether
-  the detonation damages once at its trigger or holds a radius for several
-  ticks. 01 leaves that open.
-
-All three open with a period study. GPT and Fable mark each claim as checked
-against a linked source or recalled from memory; Gemini's checks link no
-source. This step has not re-checked those sources. The links are in the
-original files.
-
-#### Three findings about the layers
-
-These hold for any look and were checked against the code and tokens.
-
-**FX builds light up over ticks.** The surface integrates emission over game
-time. At 60 Hz a stamp painted on one tick enters at about a quarter of its
-strength, and a source held in one place settles at about 2.2 times its stamp.
-None of the three knew this. A flash that must be white on its first frame has
-to be live light on LFX, which is how the plasma rifle's eruption gets its
-core. A mark stamped once at low opacity, as several of the proposals specify,
-would barely show.
-
-**Stacked yellow-green turns towards the interface lime.** Stamps add inside
-the FX surface. The engine body's accent `#c6ff32` at twice its strength clips
-to `rgb(255,255,100)`: lightness 98, chroma 73, hue 101. Brand lime is
-lightness 96, chroma 84, hue 105. Fable found this and its numbers agree with
-the tokens; a held source passes that point on its way to 2.2 times. Its
-answer is to paint FX stamps greener, around `rgb(96,224,72)`, which goes pale
-when stacked. The other interface green is the Android green of the countdown
-numerals and the arrival speed line, at hue 151; both of those are FX light
-already. To stay apart from both, fission's stacked light would sit between
-those hues. Whether fission's light may move away from the engine body's
-accent has not been decided.
-
-**LFX can remove light.** Under hard-light over the void, a source channel `s`
-above one half displays as `2s − 1`. Below one half it displays nothing and
-darkens whatever is beneath it. A deep green has to be painted pale to show at
-all, and a dark mark on LFX takes light out of FX and its glow. Production
-already uses the darkening for the night side of world bodies. Double flash,
-Standing shells and Carbon Paper all depend on it.
-
-#### Against the project's record
-
-The design principles in `docs/design.md` give hulls, natural bodies and light
-their own drawing languages. Hulls are
-flat planes. Light can swell, overlap and dissolve. The game is not retro and
-does not imitate a period look.
-
-The [plasma light study](/lab/studies/plasma-light-2026-11-11) is the nearest
-worked case of light being judged here. Its 02.5 removed three geometric marks,
-a chain of diamonds, thrown rings and a rake of parallel strokes, as far from
-the game, and found a pixel-cell fireball to belong to another genre. Its 02.4
-settled that the body of plasma's light is stamped into FX, with live light on
-LFX kept for the charge at the nozzle. Its 02.6 carried forward a cached
-luminous stamp built as ion's is: a white-hot core, a coloured body and a
-transparent edge, with lobes that drift between frames and two of the game's
-small sparks on each tick. The plasma rifle's eruption in
-production has the same construction: a lobed fireball stamp, drawn live as a
-hot core and into FX as a dimmer copy, growing to 58 u in 0.26 seconds. These
-are plasma's findings and they do not bind fission.
-
-Most of the ten proposals draw light as flat shapes with hard edges: plates,
-discs, bands, wedges and thin lines.
-
-| Idea | Where it meets the project | What could carry over |
-| --- | --- | --- |
-| Flash, ring and debris | Fission light 02.1 already built it from the same colours: a cached flash, a ring stamped on every second tick and fourteen sparks, all in FX. That page records no judgment of it. Thrown rings were removed for plasma. The sheet's spikes and clouds come from the image generator. | Nothing beyond 02.1. |
-| A fixed order in time | An order in time needs no particular shape, so it survives any drawing language and any zoom. The proposal's own shapes are a hard black disc and a rim of 1.1 to 1.5 u, which is under one CSS pixel at this bench's 1× view. By its author's account the disc dims a hull beneath it to a tenth, and a white flash with a blackout on every push is a strobe at about two a second per engine. | The order itself: a live white core, a dip, a slower green swell, with a longer dip for a larger event. A soft dark stamp on LFX could deepen the dip without an edge. |
-| The blast shows the solids it lights | The drone is about 7 u long and 4 u wide at the accepted sizing, which is 3.6 by 2 CSS px at 1×. A print that small cannot be recognised. A stern print needs a silhouette stamp for every hull. Wedges need each ship's outline on every tick. The existing precedent for cutting geometry out of light is the derelict aperture. | Lighting the target. A near-white live core drawn over a hull lifts that hull through hard-light, with no added geometry. |
-| Tracks that fork | Strokes of 1 to 1.25 u are under a pixel at 1×. The arrival speed line is a 2 u green stroke in FX, and GPT names the collapse of a fork into a speed line as its risk. A rake of strokes was removed for plasma. Chain's detonation peaks near 200 strokes a tick; the scene allows 1,024 decorative requests a frame. | The split, carried by the game's own hard sparks: a spark that divides once into a longer and a shorter one. The shared spark pool draws only in fire colour today. |
-| A plate that breaks | Luminous flat polygons are the hull's planes made of light. The game already uses a lit square for an energy cell that the ship collects, and GPT names collectible loot as this proposal's failure. | Three properties that do not need polygons: a front broader than it is long, where every other engine's light is long; an early stop, so dark sky opens between ship and light; two unequal parts. |
-| A counted footprint | Concentric bands read as an instrument. This bench already draws dashed range circles, and its author names radar and a targeting widget as the risk. | Showing the whole extent on the first tick, if the detonation has a radius worth promising. |
-
-#### Options to carry into the bench
-
-The carried ideas are restated here in the construction plasma arrived at:
-cached luminous stamps in FX, a live core on LFX and the game's sparks. They
-combine, and each is one change that can be judged on its own. None is built.
-
-1. **A body left behind.** One lumpy green stamp at the point of ignition,
-   stamped for the first few ticks and then stopped. The drone's is round and
-   sits at the drone's last position, with its ion plume ending on the same
-   tick. The engine's is broader than it is long. Sources: all three, fission
-   light 02.1, and Spall Press for the proportions and the early stop.
-2. **Two beats.** A live white core on LFX for one or two ticks, a dip, then the
-   green swell building in FX and peaking later. The dip is longer for a larger
-   event. Source: Double flash. The plasma charge bead is the precedent for a
-   cached stamp drawn live from engine state.
-3. **Arrives whole, cools inward.** The detonation appears at its full extent on
-   the first tick and retreats to its point. Plasma's eruption grows from a
-   point, so the two families would differ in motion as well as colour.
-   Sources: Plate shadow, Standing shells and the Missile Command notes. It
-   depends on the detonation having a radius.
-4. **Sparks that split.** The game's hard sparks, each dividing once into
-   unequal parts. Sources: Daughter Tracks and Chain.
-5. **The blast lights its target.** The live core is large enough to wash a
-   nearby hull pale for a tick or two. Sources: Carbon Paper's facet tick and
-   Plate shadow's overexposed silhouette.
-
-A lobed stamp in green may read as green plasma. Options 2 and 3 are the
-candidates for separating the families by time and motion.
-
-This study owns the drone's detonation. The engine's push belongs to the open
-[fission light study](/lab/studies/fission-light-2026-11-11); the engine ideas
-recorded here are material for it.
-
-#### Their questions
-
-The project can answer some of what the three asked.
-
-- **Sizes.** The drone is about 7.2 by 4.2 u beside a 17 u launcher; a Wasp is
-  about 32 u long. The bench's fixed views are 0.5, 1, 2 and 4 CSS px per world
-  unit.
-- **Glow.** The 12 px blur is CSS presentation on a stage-wide canvas. It does
-  not scale with camera zoom.
-- **Fade.** A translucent black fill on every timestep, half-life 0.1 seconds,
-  with no periodic cleanup.
-- **Camera.** The standard camera keeps the ship and its star in view together
-  and changes zoom in a few steps. How far a blast left in the world travels
-  across the screen depends on the view.
-- **LFX order.** Its marks share one canvas and are drawn in pass order,
-  world-body light first. The hard-light blend applies to the finished layer.
-
-These remain open.
-
-- Whether the detonation has a damage radius, and for how many ticks.
-- Whether fission's light may be greener than the engine body's accent, and
-  whether its first frame may be neutral white.
-- How much flash, how large and how often, is acceptable with several fission
-  engines and drones in view.
-- How the nozzle's travel over a push compares with the size of the light left
-  behind. It has not been computed for any hull.
+</details>
 
 </section>
 
 <section>
 
-### 02.7 / Fission light: what it says, then how it is painted
+### 02.7 / The flash and what lingers
 
-At 02.6 the study turned from the drone to a question underneath it: the game
-has no language for fission light. The drone's detonation and the fission
-engine's push will both use that language. Neither is the subject of this step.
+The white flash gives the detonation its violence. The green that lingers gives
+it its character: something dangerous has passed through this space. Removing
+the broad green wake solved a problem with concentric rings, but it also took
+much of the colour out of the burst. The spark trails and the light on nearby
+hulls can carry that green while the centre burns white.
+[Colour comparison](/studies/drone-launcher-2026-11-25/02-7-light-comparison.html)
 
-The first version of this step, built on 26 November 2026, was a bench that
-offered 02.6's marks as controls: a core, leaf shards, branching tracks and
-rings, each with its counts, sizes and durations. It was removed the same day.
-Nothing on its screen belonged to the game's light, because it began from the
-marks. The plasma studies had already found the order that works: settle what
-the light has to express, then paint that onto the layers.
+The fork is worth keeping for the instant one spark becomes two. Its shape is
+what fails: parallel sides and square ends give each branch the solidity of
+the ship’s low-poly hull. Adding glow still leaves a solid bar at its centre.
 
-#### What fission light says
+The sun contributes one idea to the drone: radiation travels outward. A thin
+circle conveys that at the sun’s scale. Seen close to a drone, its continuous
+edge makes the radius look like a range marker. A ship lighting up as the wave
+reaches it gives that same distance a consequence.
 
-The model is fission in space, told in arcade language.
+</section>
 
-1. **Nothing, then everything.** There is no gathering and no warning.
-2. **A flash frame, kept local.** At the source is a point too bright to have a
-   shape. For a frame or two everything within its reach is caught in that
-   light, as an arcade bomb flashes the whole screen, but only around the
-   event.
-3. **Matter answers.** What faced the flash keeps showing it after the flash is
-   gone. The event appears on the things it reached.
-4. **The remains leave.** A thin shell moves outward at a speed the eye can
-   follow. It is the only part that travels.
-5. **The place stays wrong** for as long as the light surface holds it.
 
-It should feel frightening, fatal, final and immoral. In the designer's words,
-these are the weapons of a lunatic. Fission light does not aim: it reaches the
-target, a bystander and its sender alike.
 
-The physics is mocked from the real thing. Without air there is no fireball, no
-blast wave and no sound. Nearly all the energy leaves as one burst of radiation
-in every direction, faster than a tick. That is the primary effect. The
-secondary effects are what matter does when the burst arrives, and the bomb's
-own remains leaving as a shell. There is no third stage, because blast, fire
-and fallout need an atmosphere. The double flash recorded in 02.6 also needs
-air, so it is not part of this language.
+<section id="drone-detonation">
 
-Ion is a line from one place to another, aimed and clean. Plasma is a body of
-flame, gathered and thrown. Fission has neither a line nor a body.
+### 02.8 / Closed — the fission explosion in the game’s FX and LFX language
 
-Two things are left open in this statement: what the source looks like beyond
-its flash, and which part does the harm.
+02.7 found a problem with the drawing of the explosion: the sparks had the
+hard edges of hull plates, and the radiation pulse read as a drawn circle.
+The question for 02.8 was how Void Drift’s own effects language could express
+the fork of a spark and the outward sweep of radiation.
 
-#### How the layers say it
+The proposed bench gave the sparks pale heads and fading green trails, and
+broke the pulse into arcs. It could show those marks in motion or hold them
+on a frame. It gave no basis for relating them to the game’s existing effects
+or judging whether they belonged in this explosion. Drawing them on FX and
+LFX answered only which layers carried them.
 
-LFX is live light from current state, and the game already uses it to light
-solids. FX is what stays in the world and fades. Each part of the statement is
-painted with a kind of mark the game already has.
+**The attempt failed.** The tooling had no meaningful connection to the study
+question, the game’s visual language or its use of effects in play. No
+treatment from this step was selected. Model over-correction and a failure of
+designer direction are equally plausible explanations for how the step went
+off course.
 
-| Part | Layer | Painted as | The game's precedent |
-| --- | --- | --- | --- |
-| The flash | LFX, with a copy in FX | A soft cached stamp, white well past its centre, for two ticks. | The plasma rifle's eruption: a live core and a copy that stays. |
-| The flash frame | LFX | Even pale light across the whole reach for one tick, weaker on the next, then gone. | None in the game. It is the arcade screen flash kept local. |
-| Lit faces | LFX, with a faint copy in FX | A glow on the side of each ship that faces the charge: white during the flash, then green and cooling. | The glow on a ship's planet-facing side in an atmosphere, and the lit side of a world body. |
-| Sparks thrown back | FX | Hard sparks leaving a lit face toward the source. | Impact sparks. |
-| The shell | FX for the band and its wake, LFX for its bright front | A coloured band with a narrow bright core, growing from the source to the limit of the reach. | The impact plume: a wide coloured stroke under a narrow pale one. |
-| Sparks leaving with the shell | FX | Streaks that follow the shell outward. | Impact sparks; their trails are the surface's memory. |
-| The afterglow | FX | The source keeps feeding a cooling glow into the surface. | The trace a plasma charge leaves. |
+<details>
+<summary>Frame from the failed treatment</summary>
 
-How much of the flash a ship takes follows one rule. Inside the fatal radius it
-takes all of it. Beyond that the share falls with the square of the distance,
-and at the reach limit it is nothing. When the shell passes a ship, the ship
-answers a second time with a short glow and a few sparks; that answer is strong
-only close to the source.
+<figure>
+  <img src="/studies/drone-launcher-2026-11-25/02-8-retired-light.png" alt="The proposed explosion with forked green spark trails and faint arcs spreading past the nearby ships." loading="lazy" />
+  <figcaption>The retired bench at 1.33 s.</figcaption>
+</figure>
 
-#### Where 02.6 comes in
+</details>
 
-02.6 read its ideas from pictures. Here each one either found a job inside the
-statement or has not been tried yet.
+</section>
 
-| Idea in 02.6 | In this step |
+<section id="outgoing-sparks">
+
+### 02.9 / How should a spark leave a fork of green light?
+
+The long tracks in 02.7 give the explosion its reach. The split gives it a
+direction you can read in a fraction of a second. The aim is to keep that
+force at flight scale and give each branch enough detail to hold up when the
+action stops. The square ends and uniform width are the part to reconsider.
+
+In this treatment a spark lays down green light across the full distance it
+travels. Each track is brightest down its centre and fades across its width.
+FX holds that light where it fell. A small pale tip on LFX moves ahead each
+frame, uncovering the green behind it. At a fork, both tips should be legible
+while the parent track still carries light.
+
+The centre emits at ignition. Each hull throws sparks back toward the charge when the expanding wave reaches it.
+A spark thrown from a struck hull uses the same light, speed, lifetime and
+fork as a spark from the centre. The hit sets its origin, direction and count.
+
+Moving the fork along the track changes how long the eye follows one spark
+before it becomes two. The two branch speeds determine whether the tips stay
+together or one pulls ahead. Width, tip shape and brightness can be varied at
+that same instant to see which part gives the fork its direction.
+
+The comparison uses the same detonation, including its flash, expanding circle
+and light on the ships. At 1×, does the fork still have the reach and brightness
+of 02.7? In a held frame at 4×, can the eye follow both branches to their tips?
+
+The selected track is 4.5 u wide at 1× brightness, with emission falling by
+40% over a spark’s life. Its round, soft-edged tip is 0.7× size at 1× brightness.
+At normal speed the fork forms 32% along the path, opens at 0.8×, and sends
+the two branches away at 1.05× and 0.35× their incoming speed.
+
+</section>
+
+<figure>
+  <img src="/studies/drone-launcher-2026-11-25/02-9-selected-fork.webp" alt="Green tracks from the detonation and the struck hull fork into pale tips." loading="lazy" />
+  <figcaption>Selected 02.9 values at 4×, paused 20 ticks after detonation.</figcaption>
+</figure>
+
+<section id="powered-intercept">
+
+### 02.10 / Detonation in a powered intercept
+
+From the carrier, a drone has to read through three movements: its own pursuit,
+the target’s crossing course and the carrier’s turn away after launch. The Fighter launches
+one drone at a powered Scout. The 02.5 pilot flies the intercept. The charge
+uses the selected 02.9 sparks wherever the wave strikes a hull.
+
+The drone coasts unarmed after ejection. Its first powered thrust lights the ion
+plume and arms the proximity trigger. The trigger measures clearance from the Scout’s collision hull, adjustable
+from 5 to 30 u. At detonation the drone’s drive cuts out. Its hull can disappear
+immediately, coast through the flash, or carry on for 0.2 s. Does the flash
+account for its disappearance while both ships are still moving?
+
+</section>
+
+<figure>
+  <video controls playsinline preload="metadata" src="/studies/drone-launcher-2026-11-25/02-10-powered-intercept.webm" aria-label="Powered drone intercept from the carrier" style="width: 100%; height: auto;"></video>
+  <figcaption>Carrier view at 1×, 15 u fuse and immediate hull removal. The clip runs from 0.50 to 4.65 s of game time, sampled at 20 frames per second. Detonation occurs at 3.55 s.</figcaption>
+</figure>
+
+<section id="game-fit">
+
+## 03 / Fit with the game
+
+Exploration closed with the powered intercept in 02.10. From the carrier,
+the ejection, unpowered coast, ion-powered pursuit and fission burst read as
+one attack. The separation matters: the pilot can follow what left the
+launcher and see which ship it reached. This is the reference for the
+drone’s flight and appearance. The launch and fuse distances are settled below. Pursuit and return retain the 02.5 ranges: pursue an enemy within 500 u of the drone (strictly less than 500 u); otherwise return if the carrier is also strictly within 500 u. Outside both ranges the drone drifts. Both distances are centre to centre.
+
+### Pursuit and damage
+
+The drone pursues enemies. Its armed fuse triggers within **15 u of the target
+hull**. If detonating would catch its carrier within the **30 u radiation
+radius**, the drone holds fire and keeps pursuing.
+
+At detonation, objects within 30 u take **30 points** of radiation damage.
+The expanding particle wave travels out to **180 u** from the detonation
+point, matching the circle in 02.10. Each object takes **3 points once** when
+the wave front reaches it. Individual spark trails show the motion; the wave
+front determines the hit. A target caught by both takes 33 points. The wave
+can catch the carrier too. Derelicts can take incidental damage even though
+the drone will never select one as a target.
+
+### Destruction and recovery
+
+Entering a sun’s danger zone or striking a planet’s surface forces a detonation
+even when the carrier is inside the radiation radius. A pilot can bait a
+pursuing drone into terrain, but the blast can still reach the pilot.
+
+A drone has 4 points of health and can be hit by another drone’s explosion.
+A fresh drone survives one 3-point wave with 1 point left. The 30-point
+radiation hit destroys it outright. A drone destroyed by damage vanishes
+without detonating, so shooting one down or catching several in a blast
+cannot start a chain of explosions.
+
+Building one drone costs 2 energy. When a returning drone touches any part
+of its carrier, it is consumed and returns 2 energy. Recovering an intact
+drone refunds its full build cost.
+
+### Launch and reload
+
+The launcher enters the game ready to fire. When an enemy is within 250 u
+of the carrier and a drone slot is available, it launches immediately (0 s).
+It then stays inactive for a 5 s reload. The 250 u range governs launch;
+the delay falls between shots. Three ready launchers can therefore
+put three drones into flight together. The airborne cap is three per carrier;
+a fourth launcher cannot raise it.
+
+### Targeting and independence
+
+Enemy selection and switching belong to the game’s shared targeting rules.
+Once launched, the drone operates independently and can finish an attack
+after its carrier is destroyed. Carrier loss removes its recovery destination.
+
+</section>
+
+<section id="adoption-map">
+
+## 04 / Map the implications
+
+03 settles the weapon’s behaviour. Adoption crosses two existing boundaries:
+a fitted launcher belongs to its ship, while a released drone can outlive
+that ship. The flash belongs to rendering, while a wave that can hit a ship
+after it moves belongs to the combat simulation.
+
+| Owner | What adoption would require |
 | --- | --- |
-| The white first frame and the arcade flash, from the period notes | The flash and the local flash frame. |
-| The blast shows the solids it lights (Carbon Paper, Plate shadow) | The centre of the statement: lit faces. Shadows and silhouette prints are not tried. |
-| Rings and a counted footprint (Standing shells, fission light 02.1) | The shell, as one front drawn the way the game draws an impact. Counted or stepped rings are not used. |
-| Tracks that fork (Daughter Tracks, Chain) | Sparks that divide once into a faster and a slower one, behind a switch. |
-| A plate that breaks (Spall Press) | Spall is what a struck face throws off, so it became the sparks thrown back. Luminous shards are not tried. |
-| A fixed order in time (Double flash) | The order here is flash, answer, shell, afterglow. The black gap is left out. |
-| Stop stamping early, FX builds up over ticks, greener ink, pale colours on LFX | Used as found. |
+| **Drone launcher** · proposed `docs/specs/game/drone-launcher/spec.md` | Own the cycle from ready mount to independent craft, then detonation, destruction or recovery. Record 03’s distances, damage, energy, reload and carrier-wide cap here. Use 02.5 for flight behaviour, 02.9 for the spark recipe and 02.10 for the carrier’s view of an intercept. |
+| **Parts, Ships and Hangar** · `schemas/loadout.ts`, `build-renderer.ts` | Give the launcher a catalog entry, compatible mounts, mass and shared artwork for fitting and flight. Apply existing weapon permission and energy rules at launch. Each mount has a reload clock; all mounts on a carrier share three airborne slots. Recovery credits the carrier once on hull contact. |
+| **Targeting and Ion Point Defence** · `targeting.ts`, `salvage.ts` | Represent an airborne drone as an encounter body with a stable identity. A launcher requests an enemy; point defence must be able to acquire and hit a hostile drone. Keep enemy selection and switching in the shared targeting contract. A derelict can receive blast damage without qualifying as a pursuit target. |
+| **Flight, combat and world hazards** · `simulation.ts`, `salvage.ts`, `derelict-collision.ts` | The encounter owns the drone after launch. Its owner identity supports recovery and the safety check after it leaves the rail. Resolve armed proximity, sun danger, planet contact and destruction at simulation time. Apply instant radiation and remember which bodies each expanding wave has crossed. Two waves can each hit the same hull; one wave can hit it only once. |
+| **Render and effects** · `flight-frame.ts`, `docs/specs/factory/effects/spec.md` | Present the rail departure and ion thrust from flight state. Use the detonation and wave contacts from combat to place the flash and counter-sparks. Keep green tracks in the shared FX history and pale tips on LFX. A camera change or hidden layer must have no bearing on damage. |
 
-</section>
-
-<InstrumentBand>
-  <FissionBench client:visible label="Fission light · a bare charge beside three ships" />
-</InstrumentBand>
-
-<section>
-
-A bare charge goes off at a fixed point in space every 2.5 seconds, the first
-at 1.00 s. Three ships are at rest around it: a Scout at 35 u, inside the fatal
-radius, a Fighter at 78 u and a Wasp at 125 u. With the starting values they
-take 100%, 26% and 10% of the flash. There is no drone, launcher or engine in
-the scene, and nothing takes damage. The star is present with the ships outside
-its gravity field; there are no planets.
-
-The scene opens six ticks after the first charge at 4×. Drag Time back to
-1.00 s to see the flash frame itself, and forward to follow the shell. The
-controls are in the menu in the top-right corner, grouped under the five
-sentences of the statement. Layers shown hides World, FX or LFX without
-changing what is painted. Ink switches between the engine body's yellow-green
-and the greener set from 02.6. The dashed circles mark the fatal radius and the
-reach limit. The readout gives each ship's share of the flash and the number of
-live sparks.
-
-- The sparks are study sparks in fission ink, drawn in the form of the game's
-  impact sparks. The game's shared spark pool draws only in fire colour.
-- One charge costs fewer than ten draw calls a tick on each layer, with all
-  sparks in a single stroke. Frame time has not been measured.
-- The starting values are a first guess. They stay in this browser, and Export
-  saves them as a file so a version worth keeping can be recorded here.
-- The flight bench of 02.5 stays live above for the unsettled ranges.
-
-#### What this step leaves open
-
-- Whether this reads as frightening and final, or as a pretty burst.
-- What the source is beyond its flash.
-- Which part harms: the instant flash, the shell, or both.
-- Whether the flash frame over empty space belongs, or only the lit solids.
-- How it reads on moving ships and with several charges at once.
-- The ideas from 02.6 that are not tried here: shards from a struck face, and
-  shadows.
+**Accepted adoption scope.** The Drone Launcher has **17.5 mass**, fits
+**weapon slots**, and is **Playground-only in 0.7.x**. The 250 u launch range
+in 03 supersedes the 450 u explored in 02.5. Pursuit and return retain the
+two 500 u ranges from that step. Shared targeting owns enemy selection.
+The spark treatment applies to drone detonations and their hit sparks.
+The production fitting and combat rules belong to subsequent spec and
+implementation work.
 
 </section>

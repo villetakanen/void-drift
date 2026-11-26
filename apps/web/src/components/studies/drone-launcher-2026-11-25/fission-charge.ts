@@ -26,8 +26,8 @@ import {
   FissionLightSchema,
   FissionSparks,
   type Solid,
+  SparkSettingsSchema,
   shellArrival,
-  sparkColour,
   stampCharge,
 } from "./fission-light";
 
@@ -35,10 +35,13 @@ import {
 // space, beside three ships at rest. There is no drone, launcher or engine in
 // the scene: it exists to judge the light. Nothing takes damage.
 
+export const SparkTreatment = z.enum(["02.7 strokes", "Green tracks"]);
 export const StagingSchema = z
   .object({
     /** Dashed guides at the fatal radius and the reach limit. */
     guides: z.boolean(),
+    sparkTreatment: SparkTreatment.optional(),
+    sparkSettings: SparkSettingsSchema.optional(),
   })
   .strict();
 export const DEFAULT_STAGING = StagingSchema.parse({ guides: true });
@@ -73,16 +76,29 @@ export const CHARGE_SCENE = FlightSceneDocumentSchema.parse({
   opening: { burn: "course", view: "4x", tick: FIRST_CHARGE + 6 },
 });
 
+export const HullTimingSchema = z.enum([
+  "At detonation",
+  "After the flash",
+  "Keep hull visible",
+]);
+export type HullTiming = z.infer<typeof HullTimingSchema>;
+
 export function chargeExperiment(
   lightInput: unknown,
   stagingInput: unknown = DEFAULT_STAGING,
   report: (text: string) => void = () => {},
+  drone?: { timing: HullTiming; draw: (ctx: CanvasRenderingContext2D) => void },
 ): FlightExperiment {
   const light: FissionLight = FissionLightSchema.parse(lightInput);
   const staging = StagingSchema.parse(stagingInput);
   const life = chargeLife(light);
+  const greenTracks = staging.sparkTreatment === "Green tracks";
   return {
-    label: "Fission light 02.7 · a bare charge beside three ships",
+    label: staging.sparkTreatment
+      ? "02.9 · outgoing sparks"
+      : drone
+        ? "Drone detonation 02.8 · sparks and radiation"
+        : "Fission light 02.7 · a bare charge beside three ships",
     create(sim) {
       applyYellowFamilyProfile(
         sim.star,
@@ -106,7 +122,9 @@ export function chargeExperiment(
         },
       ];
       const charges: Charge[] = [];
-      const sparks = new FissionSparks();
+      const sparks = new FissionSparks(
+        greenTracks ? staging.sparkSettings : undefined,
+      );
       let now = 0;
       let current = solids();
       report("Dark · first charge at 1.00 s");
@@ -116,6 +134,7 @@ export function chargeExperiment(
           current = solids();
           if (
             tick >= FIRST_CHARGE &&
+            (!drone || tick === FIRST_CHARGE) &&
             (tick - FIRST_CHARGE) % CHARGE_EVERY === 0
           ) {
             const charge = {
@@ -124,7 +143,12 @@ export function chargeExperiment(
               seed: charges.length + 1,
             };
             charges.push(charge);
-            emitFlashSparks(sparks, charge, current, light);
+            emitFlashSparks(
+              sparks,
+              charge,
+              staging.sparkTreatment ? [] : current,
+              light,
+            );
           }
           sparks.step(STEP);
           const latest = charges.at(-1);
@@ -136,7 +160,13 @@ export function chargeExperiment(
           for (const solid of current) {
             const distance = Math.hypot(solid.x - latest.x, solid.y - latest.y);
             if (shellArrival(light, distance) === age)
-              emitShellSparks(sparks, latest, solid, light);
+              emitShellSparks(
+                sparks,
+                latest,
+                solid,
+                light,
+                !!staging.sparkTreatment,
+              );
           }
           const caught = current
             .map((solid) => {
@@ -169,6 +199,29 @@ export function chargeExperiment(
                   body.rotation,
                   BUILD_FLIGHT_SCALE,
                 );
+              if (drone) {
+                const age = now - FIRST_CHARGE;
+                const visible =
+                  age < 0 ||
+                  drone.timing === "Keep hull visible" ||
+                  (drone.timing === "After the flash" &&
+                    age < light.flash.ticks);
+                const x = CHARGE_AT.x + Math.min(0, age) * 1.5;
+                const y = CHARGE_AT.y;
+                const view = frame.camera.getViewRect();
+                if (
+                  visible &&
+                  x + 8 >= view.x &&
+                  x - 8 <= view.x + view.width &&
+                  y + 8 >= view.y &&
+                  y - 8 <= view.y + view.height
+                ) {
+                  ctx.save();
+                  ctx.translate(x, y);
+                  drone.draw(ctx);
+                  ctx.restore();
+                }
+              }
               if (!staging.guides) return;
               const zoom = frame.camera.zoom;
               ctx.save();
@@ -202,7 +255,7 @@ export function chargeExperiment(
             name: "Fission live light",
             layer: "lfx",
             space: "world",
-            draws: "The flash frame, lit faces and shell front of each charge",
+            draws: "The flash, lit faces and radiation pulse of each charge",
             source: "study/drone-launcher/fission-light.ts",
             draw(frame, ctx) {
               const view = frame.camera.getViewRect();
@@ -215,8 +268,10 @@ export function chargeExperiment(
                   charge.y - reach > view.y + view.height
                 )
                   continue;
-                drawCharge(ctx, charge, current, light, now);
+                drawCharge(ctx, charge, current, light, now, !!drone);
               }
+              if (drone || greenTracks)
+                sparks.drawHeads(ctx, light.ink, view, greenTracks);
             },
           },
         ],
@@ -224,7 +279,8 @@ export function chargeExperiment(
           for (const charge of charges)
             stampCharge(ctx, pass, charge, current, light, now);
           ctx.save();
-          sparks.stamp(ctx, pass, sparkColour(light.ink));
+          if (drone) sparks.stampGlints(ctx, pass, light.ink);
+          else sparks.stamp(ctx, pass, light.ink, greenTracks);
           ctx.restore();
         },
       };
