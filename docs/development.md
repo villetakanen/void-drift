@@ -66,7 +66,10 @@ HEAD and selects the checks that fit, through the same recorded runner:
 Full `pnpm verify` is for a release, following the Release section. Do not run it,
 or the emulator and browser suites, for a commit that `verify:changed` did not
 select them for. A changed-mode report is partial verification, like a quick run.
-For spec edits, run `pnpm check:specs docs/specs/<feature>`. The checker recognises the format of each file, so a Blueprint/Contract parent and a child written with the current `write-spec` template can share the same tree.
+For spec edits, run `pnpm check:specs docs/specs/<feature>`. The current
+`write-spec` template uses Context, Blueprint and Scenarios as its three H2
+sections. The checker also supports the previous lean format and the
+Blueprint/Contract format in the same tree.
 
 `pnpm verify:quick` runs repository checks (including factory regression tests), lint, types
 and unit tests through the same recorded runner. It exits nonzero on failure or

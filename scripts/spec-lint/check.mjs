@@ -216,10 +216,19 @@ function lintTree(root) {
     const text = fs.readFileSync(abs(f), "utf8");
     const lines = scan(text);
     // Each spec declares its own layout, even in a mixed parent/child tree.
-    const lean = lines.some(
-      (line) =>
-        !line.fm && !line.fence && /^ {0,3}## Scenarios[ \t]*$/.test(line.text),
+    const headings = new Set(
+      lines
+        .filter(
+          (line) =>
+            !line.fm &&
+            !line.fence &&
+            /^ {0,3}## (?:Context|Blueprint|Scenarios)[ \t]*$/.test(line.text),
+        )
+        .map((line) => line.text.trim()),
     );
+    const lean =
+      headings.has("## Scenarios") ||
+      (headings.has("## Context") && headings.has("## Blueprint"));
     specInfo.set(f, { lean, links: linkTargets(lines, abs(f)) });
     v.push(...lintFile(text, lines, show(f), lean));
   }

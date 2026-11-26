@@ -219,7 +219,7 @@ test("lean format enforces the feature name, scenario boundaries and single veri
     [
       "## Scenarios",
       "## Blueprint\n\n## Scenarios",
-      /optional Architecture and Constraints/,
+      /Context, Blueprint and Scenarios in that order/,
     ],
     [
       "verified: []",
@@ -238,11 +238,70 @@ test("lean format enforces the feature name, scenario boundaries and single veri
   }
 });
 
+const currentSpec = leanSpec.replace(
+  "Readers can export selected rows.",
+  "## Context\n\nReaders can export selected rows.\n\n## Blueprint\n\nThe exporter writes one row per selection.",
+);
+
+test("current specs require substantive Context, Blueprint and Scenarios in order", (t) => {
+  const lint = fixture(t);
+  const result = lint(currentSpec);
+  assert.equal(result.status, 0, result.stderr + result.stdout);
+
+  for (const [from, to, message] of [
+    [
+      "## Context\n\nReaders can export selected rows.\n\n",
+      "",
+      /in that order/,
+    ],
+    ["## Blueprint", "## Architecture", /in that order/],
+    ["## Scenarios", "## Examples", /in that order/],
+    [
+      "## Scenarios",
+      "## Constraints\n\nNo external calls.\n\n## Scenarios",
+      /in that order/,
+    ],
+    [
+      "# Export",
+      "# Export\n\nIntroductory prose.",
+      /start Context immediately/,
+    ],
+    ["Readers can export selected rows.", "", /add content to ## Context/],
+    [
+      "The exporter writes one row per selection.",
+      "### Empty",
+      /add content to ## Blueprint/,
+    ],
+    ["Feature: Export", "Feature: Empty", /repeat the spec title/],
+    ["When I request", "And I request", /Given, When and Then/],
+    [
+      "verified: []",
+      "verified: [{ by: human:a, at: 2026-11-19 }, { by: human:b, at: 2026-11-20 }]",
+      /at most one human/,
+    ],
+  ]) {
+    const invalid = lint(currentSpec.replace(from, to));
+    assert.equal(invalid.status, 1, invalid.stderr + invalid.stdout);
+    assert.match(invalid.stdout, message);
+  }
+
+  const unordered = lint(
+    currentSpec.replace(/## (Context|Blueprint)/g, (_, key) =>
+      key === "Context" ? "## Blueprint" : "## Context",
+    ),
+  );
+  assert.equal(unordered.status, 1, unordered.stderr + unordered.stdout);
+  assert.match(unordered.stdout, /in that order/);
+});
+
 test("format selection and attachment provenance follow each spec in a mixed tree", (t) => {
   const root = mkdtempSync(join(tmpdir(), "void-drift-mixed-specs-"));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   const child = join(root, "export");
   mkdirSync(join(child, "attachments"), { recursive: true });
+  const olderChild = join(root, "archive");
+  mkdirSync(olderChild);
+  writeFileSync(join(olderChild, "spec.md"), leanSpec);
   const reviews =
     "verified: [{ by: human:a, at: 2026-11-19 }, { by: human:b, at: 2026-11-20 }]";
   // A heading quoted inside a fence does not change the parent's format.
@@ -253,7 +312,7 @@ test("format selection and attachment provenance follow each spec in a mixed tre
   );
   writeFileSync(
     join(child, "spec.md"),
-    leanSpec.replace(
+    currentSpec.replace(
       "selected rows.",
       "selected rows. [Columns](attachments/columns.md)",
     ),

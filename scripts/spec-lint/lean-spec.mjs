@@ -36,13 +36,20 @@ export function lintLeanSpec(ls, bad) {
   if (/^# Spec:/i.test(title))
     bad("headings", "title must omit the Spec: prefix");
   const sectionNames = heads.slice(1).map((l) => l.text.trim());
-  const want = ["## Architecture", "## Constraints"]
-    .filter((key) => sectionNames.includes(key))
-    .concat("## Scenarios");
+  const current = sectionNames.some(
+    (heading) => heading === "## Context" || heading === "## Blueprint",
+  );
+  const want = current
+    ? ["## Context", "## Blueprint", "## Scenarios"]
+    : ["## Architecture", "## Constraints"]
+        .filter((key) => sectionNames.includes(key))
+        .concat("## Scenarios");
   if (sectionNames.join("\n") !== want.join("\n")) {
     bad(
       "headings",
-      "use optional Architecture and Constraints, then Scenarios",
+      current
+        ? "use Context, Blueprint and Scenarios in that order"
+        : "use optional Architecture and Constraints, then Scenarios",
     );
   }
   const section = (heading) => {
@@ -51,8 +58,24 @@ export function lintLeanSpec(ls, bad) {
       ? []
       : ls.slice(heads[i].n, heads[i + 1] ? heads[i + 1].n - 1 : ls.length);
   };
-  if (!section(title).some((l) => !l.fence && /\S/.test(l.text)))
+  if (current) {
+    if (section(title).some((line) => line.text.trim())) {
+      bad("headings", "start Context immediately after the title");
+    }
+    for (const key of ["## Context", "## Blueprint"]) {
+      if (
+        sectionNames.includes(key) &&
+        !section(key).some(
+          (line) =>
+            !line.fence && /\S/.test(line.text) && !/^\s*#/.test(line.text),
+        )
+      ) {
+        bad("headings", `add content to ${key}`);
+      }
+    }
+  } else if (!section(title).some((l) => !l.fence && /\S/.test(l.text))) {
     bad("purpose", "open with a sentence explaining the feature");
+  }
   for (const line of prose) {
     if (
       /^\s*(?:#{1,6}\s+|\*\*|__)?(?:acceptance criteria|acceptance criterion|definition of done|regression guardrails|required behavio[u]?r)(?:\s*[:#*_]|\s*$)/i.test(
@@ -115,6 +138,7 @@ export function lintLeanSpec(ls, bad) {
 
   for (const key of ["## Architecture", "## Constraints"]) {
     if (
+      !current &&
       sectionNames.includes(key) &&
       !section(key).some((l) => /\S/.test(l.text) && !l.text.startsWith("#"))
     ) {
