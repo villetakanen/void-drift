@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Void Drift — Fission effects</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>html{background:#101019;color:#e8eaed}body{max-width:1000px;margin:auto;padding:3vw;font:17px/1.55 system-ui}h2,h3{margin-top:2.4em}h3{color:#d8ed99}a{color:#a5dfec}figure{margin:1em 0}img{width:100%;height:auto}figcaption{display:none}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:.6em;border-bottom:1px solid #444451;vertical-align:top}table col{width:auto!important}</style>
+</head>
+<body>
+<h1 id="void-drift-a-nuclear-family-of-explosions">Void Drift · A
+nuclear family of explosions</h1>
+<p><strong>I’d build Spall Press.</strong> At the first tick of thrust,
+a broad plate of light forms across the nozzle. The ship moves forward,
+the plate breaks backward, and a strip of black opens between them. That
+strip does more to sell the push than a longer or brighter plume would.
+The drone gets the same material and a different action: its plate
+breaks open in three directions around the point where the drone
+disappeared.</p>
+<h2 id="what-to-take-from-the-period">What to take from the period</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Reference</th>
+<th>Period observation</th>
+<th>Transfer to Void Drift</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Star Control II — Super Melee</strong></td>
+<td><strong>Checked.</strong> The Thraddash Torch accelerates and leaves
+a damaging wake that a pursuer can fly into. The Shofixti Scout carries
+a close-range detonation capable of killing a much larger ship. One
+event draws a path behind a surviving craft. The other ends at the
+position of a disappearing craft. <a
+href="https://www.mobygames.com/game/179/star-control-ii/screenshots/">Melee
+screenshots, including “Ka-blooey!”</a> · <a
+href="https://wiki.uqm.stack.nl/Torch">Torch</a> · <a
+href="https://wiki.starcontrol.com/index.php/Glory_Device">Glory
+Device</a></td>
+<td>Let the player see <strong>what leaves the origin</strong>. For
+thrust, it’s the ship. For detonation, it’s the light. Since Void
+Drift’s engine wake is assumed harmless, let its contrast fall as soon
+as it detaches.</td>
+</tr>
+<tr class="even">
+<td><strong>Master of Orion I</strong></td>
+<td><strong>Checked against a documented comparison with DOS
+v1.3.</strong> A tester found that ordinary hits scaled the explosion
+with damage, while eliminating the last ship in a stack produced the
+large explosion even on a small final hit. A reimplementation
+accidentally reversed those cases. <a
+href="https://www.mobygames.com/game/212/master-of-orion/screenshots/dos/570439/">DOS
+combat screenshot</a> · <a
+href="https://github.com/1oom-fork/1oom/issues/1">Comparison</a></td>
+<td>Give destruction a distinct <strong>ending pose</strong>. A drone
+can deliver its full payload against a surviving target. Reserve the
+loss of the target silhouette for an actual kill.</td>
+</tr>
+<tr class="odd">
+<td><strong>Master of Orion II</strong></td>
+<td><strong>Checked.</strong> A warp-drive failure can destroy the ship
+and damage neighbours. A player account identifies the breach by its
+blue explosion. The Plasma Web has a different sequence: projectile,
+attachment, then diminishing damage over later turns. <a
+href="https://www.mobygames.com/game/182/master-of-orion-ii-battle-at-antares/screenshots/">Battle
+screenshot in the Windows gallery</a> · <a
+href="https://www.orionsector.com/pages/moo3/etc/moo2shiparchive.php">Player
+account</a> · <a
+href="https://videolamer.com/master-of-orion-2-the-battle-at-antares">Drive
+failure</a> · <a
+href="https://www.manualshelf.com/manual/games-pc/master-of-orion-ii-battle-at-antares/user-guide-english/page-96.html">Plasma
+Web manual entry</a></td>
+<td>Colour can name the material. <strong>What the light
+follows</strong> tells the player what that material is doing. Keep a
+spent detonation in world space. Light that clings to the enemy suggests
+an ongoing condition.</td>
+</tr>
+<tr class="even">
+<td><strong>Asteroids — arcade</strong></td>
+<td><strong>Checked against the vector ROM.</strong> The ship explosion
+has six short strokes, each with its own velocity. Shot impacts use four
+slightly expanded versions of one shrapnel pattern to bridge the
+hardware’s coarse scale steps. Two kinds of destruction read differently
+using monochrome marks. <a
+href="https://computerarcheology.com/Arcade/Asteroids/VectorROM.html">Vector
+drawings and original tables</a></td>
+<td>Author the relationship between pieces. Two fragments that visibly
+fitted together a moment ago convey rupture at a size where fourteen
+random sparks convey glitter.</td>
+</tr>
+<tr class="odd">
+<td><strong>Missile Command — arcade</strong></td>
+<td><strong>Checked.</strong> A gameplay still shows narrow red incoming
+tracks and a filled cyan blast. The video hardware allowed cheap palette
+cycling for explosions. A single bounded shape could change internally
+while its occupied area remained legible. <a
+href="https://static1.squarespace.com/static/555e5d9ae4b0b614ae7344b0/t/55679970e4b0e9e465255184/1432852848109/MissileCommand.pdf">Gameplay
+screenshot, first page</a> · <a
+href="https://6502disassembly.com/va-missile-command/videomem.html">Video
+memory</a></td>
+<td>Spend colour changes <strong>inside</strong> one silhouette. An
+expanding filled boundary makes a strong promise about danger radius.
+Use that promise only when the game can honour it.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="three-fission-families">Three fission families</h2>
+<p>The three concept sheets each show six moments per subject. They are
+shape studies. The timings and dimensions below are the intended
+gameplay versions, and the sheets keep the target visible to give a
+consistent scale reference.</p>
+<p>I use <strong>L</strong> for the firing fighter’s on-screen length,
+assumed <strong>32 px</strong> here. Tick 0 is the first physics tick of
+thrust or detonation. Thrust occupies ticks 0–10. The next push begins
+at tick 27 or 54. At the supplied FX half-life, a stamp retains 50%
+after six ticks, 25% after twelve and about 6% after twenty-four.
+Stopping emission early therefore matters more than choosing a darker
+final swatch.</p>
+<h3 id="spall-press">1. Spall Press</h3>
+<p>A fission pulse makes a transverse plate of light that breaks like a
+glazed tile. The engine shears it rearward in two unequal pieces, while
+the drone splits it around a three-way seam.</p>
+<figure>
+<img src="images/spall-press.png" alt="Spall Press timing sheet" />
+<figcaption aria-hidden="true">Spall Press timing sheet</figcaption>
+</figure>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Ticks</th>
+<th>Engine push</th>
+<th>Drone burst</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>0–1</strong></td>
+<td>A pale stroke sits flush across the nozzle on the first thrust tick.
+It widens to <strong>0.65 L</strong> across and just <strong>0.12
+L</strong> fore–aft.</td>
+<td>Stop mint emission. At the last drone position, a pale lozenge opens
+to <strong>0.45 L</strong> across. Keep its brightest edge on the drone
+side of the contact.</td>
+</tr>
+<tr class="even">
+<td><strong>2–4</strong></td>
+<td>The plate reaches peak width. It detaches on tick 2. A diagonal
+joint opens to <strong>2 screen px</strong> between a large upper piece
+and a smaller lower piece.</td>
+<td>The lozenge reaches <strong>0.8 L</strong>. Three unequal polygons
+part along a Y seam. By tick 4 there is sky at the origin.</td>
+</tr>
+<tr class="odd">
+<td><strong>5–10</strong></td>
+<td>Both pieces translate aft without rotating. The small piece travels
+farther. By the end of thrust the nozzle has cleared both, even when the
+ship began at rest.</td>
+<td>Pieces travel outward to <strong>0.9 L radius</strong>. Turn the
+widest gap toward the target so at most one narrow edge crosses its
+hull.</td>
+</tr>
+<tr class="even">
+<td><strong>11 onward</strong></td>
+<td>No new light during the wait. The last green impressions decay at
+their deposited positions.</td>
+<td>Remove live edges by tick 14. The three dim impressions linger for
+roughly another twelve ticks.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Paint.</strong> Cache two trapezoids and a three-piece
+lozenge. On FX, stamp only the <strong>outer third</strong> of each
+moving face at ticks 2, 5 and 8, around 20% opacity. Screen overlap
+makes stepped green shoulders. Redraw the actual faces on LFX, with a
+pale leading lip and a transparent seam. A dark stripe painted across a
+solid FX plate would lose the seam as soon as LFX stopped. Leaving the
+joint unpainted preserves it.</p>
+<p><strong>Colour and scale.</strong> Use <code>#f4ffd9</code> for the
+lip, <code>#b8ed43</code> for the brief face and <code>#38752b</code>
+for the deposited edges. The broad crosswise front separates it from the
+longitudinal mint and cyan engines. Its leaf-green decay distinguishes
+it from amber heat and violet gravity. UI lime never gets a stable,
+intact tile to compete with. For a larger event, split the largest chip
+once more after tick 8. Keep the unequal pieces and the clean joint.</p>
+<p><strong>Cost and failure.</strong> At drone peak, three LFX faces and
+three lips per frame, plus nine FX impressions over the event. The
+failure mode is <strong>loot</strong>: independently tumbling luminous
+polygons look collectible. Keep their orientation fixed and let the
+matching cut edges remain recognisable for four ticks.</p>
+<h3 id="carbon-paper">2. Carbon Paper</h3>
+<p>The flash leaves a dark contact print of the machine that produced
+it. On thrust, the stern pulls free of its own impression; on
+detonation, a small image of the vanished drone hangs briefly beside the
+target.</p>
+<figure>
+<img src="images/carbon-paper.png" alt="Carbon Paper timing sheet" />
+<figcaption aria-hidden="true">Carbon Paper timing sheet</figcaption>
+</figure>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Ticks</th>
+<th>Engine push</th>
+<th>Drone burst</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>0–2</strong></td>
+<td>Stamp three overlapping sulphur ovals aft of the moving nozzle, one
+per tick. Together they expose a patch <strong>0.7 L wide × 0.45 L
+long</strong>. Peak on tick 2.</td>
+<td>Cut mint emission. Centre one asymmetric oval on the drone’s last
+pose, with the short side toward the enemy. Expose it twice, reaching
+<strong>1.3 L</strong> along its long axis.</td>
+</tr>
+<tr class="even">
+<td><strong>3–6</strong></td>
+<td>Inside the patch, hold a dark print of the <strong>aft
+third</strong> of the ship at its tick-0 pose. Clip it to the lit patch.
+The live nozzle moves clear.</td>
+<td>The drone is gone. Its silhouette remains as a dark cutout, at the
+drone’s actual projected size. Give the target’s nearest facing facet
+one pale tick at impact.</td>
+</tr>
+<tr class="odd">
+<td><strong>7 onward</strong></td>
+<td>Lift the print over ticks 7–10. During the wait only the FX exposure
+fades. At the slow cadence the engine spends most of the cycle
+dark.</td>
+<td>Lift the print over ticks 7–12. The asymmetrical patch decays in
+place. The target carries away no residual mark.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Paint.</strong> FX gets one cached soft-edged oval at three
+offsets. The first exposure is pale and small, the following exposures
+greener, larger and weaker. On LFX, one cached silhouette filled
+<code>#102619</code> at about 80% darkens the accumulated light
+underneath it. Clip that mark to the oval and exclude the current live
+hull. The dark print depends on having light beneath it, which makes
+hard-light particularly useful here.</p>
+<p><strong>Colour and scale.</strong> Expose with <code>#f6ffd0</code>,
+shoulder through <code>#b8de51</code>, and use <code>#558539</code>
+around the perimeter. The deep green silhouette carries identity through
+a pale overlap with mint or cyan. The cool shadow also separates it from
+atmospheric orange, plasma and violet. The asymmetric exposure and
+recognisable machinery cutout keep it away from a UI selection halo. For
+a capital event, expose the silhouette of a distinct engine bank or
+docking fork. Keep the print at the <strong>actual size of its
+source</strong> as the lit field grows.</p>
+<p><strong>Cost and failure.</strong> Two or three FX stamps per event,
+one LFX mask per frame and one optional facet fill. The risk is a
+phantom second ship. The concept sheet shows that risk clearly. For
+gameplay I would crop the engine print at the stern and lift it within
+ten ticks. The drone earns a full silhouette because the original has
+disappeared.</p>
+<h3 id="daughter-tracks">3. Daughter Tracks</h3>
+<p>A grain of light draws a short track, divides once, and sends unequal
+daughters away from the joint. The engine writes one backward fork; the
+drone writes two forks from a common point.</p>
+<figure>
+<img src="images/daughter-tracks.png"
+alt="Daughter Tracks timing sheet" />
+<figcaption aria-hidden="true">Daughter Tracks timing sheet</figcaption>
+</figure>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Ticks</th>
+<th>Engine push</th>
+<th>Drone burst</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>0–2</strong></td>
+<td>One ivory grain starts at the nozzle and draws <strong>0.18
+L</strong> straight aft. Freeze the firing axis at ignition.</td>
+<td>End mint emission. Two grains leave the drone position in roughly
+opposing directions, one passing across the target’s near edge.</td>
+</tr>
+<tr class="even">
+<td><strong>3–7</strong></td>
+<td>Split into two grains at an included angle of <strong>38°</strong>.
+The longer daughter reaches <strong>0.9 L</strong> from the joint, the
+shorter <strong>0.45 L</strong>. The separating tips produce the
+peak.</td>
+<td>Split each parent once, on ticks 3 and 5 respectively. Four daughter
+tips reach <strong>0.6–1.3 L</strong>. The later split makes the
+sequence readable even when a player misses ignition.</td>
+</tr>
+<tr class="odd">
+<td><strong>8 onward</strong></td>
+<td>Extinguish the short tip at tick 8, the long tip at 10. The oldest
+stem fades first. No new tracks during the wait.</td>
+<td>End tips successively over ticks 9–14. Old segments fade in birth
+order, leaving two or three disconnected terminal dashes before
+darkness.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Paint.</strong> FX gets only the segment travelled
+<strong>this tick</strong>, one stroke per active tip. Give adjacent
+segments round ends and about half a pixel of overlap. Screen blending
+picks out each junction. Repainting the full polyline every tick would
+turn the root white and reverse the intended decay. LFX gets a
+<strong>1.5–2 px</strong> pale lozenge at each live tip. At this width
+the full-resolution stroke carries the shape; the eighth-resolution glow
+contributes little.</p>
+<p><strong>Colour and scale.</strong> Use <code>#f1ffd5</code> tips and
+<code>#a6e838</code> fresh strokes, with a single <code>#448329</code>
+root impression. Older strokes dim naturally on FX. Yellow-green
+branching distinguishes the tracks from mint or cyan jets, orange plasma
+and violet gravity. The critical collision is with the green speed
+lines: every fission stroke must share a visible <strong>fork</strong>,
+with a shorter and a longer daughter. A larger event can branch one
+daughter again. Cap it at eight tips.</p>
+<p><strong>Cost and failure.</strong> Up to two moving tips for the
+engine, four for the drone. Each costs one short FX stroke and one LFX
+lozenge per tick. At minimum zoom the fork can collapse into a straight
+green speed line. Keep at least <strong>3 px between daughter
+endpoints</strong> and a <strong>1.25 px stroke</strong>. This family is
+the most sensitive to camera scale.</p>
+<h2 id="decision">Decision</h2>
+<p><strong>Spall Press is the best fit for Void Drift.</strong> At 32
+px, the proposed engine plate is about 21 px across and 4 px thick. That
+is enough room to see a solid front, a fracture and two matching pieces.
+The plate also belongs beside the game’s faceted hulls. Carbon Paper
+makes the best use of hard-light, but it needs a recognisable source
+silhouette. Daughter Tracks gives the drone an excellent signature, but
+asks the engine to sell a heavy push with two thin lines.</p>
+<p>For a first in-game check, I’d run <strong>Spall Press from rest, at
+full lateral drift, and with the stern crossing a charcoal
+hull</strong>. At tick 1 the plate should touch the nozzle. By tick 5
+there should be visible sky in the fracture. At the next fast pulse the
+previous plate should read as spent. Those three frames would tell me
+more than a larger render.</p>
+<p>Three answers would change the implementation:</p>
+<ol type="1">
+<li>What are the <strong>smallest projected fighter, nozzle and drone
+widths</strong> at combat zoom? The nozzle width sets the plate’s
+starting size. The minimum drone width decides whether Carbon Paper is
+viable.</li>
+<li>How far does the nozzle actually move over <strong>ticks 0–4 and
+0–10</strong>, starting from rest? That determines how much rearward
+fragment travel the artist must supply to open the gap.</li>
+<li>Is drone damage resolved <strong>once at proximity trigger</strong>,
+or does it occupy a radius for several ticks? I assumed one damage tick
+and a harmless afterimage. A live damage volume needs a readable extent
+for its full lifetime.</li>
+</ol>
+</body>
+</html>

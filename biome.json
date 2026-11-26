@@ -17,6 +17,7 @@
       "!**/.claude",
       "!artifacts",
       "!apps/web/public/studies/drone-launcher-2026-11-25/01-ion-weapons-source.svg",
+      "!apps/web/public/studies/drone-launcher-2026-11-25/02-6-sources",
       "!docs/loop-evidence/artifacts",
       "!playwright-report",
       "!test-results",

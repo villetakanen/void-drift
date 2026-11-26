@@ -1,0 +1,65 @@
+{
+  "schema_version": 2,
+  "run_id": "9c862e92-c3e1-4a28-bdee-9ea958bb0d1c",
+  "recorded_at": "2026-11-26T08:55:10Z",
+  "loop": "Drone launcher study, 26 November 2026: step 02.6 (digest of three outside models' fission proposals) and step 02.7 (what fission light says, and a bench that paints it). One agent working directly with the designer, without first-mate mode.",
+  "worked": [
+    "Reading the plasma light study, the fission light study, the render specs and the production effect code before writing 02.6, and checking the outside models' claims against the code and tokens. That produced findings none of the sources had, such as the FX surface taking a single stamp at about a quarter strength.",
+    "Storing the outside material unchanged, attributing it from the files' own content credentials, and capturing stills for the source that had only live canvases.",
+    "Stopping to discuss when the designer rejected the first 02.7, and agreeing in conversation what fission light has to express before building again.",
+    "Rebuilding 02.7 from production precedents (the heat glow on a ship's facing side, the impact plume's band and core, the plasma rifle's live core with a copy in FX, impact sparks) and grouping the bench's controls under the sentences of the agreed statement.",
+    "Stepping through rendered frames at several ticks and zoom levels before handing over. This caught defaults that buried one element under another, a shell that left a disc of rings, and sparks that came out as dotted lines.",
+    "Leaving 02.6 as written after the designer warned against overcorrecting, and using 02.7 to show which of its ideas found a job and which are untried.",
+    "Tests that assert relations (nearer ships take more of the flash, the shell only moves outward, replay rebuilds the same state) and no pinned design values."
+  ],
+  "issues": [
+    {
+      "area": "context",
+      "observation": "I built the first 02.7 as a bench whose controls were the parameters of marks taken from the outside research: a core, leaf shards, branching tracks and rings. I had read the plasma light study's finding against edged geometric marks and the fx-development skill earlier in the same session. The designer judged that nothing on screen belonged to the game's visual language.",
+      "effect": "One full build was discarded and rebuilt, and the designer had to stop the work and redirect it.",
+      "interpretation": "Suspected, not established: I treated the three ideas the designer named as intuition as a parts list, and read 'an instrument to tweak the lfx/fx of an explosion' as a request for a parameter panel. The last section of my own 02.6 already restated the research as a list of marks, which may have set this up. The designer also said their own direction may have contributed."
+    },
+    {
+      "area": "context",
+      "observation": "I assumed the next subject after 02.6 was the drone's detonation, and my 02.6 hand-off suggested building it. The designer had turned to the missing language for fission light on purpose, and later said the drone was not the question yet. The continuation brief from the previous session did not know about this turn.",
+      "effect": "The first 02.7 was staged around a drone flying into a target, which the rebuilt step dropped for a bare charge.",
+      "interpretation": "The purpose of the turn at 02.6 was stated as a research step, and I filled in its aim from the study's existing question. Uncertain whether asking once at the start would have surfaced it."
+    },
+    {
+      "area": "harness",
+      "observation": "The embedded browser pane ran animation frames at about two a second while I verified the bench.",
+      "effect": "I could not judge playback, motion or frame time. All visual checks were stills at chosen ticks, and the hand-off says so.",
+      "interpretation": "Suspected background throttling of the pane. Not established; the page also carries two live instruments."
+    },
+    {
+      "area": "harness",
+      "observation": "The command sandbox blocked reading the attached archives in the Downloads folder and blocked the headless browser from reading its own installed files. The shared preview's status command also failed inside it.",
+      "effect": "Two commands were rerun outside the sandbox, and I relied on the already running preview server without confirming its ownership.",
+      "interpretation": null
+    },
+    {
+      "area": "project",
+      "observation": "The linter covers everything under the web app's public folder, so third-party HTML and JavaScript stored as received would have failed it.",
+      "effect": "I added an ignore entry for the stored sources folder to the lint configuration.",
+      "interpretation": null
+    },
+    {
+      "area": "project",
+      "observation": "The stored outside material and captures add several megabytes of images to the repository.",
+      "effect": "None on the loop. I reported the size to the designer.",
+      "interpretation": null
+    },
+    {
+      "area": "harness",
+      "observation": "The browser console kept showing four failed-resource errors after the page was fixed. They dated from the moment the page still imported a file I had just removed.",
+      "effect": "A short extra check of the page's resource timings to confirm the current load was clean.",
+      "interpretation": "The console read appears to keep messages across reloads. Not confirmed."
+    },
+    {
+      "area": "context",
+      "observation": "A dictated phrase, 'half-time-art type branching explosions', was unclear. I took it to mean the branching tracks from two of the outside proposals and said so.",
+      "effect": "Unknown. The designer did not correct the reading.",
+      "interpretation": null
+    }
+  ]
+}

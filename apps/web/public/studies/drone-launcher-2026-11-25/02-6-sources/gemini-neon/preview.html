@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Void Drift — Fission Effect Family Preview</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #07060d;
+    color: #c8f4f0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    gap: 14px;
+  }
+  header {
+    width: 960px;
+    max-width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid #264d6b;
+    padding-bottom: 8px;
+  }
+  h1 { font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; color: #f4ffd6; }
+  .sub { font-size: 12px; color: #83c7d0; }
+  .stage-wrap {
+    position: relative;
+    width: 960px;
+    height: 460px;
+    max-width: 100%;
+    background: #07060d;
+    border: 1px solid #252838;
+    overflow: hidden;
+  }
+  .stage-wrap canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  #fx { mix-blend-mode: screen; }
+  #fxglow { mix-blend-mode: screen; filter: blur(12px); opacity: 0.9; image-rendering: auto; }
+  #lfx { mix-blend-mode: hard-light; }
+  .controls {
+    width: 960px;
+    max-width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    font-size: 12px;
+  }
+  button {
+    background: #12171e;
+    color: #c8f4f0;
+    border: 1px solid #365d79;
+    padding: 6px 12px;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  button:hover { border-color: #c6ff32; color: #f4ffd6; }
+  button.active { background: #1e2d20; border-color: #c6ff32; color: #c6ff32; }
+  .hint { margin-left: auto; color: #6193a9; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Void Drift — Fission Effect Family (Canvas 2D Stack)</h1>
+    <span class="sub">World (normal) · FX (screen, 0.1s half-life) · FX Glow (1/8 blur 12px, 90%) · LFX (hard-light)</span>
+  </header>
+
+  <div class="stage-wrap" id="stage">
+    <canvas id="world" width="960" height="460"></canvas>
+    <canvas id="fx" width="960" height="460"></canvas>
+    <canvas id="fxglow" width="120" height="58"></canvas>
+    <canvas id="lfx" width="960" height="460"></canvas>
+  </div>
+
+  <div class="controls">
+    <button id="btnPulse" class="active">Engine Cycle: ON (0.45s)</button>
+    <button id="btnDetonate">Trigger Drone Detonation</button>
+    <button id="btnReset">Reset Ship</button>
+    <span class="hint">Click anywhere on canvas to detonate a fission drone</span>
+  </div>
+
+<script>
+(() => {
+  const W = 960, H = 460;
+  const worldC = document.getElementById('world'), wCtx = worldC.getContext('2d');
+  const fxC = document.getElementById('fx'), fxCtx = fxC.getContext('2d');
+  const glowC = document.getElementById('fxglow'), gCtx = glowC.getContext('2d');
+  const lfxC = document.getElementById('lfx'), lCtx = lfxC.getContext('2d');
+
+  // Stars
+  const stars = Array.from({ length: 140 }, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: Math.random() < 0.85 ? 1 : 1.6,
+    a: 0.18 + Math.random() * 0.5
+  }));
+
+  // Cached procedural stamps (prepared once at load)
+  function makeStarburstStamp(size, points, innerR, outerR, coreCol, edgeCol) {
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    const ctx = c.getContext('2d');
+    const cx = size / 2, cy = size / 2;
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, outerR);
+    grad.addColorStop(0, coreCol);
+    grad.addColorStop(0.45, edgeCol);
+    grad.addColorStop(1, 'rgba(58,196,40,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    for (let i = 0; i < points * 2; i++) {
+      const a = (i * Math.PI) / points;
+      const rad = i % 2 === 0 ? outerR * (0.82 + 0.18 * Math.sin(i * 3.7)) : innerR;
+      const x = cx + Math.cos(a) * rad;
+      const y = cy + Math.sin(a) * rad;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fill();
+    return c;
+  }
+
+  function makeRingStamp(size, color) {
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    const ctx = c.getContext('2d');
+    const cx = size / 2, cy = size / 2;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(cx, cy, size * 0.42, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(244,255,214,0.65)';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, size * 0.40, 0, Math.PI * 2);
+    ctx.stroke();
+    return c;
+  }
+
+  const stampBurstHot = makeStarburstStamp(128, 13, 18, 58, '#f4ffd6', '#c6ff32');
+  const stampBurstDeep = makeStarburstStamp(128, 11, 22, 54, '#c6ff32', '#3ac428');
+  const stampRing = makeRingStamp(128, '#3ac428');
+
+  // Ship state (faceted fighter, ~36px long)
+  const ship = { x: 160, y: H * 0.5, vx: 0, vy: 0, angle: 0 };
+  let autoPulse = true;
+  let cycleTimer = 0;
+  const CYCLE = 0.45;
+  const THRUST_DUR = 0.18;
+
+  const rings = [];
+  const sparks = [];
+  const detonations = [];
+
+  function spawnEnginePulse() {
+    const nx = ship.x - Math.cos(ship.angle) * 20;
+    const ny = ship.y - Math.sin(ship.angle) * 20;
+    rings.push({ x: nx, y: ny, r: 8, maxR: 48, age: 0, life: 0.28, thick: 2.2 });
+    for (let i = 0; i < 12; i++) {
+      const spread = (Math.random() - 0.5) * 1.1;
+      const spd = 70 + Math.random() * 140;
+      sparks.push({
+        x: nx, y: ny,
+        vx: -Math.cos(ship.angle + spread) * spd,
+        vy: -Math.sin(ship.angle + spread) * spd,
+        age: 0, life: 0.16 + Math.random() * 0.18,
+        size: 1.5 + Math.random() * 2.2
+      });
+    }
+    // Initial FX flash
+    fxCtx.save();
+    fxCtx.translate(nx, ny);
+    fxCtx.rotate(Math.random() * Math.PI * 2);
+    fxCtx.drawImage(stampBurstHot, -34, -34, 68, 68);
+    fxCtx.restore();
+  }
+
+  function triggerDetonation(x, y) {
+    detonations.push({ x, y, age: 0, life: 0.52 });
+    rings.push({ x, y, r: 10, maxR: 110, age: 0, life: 0.34, thick: 3.4 });
+    rings.push({ x, y, r: 6, maxR: 78, age: 0, life: 0.24, thick: 2.0 });
+    for (let i = 0; i < 28; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const spd = 60 + Math.random() * 220;
+      sparks.push({
+        x, y,
+        vx: Math.cos(a) * spd,
+        vy: Math.sin(a) * spd,
+        age: 0, life: 0.18 + Math.random() * 0.28,
+        size: 1.8 + Math.random() * 3.0
+      });
+    }
+  }
+
+  function drawShip(ctx, x, y, angle) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    // Top-lit faceted fighter
+    const drawPoly = (pts, col) => {
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      pts.forEach((p, i) => i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]));
+      ctx.closePath();
+      ctx.fill();
+    };
+    // Port wing (lit)
+    drawPoly([[18, 0], [-14, -14], [-10, -4]], '#c8f4f0');
+    drawPoly([[18, 0], [-10, -4], [-16, 0]], '#83c7d0');
+    // Starboard wing (shaded)
+    drawPoly([[18, 0], [-16, 0], [-10, 4]], '#437e99');
+    drawPoly([[18, 0], [-10, 4], [-14, 14]], '#264d6b');
+    // Canopy
+    drawPoly([[6, 0], [-2, -2.5], [-6, 0], [-2, 2.5]], '#080b10');
+    // Engine block + fission accent
+    drawPoly([[-13, -4], [-19, -5], [-19, 5], [-13, 4]], '#363a42');
+    drawPoly([[-18, -2.5], [-20, -2.5], [-20, 2.5], [-18, 2.5]], '#c6ff32');
+    ctx.restore();
+  }
+
+  const DT = 1 / 60;
+  // Half-life 0.1s => per 60Hz tick decay factor = 0.5^(DT/0.1) ~= 0.8909
+  const DECAY_ALPHA = 1 - Math.pow(0.5, DT / 0.1);
+
+  function tick() {
+    // 1. Decay FX layer
+    fxCtx.save();
+    fxCtx.globalCompositeOperation = 'destination-out';
+    fxCtx.fillStyle = `rgba(0,0,0,${DECAY_ALPHA.toFixed(4)})`;
+    fxCtx.fillRect(0, 0, W, H);
+    fxCtx.restore();
+
+    // 2. Clear World & LFX
+    wCtx.fillStyle = '#07060d';
+    wCtx.fillRect(0, 0, W, H);
+    for (const s of stars) {
+      wCtx.fillStyle = `rgba(200,220,255,${s.a})`;
+      wCtx.fillRect(s.x, s.y, s.r, s.r);
+    }
+    lCtx.clearRect(0, 0, W, H);
+
+    // 3. Engine cycle
+    let thrusting = false;
+    let phase = 0;
+    if (autoPulse) {
+      if (cycleTimer === 0) spawnEnginePulse();
+      if (cycleTimer < THRUST_DUR) {
+        thrusting = true;
+        phase = cycleTimer / THRUST_DUR;
+        ship.vx += 260 * DT * (1 - phase * 0.65);
+      }
+      cycleTimer += DT;
+      if (cycleTimer >= CYCLE) cycleTimer = 0;
+    }
+
+    ship.vx *= 0.985;
+    ship.x += ship.vx * DT;
+    if (ship.x > W + 40) ship.x = -30;
+
+    // Draw ship on World
+    drawShip(wCtx, ship.x, ship.y, ship.angle);
+
+    // Active engine plume on LFX + FX
+    if (thrusting) {
+      const nx = ship.x - Math.cos(ship.angle) * 20;
+      const ny = ship.y - Math.sin(ship.angle) * 20;
+      const s = phase < 0.25 ? 28 + phase * 140 : 62 * (1 - (phase - 0.25) * 0.9);
+      lCtx.save();
+      lCtx.translate(nx, ny);
+      lCtx.rotate(phase * 2.4);
+      lCtx.globalAlpha = Math.max(0, 1 - phase * 0.85);
+      lCtx.drawImage(stampBurstHot, -s / 2, -s / 2, s, s);
+      lCtx.restore();
+
+      if (phase < 0.45) {
+        fxCtx.save();
+        fxCtx.translate(nx, ny);
+        fxCtx.globalAlpha = 0.55 * (1 - phase);
+        fxCtx.drawImage(stampBurstDeep, -s * 0.45, -s * 0.45, s * 0.9, s * 0.9);
+        fxCtx.restore();
+      }
+    }
+
+    // 4. Update & draw shock rings
+    for (let i = rings.length - 1; i >= 0; i--) {
+      const r = rings[i];
+      r.age += DT;
+      if (r.age >= r.life) { rings.splice(i, 1); continue; }
+      const t = r.age / r.life;
+      const rad = r.r + (r.maxR - r.r) * (1 - Math.pow(1 - t, 2.2));
+      fxCtx.save();
+      fxCtx.globalAlpha = (1 - t) * 0.85;
+      fxCtx.drawImage(stampRing, r.x - rad, r.y - rad, rad * 2, rad * 2);
+      fxCtx.restore();
+    }
+
+    // 5. Update & draw sparks
+    for (let i = sparks.length - 1; i >= 0; i--) {
+      const p = sparks[i];
+      p.age += DT;
+      if (p.age >= p.life) { sparks.splice(i, 1); continue; }
+      p.x += p.vx * DT;
+      p.y += p.vy * DT;
+      p.vx *= 0.96; p.vy *= 0.96;
+      const t = p.age / p.life;
+      fxCtx.fillStyle = t < 0.3 ? '#f4ffd6' : (t < 0.65 ? '#c6ff32' : '#3ac428');
+      fxCtx.globalAlpha = 1 - t;
+      fxCtx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+      fxCtx.globalAlpha = 1;
+    }
+
+    // 6. Drone detonations
+    for (let i = detonations.length - 1; i >= 0; i--) {
+      const d = detonations[i];
+      d.age += DT;
+      if (d.age >= d.life) { detonations.splice(i, 1); continue; }
+      const t = d.age / d.life;
+      if (t < 0.16) {
+        const sz = 40 + (t / 0.16) * 120;
+        fxCtx.save();
+        fxCtx.translate(d.x, d.y);
+        fxCtx.rotate(t * 6);
+        fxCtx.drawImage(stampBurstHot, -sz / 2, -sz / 2, sz, sz);
+        fxCtx.restore();
+        lCtx.save();
+        lCtx.translate(d.x, d.y);
+        lCtx.rotate(-t * 4);
+        lCtx.drawImage(stampBurstHot, -sz * 0.55, -sz * 0.55, sz * 1.1, sz * 1.1);
+        lCtx.restore();
+      } else if (t < 0.55) {
+        // Dark hard-light core cavity for high contrast
+        const k = (t - 0.16) / 0.39;
+        lCtx.save();
+        lCtx.fillStyle = `rgba(18, 28, 12, ${(1 - k) * 0.72})`;
+        lCtx.beginPath();
+        lCtx.arc(d.x, d.y, 12 + k * 34, 0, Math.PI * 2);
+        lCtx.fill();
+        lCtx.restore();
+      }
+    }
+
+    // 7. Downsample FX to 1/8-res FX Glow
+    gCtx.clearRect(0, 0, glowC.width, glowC.height);
+    gCtx.drawImage(fxC, 0, 0, glowC.width, glowC.height);
+
+    requestAnimationFrame(tick);
+  }
+
+  document.getElementById('btnPulse').addEventListener('click', (e) => {
+    autoPulse = !autoPulse;
+    e.target.textContent = `Engine Cycle: ${autoPulse ? 'ON (0.45s)' : 'OFF'}`;
+    e.target.classList.toggle('active', autoPulse);
+  });
+  document.getElementById('btnDetonate').addEventListener('click', () => {
+    triggerDetonation(W * 0.65, H * 0.5);
+  });
+  document.getElementById('btnReset').addEventListener('click', () => {
+    ship.x = 160; ship.vx = 0; cycleTimer = 0;
+  });
+  document.getElementById('stage').addEventListener('click', (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * W;
+    const y = ((e.clientY - rect.top) / rect.height) * H;
+    triggerDetonation(x, y);
+  });
+
+  // Trigger one showcase detonation shortly after load
+  setTimeout(() => triggerDetonation(W * 0.68, H * 0.48), 900);
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

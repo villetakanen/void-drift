@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Void Drift Fission Family Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Sora:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* one visual world: the game's void. Page chrome stays neutral so the only green on the page is in the images. */
+  --void:#07070f; --panel:#0f1019; --rule:#242739; --ink:#d9dbe6; --dim:#8d91a6; --link:#78b9e8;
+  --display:"Sora","IBM Plex Sans",system-ui,sans-serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  /* layout: one reading column of 68ch; figures break out to the full page width */
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--void)}
+body{margin:0;background:var(--void);color:var(--ink);font:400 16px/1.55 var(--body)}
+main{max-width:1500px;margin:0 auto;padding:40px 20px 80px;display:flex;flex-direction:column;gap:56px}
+section{display:flex;flex-direction:column;gap:16px}
+.col{max-width:68ch;display:flex;flex-direction:column;gap:12px}
+h1,h2,h3{font-family:var(--display);font-weight:600;text-wrap:balance;margin:0;letter-spacing:-.01em}
+h1{font-size:34px;line-height:1.15}
+h2{font-size:24px;padding-top:20px;border-top:1px solid var(--rule)}
+h3{font-size:17px;font-weight:500}
+p,ul,ol{margin:0}
+ul,ol{padding-left:20px;display:flex;flex-direction:column;gap:6px}
+a{color:var(--link);text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--link);outline-offset:3px}
+code,.v{font-family:var(--mono);font-size:.86em;color:#c3c7dc}
+.dim{color:var(--dim)}
+.lede{font-size:18px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;line-height:1.45}
+th,td{text-align:left;vertical-align:top;padding:9px 14px 9px 0;border-top:1px solid var(--rule)}
+th{font-weight:500;color:var(--dim);font-size:13px}
+table.spec th{width:150px;white-space:nowrap;padding-right:18px}
+table.spec{max-width:1000px}
+table.period{min-width:980px}
+.tag{font-family:var(--mono);font-size:12px;padding:1px 6px;border-radius:3px;border:1px solid var(--rule);white-space:nowrap}
+.tag.c{color:#9fd6b0}.tag.r{color:#d8b68a}
+.strip{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}
+@media(max-width:900px){.strip{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:480px){.strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
+figure{margin:0;display:flex;flex-direction:column;gap:4px}
+canvas{display:block;max-width:100%;height:auto;background:#05050f}
+.strip canvas{width:100%}
+figcaption,.cap{font-family:var(--mono);font-size:12px;color:var(--dim)}
+.row{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.row>figure{flex:1 1 420px;min-width:0}
+.sw{display:inline-block;width:14px;height:14px;border-radius:2px;vertical-align:-2px;margin-right:6px;border:1px solid #ffffff22}
+button{font:500 14px var(--body);color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-radius:6px;padding:8px 14px;cursor:pointer}
+button:hover{border-color:var(--dim)}
+.pick{border:1px solid var(--rule);background:var(--panel);border-radius:8px;padding:18px 20px}
+.label{font-family:var(--mono);font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+</style>
+</head>
+<body>
+<main>
+
+<section>
+  <div class="col">
+    <span class="label">External design study · Fable 5.2 · 26 Nov 2026</span>
+    <h1>A fission family for Void Drift</h1>
+    <p class="lede">Four proposals that differ in idea: a timing, a shadow, a branching rule and a counted footprint. Every image below is drawn live by this page with Canvas 2D through a copy of your World / FX / FX glow / LFX stack.</p>
+  </div>
+  <div class="pick col">
+    <span class="label">Pick</span>
+    <p><strong>A, Double flash.</strong> Every fission event blinks white, then black, then green, and the length of the black gap tells the yield. It is the only one of the four whose identity survives at 6 px, it costs three draws per tick, and it keeps the saturated green out of the frame for all but the decay. Reasons and open questions are in <a href="#pick">section 5</a>.</p>
+  </div>
+  <div class="col">
+    <p><button id="play" type="button" aria-pressed="false">Play the loops</button></p>
+    <p class="dim">The four loops (one per proposal) are paused on a mid-detonation frame until you press this. They flash at about 2 Hz.</p>
+  </div>
+</section>
+
+<section>
+  <h2>1. Period study</h2>
+  <div class="col">
+    <p>Each row separates what the game did from what transfers. <span class="tag c">checked</span> means I read a source for that claim today; <span class="tag r">recalled</span> means memory only. The Master of Orion rows are all recalled: the one FAQ I opened did not cover explosions, so treat them as leads.</p>
+    <p class="dim">References are links. This page cannot load remote images and I did not copy screenshots into it. The Missile Command and Doom fire links carry their own screenshots and animation.</p>
+  </div>
+  <div class="scroll">
+  <table class="period">
+    <tr><th>Work</th><th>What it did with few means</th><th>Period look (leave behind)</th><th>Transferable principle</th><th>Status and source</th></tr>
+    <tr>
+      <td>Star Control 2, Super Melee (1992)</td>
+      <td>Thrust has no plume sprite. Each thrust frame drops one point primitive at the engine, in the world. The point lives one frame per colour and is revived down a five-step table, from <code>(1F,15,00)</code> orange through red to <code>(13,00,00)</code> in 15-bit RGB. The original table had twelve steps.</td>
+      <td>Single pixels, 15-bit orange to red.</td>
+      <td>Engine light is a world-anchored mark on a fixed colour clock. The ship's motion draws the shape. This is your FX layer.</td>
+      <td><span class="tag c">checked</span> for the Orz marine trail, whose comment says to merge it with the ship's <code>spawn_ion_trail</code>: <a href="https://sourceforge.net/p/sc2/mailman/message/24070159">UQM commit r3365</a>. That ships use the same table: <span class="tag r">recalled</span>.</td>
+    </tr>
+    <tr>
+      <td>Star Control 2, ship death</td>
+      <td>The hull is replaced by several small blast sprites scattered over its area across one to two seconds, then the fight pauses for the victor. Weapon hits use short blast animations stored in three zoom sizes.</td>
+      <td>Hand-painted orange fireball frames.</td>
+      <td>A big death is many small events staged over the victim, with a held beat afterwards. Size is told by count and duration, not by one larger circle.</td>
+      <td><span class="tag r">recalled</span></td>
+    </tr>
+    <tr>
+      <td>Master of Orion (1993)</td>
+      <td>Tactical grid. Beams are straight lines in one palette-cycled hue per weapon. A destroyed stack plays one explosion animation on its tile. No engine light in combat.</td>
+      <td>VGA sprite frames, dithered ramps.</td>
+      <td>One hue per technology, and cycling means energy is flowing.</td>
+      <td><span class="tag r">recalled</span>. Where to check: <a href="https://es.scribd.com/document/122251273/Moo">manual scan</a>.</td>
+    </tr>
+    <tr>
+      <td>Master of Orion 2 (1996)</td>
+      <td>Explosion sprite sized to the hull class. A ship whose drive is destroyed blows up and damages neighbours, scaled by class. Engines show a small flicker at the stern.</td>
+      <td>Pre-rendered fireball sprites.</td>
+      <td>Danger comes in a discrete ladder of sizes tied to a known class, so players learn four blasts instead of a continuum.</td>
+      <td><span class="tag r">recalled</span>, low confidence on the drive rule. Where to check: <a href="https://manualmachine.com/gamespc/masteroforioniibattleatantares/1118784-user-manual">manual</a>.</td>
+    </tr>
+    <tr>
+      <td>Missile Command (1980)</td>
+      <td>Eight palette entries. Explosions are drawn in one entry whose colour is rewritten every frame, visible at about 30 Hz. Smart bombs avoid blasts by reading screen pixels for that flashing entry. Blasts grow and then shrink.</td>
+      <td>3-bit RGB, full-palette strobing.</td>
+      <td>The drawn flash is the hitbox: what you see is exactly what kills. Flicker comes from cycling a flat shape, and the light retreats after it grows.</td>
+      <td><span class="tag c">checked</span> for palette, cycling rate and pixel-reading: <a href="https://6502disassembly.com/va-missile-command/videomem.html">video memory notes</a>, <a href="https://6502disassembly.com/va-missile-command/">disassembly</a>. Grow-then-shrink: <span class="tag r">recalled</span>.</td>
+    </tr>
+    <tr>
+      <td>Defender (1981)</td>
+      <td>A particle routine makes each explosion from the destroyed object, so no two look alike. The player's death is far longer and denser than an enemy's.</td>
+      <td>Chunky scaled pixels.</td>
+      <td>Build the blast from the victim's own shape. Importance is told by duration and count.</td>
+      <td><span class="tag c">checked</span> that Sam Dicker wrote a particle algorithm for unique explosions: <a href="https://en.wikipedia.org/wiki/Defender_(1981_video_game)">Wikipedia</a>. The rest: <span class="tag r">recalled</span>.</td>
+    </tr>
+    <tr>
+      <td>Elite (1984)</td>
+      <td>An explosion cloud is random particles seeded around some of the ship's vertices. Each ship blueprint stores how many vertices to use, and a cloud counter drives growth.</td>
+      <td>1-bit dots.</td>
+      <td>One routine, one integer per object for scale. The cloud keeps the skeleton of what died.</td>
+      <td><span class="tag c">checked</span>: <a href="https://elite.bbcelite.com/compare/main/subroutine/doexp.html">DOEXP, annotated source</a>.</td>
+    </tr>
+    <tr>
+      <td>Fire effect (demos from about 1993; PSX Doom, 1995)</td>
+      <td>A buffer of heat values 0 to 36. Each frame copies heat upward with a random loss. A 37-step palette from white through yellow, orange and red to black turns heat into colour at the end.</td>
+      <td>Low resolution, orange fire ramp.</td>
+      <td>Store intensity, apply the ramp last, and let decay plus feedback animate. Your FX layer is this without the final ramp, which has a consequence for colour (section 2).</td>
+      <td><span class="tag c">checked</span>: <a href="https://fabiensanglard.net/doom_fire_psx/">Sanglard, How DOOM fire was done</a>. Demo-scene dating: <span class="tag r">recalled</span>.</td>
+    </tr>
+    <tr>
+      <td>Physical reference: the double flash</td>
+      <td>An atmospheric nuclear burst emits two light peaks. For 19 kt: first maximum near 0.3 ms, minimum at 12 ms, second maximum near 130 ms. The shock front is opaque and hides the fireball between them. The minimum and second-maximum times grow with yield, and satellites read yield from them.</td>
+      <td>None.</td>
+      <td>A nuclear event has a time signature that no chemical or plasma effect shares, and its clock is its size.</td>
+      <td><span class="tag c">checked</span>: <a href="https://sgp.fas.org/othergov/doe/lanl/docs4/00362363.pdf">LANL review (PDF)</a>, <a href="https://en.wikipedia.org/wiki/Bhangmeter">Bhangmeter</a>.</td>
+    </tr>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>2. Three findings that apply to all four</h2>
+  <div class="col">
+    <h3>Stacked yellow-green turns into your brand lime</h3>
+    <p>FX adds towards white with no ramp at the end. <span class="sw" style="background:#c6ff32"></span><code>#c6ff32</code> stamped twice clips to <span class="sw" style="background:#ffff64"></span><code>rgb(255,255,100)</code>, which is <span class="v">L 97.9 C 72.6 h 100.8</span>. Brand lime <span class="sw" style="background:#eeff41"></span> is <span class="v">L 96.4 C 84.2 h 104.9</span>. Green clips first, red catches up, and every overlap passes through the interface colour on its way to white.</p>
+    <p>So the FX stamps here are authored greener and bluer than the identity: <span class="sw" style="background:rgb(96,224,72)"></span><code>rgb(96,224,72)</code> (<span class="v">h 133.7</span>). Twice gives <span class="sw" style="background:rgb(192,255,144)"></span><code>rgb(192,255,144)</code> (<span class="v">h 126.6, C 57.6</span>), three times is near white. Hot stamp <span class="sw" style="background:rgb(200,255,190)"></span><code>rgb(200,255,190)</code>, deep stamp <span class="sw" style="background:rgb(30,150,48)"></span><code>rgb(30,150,48)</code>.</p>
+    <h3>A proposed ramp, and its distance from the interface</h3>
+  </div>
+  <div class="scroll">
+  <table style="max-width:900px;min-width:620px">
+    <tr><th>Role</th><th>Value</th><th>LCH</th><th>Note</th></tr>
+    <tr><td>Brand lime (interface)</td><td><span class="sw" style="background:#eeff41"></span><code>≈ #eeff41</code></td><td class="v">96.4 / 84.2 / 104.9</td><td>Flat, steady, hard-edged.</td></tr>
+    <tr><td>Fission, working accent</td><td><span class="sw" style="background:#c6ff32"></span><code>#c6ff32</code></td><td class="v">93.6 / 89.8 / 114.6</td><td>10° of hue and 3 L from brand lime. Too close.</td></tr>
+    <tr><td>Hot</td><td><span class="sw" style="background:#f4ffe2"></span><code>#f4ffe2</code></td><td class="v">98.6 / 14.6 / 120.5</td><td>Loses chroma instead of passing through lime.</td></tr>
+    <tr><td>Mid</td><td><span class="sw" style="background:#96f02e"></span><code>#96f02e</code></td><td class="v">86.7 / 89.7 / 122.8</td><td>Brightest saturated value allowed.</td></tr>
+    <tr><td>Identity accent (machinery)</td><td><span class="sw" style="background:#78f03c"></span><code>#78f03c</code></td><td class="v">85.5 / 90.3 / 129.3</td><td>24° from brand lime, 11 L darker.</td></tr>
+    <tr><td>Deep (your working value)</td><td><span class="sw" style="background:#3ac428"></span><code>#3ac428</code></td><td class="v">69.9 / 84.2 / 134.0</td><td>17° yellower than countdown green.</td></tr>
+    <tr><td>Dark end</td><td><span class="sw" style="background:#14702e"></span><code>#14702e</code></td><td class="v">41.1 / 47.7 / 143.3</td><td>37 L below countdown green.</td></tr>
+    <tr><td>Countdown green (interface)</td><td><span class="sw" style="background:#3ddc84"></span><code>≈ #3ddc84</code></td><td class="v">78.3 / 65.0 / 151.5</td><td></td></tr>
+  </table>
+  </div>
+  <div class="col">
+    <p>Rules that follow: no fission colour with chroma above 60 sits below hue 120 or above L 88. Nothing between hue 138 and 160 is lighter than L 55. Fission light never holds a level for more than 0.3 s, and the interface lime never glows or fades. Mint at hue 178 and cyan beyond it are untouched. Amber and violet are on other sides of the wheel.</p>
+    <h3>Hard-light over the void shows 2s − 1</h3>
+    <p>With a backdrop near black, an LFX source channel <code>s</code> above 50% displays as <code>2s − 1</code>, and below 50% it displays nothing while darkening whatever light is there. A deep green you want to see as <span class="sw" style="background:rgb(45,148,52)"></span><code>rgb(45,148,52)</code> must be painted as pale sage <span class="sw" style="background:rgb(150,202,154)"></span><code>rgb(150,202,154)</code>. Proposals B and D author their LFX colours this way. LFX is also the only layer that can remove light, and A and D use that on purpose.</p>
+    <h3>What the images assume</h3>
+    <p class="dim">One world unit is one pixel at flight scale, drawn here at 2 px per unit with the glow blur doubled to match. The fighter is 38 u long with a pusher plate at the stern. Its geometry is invented, the facet colours are yours. The burst point sits 6 u behind the plate. Speeds are 1 to 3.5 u per tick. The FX fade is a black fill at 10.9% per tick.</p>
+  </div>
+</section>
+
+<!-- proposals -->
+<section id="A">
+  <h2>3A. Double flash</h2>
+  <div class="col"><p class="lede">Every fission event blinks twice: a hard white flash, a black gap with a bright rim, then a slower green swell. Yield sets the clock, so a larger event has a longer gap and its size is read from timing before radius.</p></div>
+  <div><p class="cap">Engine pulse, ship moving right, camera fixed</p><div class="strip" id="engA"></div></div>
+  <div><p class="cap">Drone detonation 56 u from a charcoal fighter</p><div class="strip" id="detA"></div></div>
+  <div class="row">
+    <figure><canvas id="liveA" width="920" height="400"></canvas><figcaption>Loop: seven pushes and one detonation, 2.9 s</figcaption></figure>
+    <figure><canvas id="markA" width="460" height="112"></canvas><figcaption>Source marks: flash disc and soft white · gap disc with rim (LFX) · swell stamp hot, green, deep</figcaption></figure>
+  </div>
+  <div class="scroll"><table class="spec">
+    <tr><th>Engine pulse</th><td>Ticks 0–1 (33 ms): white disc r 6 u at the burst point, soft white r 16 u. Ticks 2–4 (50 ms): black disc r 8 → 12 u with a 1.1 u pale rim. Ticks 5–10 (100 ms): green swell, soft stamp r 12 → 25 u, peak on tick 7, drifting aft 0.6 u per tick. The ship is 38 u, so the swell peaks at two thirds of a ship length and sits behind the plate.</td></tr>
+    <tr><th>Drone detonation</th><td>Ticks 0–2 (50 ms): white disc r 11 u, soft white r 30 u, LFX white r 22 u on tick 0 then 15 u. Ticks 3–9 (117 ms): black disc r 16 → 34 u, rim 1.5 u. Ticks 10–26 (283 ms): swell r 34 → 50 u, peak on tick 14, hot to green to deep. Ticks 27–45: decay only.</td></tr>
+    <tr><th>FX</th><td>Flash, swell and a faint print of the rim each tick. Accumulation makes the swell's white core and stretches it along the ship's path. The rim prints stack into nested echo rings inside the swell.</td></tr>
+    <tr><th>LFX</th><td>The flash disc, because hard-light white is white on the first frame with no bloom lag. The gap disc, because only LFX can subtract: its dark source takes the flash afterglow and the glow layer beneath it to near zero. Over a hull it dims the hull to about a tenth, for at most 7 ticks.</td></tr>
+    <tr><th>Shapes and counts</th><td>Hard disc, ring stroke, one cached soft radial stamp scaled as needed. At most 3 draws per event per tick. No particles.</td></tr>
+    <tr><th>Colour</th><td>Flash neutral white, gap black. Green appears only in the swell, as FX stamps <code>rgb(200,255,190)</code> → <code>rgb(96,224,72)</code> → <code>rgb(30,150,48)</code>. Of the four this puts the least saturated green on screen, and none of it is flat or steady, which is the separation from the lime.</td></tr>
+    <tr><th>Scaling</th><td>Gap of 3 ticks for the engine, 7 for a drone, about 16 for a reactor, about 40 for a capital event. Radius grows more slowly than the gap. Constant: the order white, black, green, and a gap that is never skipped.</td></tr>
+    <tr><th>The wait</th><td>Nothing new is drawn. The last swell decays at its world point, falling to an eighth by tick 28, so a thrusting ship leaves green beads whose spacing is its speed. The plate accent steps hot, mid, deep, dark at 4 ticks each.</td></tr>
+    <tr><th>Cost and risk</th><td>Negligible cost. Risk: a white flash and a blackout at 2.2 Hz is a strobe, and if the gap reads as "off" instead of as a shape you are back to an engine that flickers. The rim prevents that, and at 1× the engine's rim is about one pixel wide. Over empty void the black disc is invisible except for the rim.</td></tr>
+  </table></div>
+</section>
+
+<section id="B">
+  <h2>3B. Plate shadow</h2>
+  <div class="col"><p class="lede">The blast is drawn by what it lights: a flat pale wash that appears at full radius and contracts in steps, while every solid cuts a hard shadow wedge out of it. The engine's own plate shades its ship, so the ship sits unlit in a notch of its own explosion.</p></div>
+  <div><p class="cap">Engine pulse</p><div class="strip" id="engB"></div></div>
+  <div><p class="cap">Drone detonation</p><div class="strip" id="detB"></div></div>
+  <div class="row">
+    <figure><canvas id="liveB" width="920" height="400"></canvas><figcaption>Loop</figcaption></figure>
+    <figure><canvas id="markB" width="460" height="112"></canvas><figcaption>Source marks: wash as painted on LFX (pale) · wash as displayed over void, with a wedge cut · FX ring print · FX core</figcaption></figure>
+  </div>
+  <div class="scroll"><table class="spec">
+    <tr><th>Engine pulse</th><td>Tick 0: wash at R 32 u (0.85 ship length) in two flat tones, the inner at 58% of R. It steps every 2 ticks: 32, 26, 20, 15, 10, 6 u, each step one tone deeper. The plate's notch is ±53° at ignition and narrows as the ship leaves. Core: white r 2.2 u and soft r 7 u on ticks 0–3.</td></tr>
+    <tr><th>Drone detonation</th><td>Tick 0: wash at R 78 u. Steps every 3 ticks: 78, 66, 53, 41, 29, 18, 9 u, gone at tick 21. Any ship inside is overexposed to a white silhouette on ticks 0–1 and throws a wedge to the rim for as long as the wash reaches it. Core: white r 5 u, soft r 16 u, ticks 0–2.</td></tr>
+    <tr><th>FX</th><td>The core, and a 0.7 to 1 u ring printed at the wash edge each time it steps. FX therefore remembers where the light has been: nested rings that outlast the wash by about 15 ticks.</td></tr>
+    <tr><th>LFX</th><td>The wash and its wedges. No history means hard steps and shadow edges that follow moving ships exactly. Wedges are cut from the LFX canvas with <code>destination-out</code>, so a shadow is the untouched scene and a shaded ship keeps its own colours. Over a lit hull the pale wash screens and lifts it.</td></tr>
+    <tr><th>Shapes and counts</th><td>Two discs per event, one wedge polygon per ship in range (five silhouette points scanned for the two tangent angles), one ring per step.</td></tr>
+    <tr><th>Colour</th><td>Large areas stay low in chroma: displayed <code>rgb(205,228,190)</code> → <code>rgb(150,200,132)</code> → <code>rgb(96,166,92)</code> → <code>rgb(56,126,64)</code> → <code>rgb(30,90,46)</code>, at 78% falling to 54%. Saturated green is confined to the 7 u core. It separates from the lime by chroma and by never being the same size twice.</td></tr>
+    <tr><th>Scaling</th><td>R and step period: 32 u and 2 ticks, 78 u and 3 ticks, about 160 u and 5 ticks. Constant: light that retreats to its point, two flat tones, wedges.</td></tr>
+    <tr><th>The wait</th><td>The ring prints and core fade. The plate accent steps down as in A.</td></tr>
+    <tr><th>Cost and risk</th><td>Cheap, but the wedge scan runs per ship per event per tick. Risks: the engine frame reads as Pac-Man with the ship in its mouth. A flat disc wider than the ship every 0.45 s is the largest lit area of the four. Overlapping washes from two engines replace each other on LFX and do not add.</td></tr>
+  </table></div>
+</section>
+
+<section id="C">
+  <h2>3C. Chain</h2>
+  <div class="col"><p class="lede">Light is straight tracks that appear at full length, never move, and end by splitting in two. The picture grows by generations, and yield is the number of generations.</p></div>
+  <div><p class="cap">Engine pulse</p><div class="strip" id="engC"></div></div>
+  <div><p class="cap">Drone detonation</p><div class="strip" id="detC"></div></div>
+  <div class="row">
+    <figure><canvas id="liveC" width="920" height="400"></canvas><figcaption>Loop</figcaption></figure>
+    <figure><canvas id="markC" width="460" height="112"></canvas><figcaption>Source marks: track on its birth tick · track with first fork and tip dots · with second fork</figcaption></figure>
+  </div>
+  <div class="scroll"><table class="spec">
+    <tr><th>Engine pulse</th><td>Tick 0: 8 tracks. Tick 1: 4. Ticks 2–10: 2 each, 30 in all, from the plate's current position into a rear cone of ±49°. Length 8 to 60 u, weighted short. Width 1.1 u. Each track is stamped for 3 ticks at 90, 50 and 30%. Three ticks after birth it forks: two branches at ±23° to ±46°, 40% of its length, with a 1 u dot at each tip. LFX white lens r 5 u at the plate on ticks 0–1.</td></tr>
+    <tr><th>Drone detonation</th><td>40, 20, 10 and 5 tracks on ticks 0–3, all round, 14 to 76 u. First forks at +3 ticks. Second forks at +6: four twigs per track, 18% length, deep green. LFX white core r 7 u on ticks 0–1. Peak density ticks 5–9, gone near tick 36.</td></tr>
+    <tr><th>FX</th><td>Every track. Overlap near the origin adds to white, so the core comes free. The glow layer turns the dense centre into a body and leaves the tips crisp. Because the ship moves during the push, successive origins comb the fan along its path.</td></tr>
+    <tr><th>LFX</th><td>Only the two-tick core, to give tick 0 a solid.</td></tr>
+    <tr><th>Shapes and counts</th><td>Line strokes and 1 u dots. Engine: 30 tracks and 60 branches per push. Drone: 75 tracks, 150 branches, 300 twigs, about 200 strokes on the busiest tick. Tracks live in a small list per event for 8 ticks.</td></tr>
+    <tr><th>Colour</th><td><code>rgb(200,255,190)</code> on the birth tick, <code>rgb(96,224,72)</code> after, twigs <code>rgb(30,150,48)</code>. Thin strokes never fill an area, so there is no flat lime-like patch anywhere.</td></tr>
+    <tr><th>Scaling</th><td>Generations: 1 for the engine, 2 for a drone, 3 for a reactor, capped near 1,200 strokes. Constant: the fork, its angle range and the 40% ratio.</td></tr>
+    <tr><th>The wait</th><td>Forks of the last tracks finish on tick 14, then the comb decays in place.</td></tr>
+    <tr><th>Cost and risk</th><td>The most strokes of the four, still small. Risks: it reads as lightning, frost or a plant. Lines of 1 u disappear when the camera zooms out. It has the least mass, so the weakest push.</td></tr>
+  </table></div>
+</section>
+
+<section id="D">
+  <h2>3D. Standing shells</h2>
+  <div class="col"><p class="lede">The event shows its whole footprint on tick 0 as counted rings 6 u wide. A hot band then walks outward one ring every 3 ticks and leaves burnt rings behind. Size is the ring count and time is where the hot band stands.</p></div>
+  <div><p class="cap">Engine pulse</p><div class="strip" id="engD"></div></div>
+  <div><p class="cap">Drone detonation</p><div class="strip" id="detD"></div></div>
+  <div class="row">
+    <figure><canvas id="liveD" width="920" height="400"></canvas><figcaption>Loop</figcaption></figure>
+    <figure><canvas id="markD" width="460" height="112"></canvas><figcaption>Source marks: bands as painted on LFX · as displayed over void · engine sector with burnt, hot and pending bands</figcaption></figure>
+  </div>
+  <div class="scroll"><table class="spec">
+    <tr><th>Engine pulse</th><td>Three bands from r 3 to 21 u in a 120° sector behind the plate, fixed in the world at ignition. Hot band on ring 1 for ticks 0–2, ring 2 for 3–5, ring 3 for 6–8. Burnt rings fade over ticks 9–14.</td></tr>
+    <tr><th>Drone detonation</th><td>Six bands from r 3 to 39 u, full circle. The walk takes 18 ticks (300 ms) and the burnt fade 6 more. Pending rings are visible from tick 0, so the kill radius is announced before the heat arrives.</td></tr>
+    <tr><th>FX</th><td>The hot band only, at 55%. Over its 3 ticks it adds up to white and lingers as glow.</td></tr>
+    <tr><th>LFX</th><td>All bands. Pending rings are pale sage sources that display as deep green. The hot ring is near white. Burnt rings are dark sources that remove the FX afterglow beneath them, which leaves bright 0.9 u hairlines in the gaps between rings.</td></tr>
+    <tr><th>Shapes and counts</th><td>Annular sectors: 3 per engine event, 6 per detonation, plus one FX sector and a 2-tick centre flash.</td></tr>
+    <tr><th>Colour</th><td>Four flat steps, displayed: <code>rgb(240,255,215)</code> hot, then <code>rgb(70,190,60)</code>, <code>rgb(45,148,52)</code>, <code>rgb(20,105,45)</code> outward. Banding is the style.</td></tr>
+    <tr><th>Scaling</th><td>3, 6, 12, 24 rings. Constant: 6 u per ring and 3 ticks per ring, so the hot band walks at 2 u per tick at every size and a bigger event simply takes longer.</td></tr>
+    <tr><th>The wait</th><td>The burnt sector for 6 ticks, then nothing.</td></tr>
+    <tr><th>Cost and risk</th><td>Cheapest after A. Risks: concentric green rings read as radar, sonar or a targeting widget, and the outer rings sit closest of any proposal to the countdown green. It is orderly, so the least violent. The engine version is small.</td></tr>
+  </table></div>
+</section>
+
+<section id="pick">
+  <h2>4. Side by side</h2>
+  <div class="scroll"><table style="min-width:760px;max-width:1100px">
+    <tr><th></th><th>A Double flash</th><th>B Plate shadow</th><th>C Chain</th><th>D Standing shells</th></tr>
+    <tr><th>Signature</th><td>An order in time</td><td>Shadow geometry</td><td>A branching rule</td><td>A counted footprint</td></tr>
+    <tr><th>Size is told by</th><td>Gap length</td><td>Wash radius and step period</td><td>Generations</td><td>Ring count</td></tr>
+    <tr><th>Ship under the blast</th><td>Dimmed for up to 7 ticks</td><td>Never covered, shaded or overexposed</td><td>Seen through lines</td><td>Seen through bands</td></tr>
+    <tr><th>Reads as cause of push</th><td>Bead left behind, ship gone</td><td>Plate visibly blocks the light</td><td>Fan anchored to plate</td><td>Sector anchored to ignition point</td></tr>
+    <tr><th>Draws per event per tick</th><td>≤ 3</td><td>3 + one per ship in range</td><td>up to ~200 strokes</td><td>4 to 8</td></tr>
+    <tr><th>Saturated green on screen</th><td>Least</td><td>Low chroma, large area</td><td>Thin lines only</td><td>Most</td></tr>
+    <tr><th>Main failure</th><td>Strobe</td><td>Pac-Man</td><td>Lightning or foliage</td><td>Radar widget</td></tr>
+  </table></div>
+
+  <h2>5. Pick: A, Double flash</h2>
+  <div class="col">
+    <ul>
+      <li><strong>It solves the plume problem at its root.</strong> Today's plume reads as an ion engine that flickers because on and off is all it says. A says three things per push in a fixed order, and no ion, plasma or gravity effect in the game has a black phase.</li>
+      <li><strong>It survives scale.</strong> A timing reads the same at 6 px and at 300 px. B, C and D each depend on geometry that needs pixels.</li>
+      <li><strong>It uses each layer for the thing only that layer can do.</strong> LFX subtracts, FX remembers. The gap disc eating the afterglow is the one image here that cannot be made on a single layer.</li>
+      <li><strong>The family scales with one number.</strong> Gap length. A player who has seen an engine pulse can read a reactor loss without being taught.</li>
+      <li><strong>It is the furthest from the interface lime</strong>, because two of its three beats have no hue.</li>
+      <li><strong>The push comes from the bead left behind.</strong> The swell is painted at a world point and the ship leaves it. At 2 u per tick the ship is a full length away before the swell peaks.</li>
+    </ul>
+    <p>What I would test next on top of A, as an experiment and not as part of the pick: B's shadow wedge on detonation ticks 0–2 only. It answers "who was hit" in one frame and costs one polygon.</p>
+    <h3>Questions I would need answered</h3>
+    <ol>
+      <li>How many pixels is one unit at flight zoom, what is the zoom range, and does the 12 px glow blur scale with zoom? The engine rim is about 1 px at 1×.</li>
+      <li>Typical and top ship speeds in units per tick. Bead spacing and the "ship has left" read depend on it. Does the camera follow the thrusting ship?</li>
+      <li>Does the detonation have a gameplay radius, and should the drawn rim equal it, as in Missile Command?</li>
+      <li>Is there a photosensitivity limit on flash area and rate? Several fission engines on screen at 2.2 Hz each will need one.</li>
+      <li>May the first flash be neutral white, or must every frame carry the yellow-green?</li>
+      <li>Is the FX fade done in gamma space as a black fill, as here, or some other way? It changes how long the deep end lingers.</li>
+      <li>Within LFX, do effects draw over each other with normal compositing? A's gap disc must draw after other LFX light, or it cannot darken it.</li>
+      <li>What happens when thrust is released mid-push, and how should the 0.9 s rhythm differ from the 0.45 s one besides spacing?</li>
+      <li>What is the budget for simultaneous drones and detonations?</li>
+      <li>Where do the sound transients fall? A wants two hits per event, with the second one longer.</li>
+    </ol>
+  </div>
+</section>
+
+</main>
+<script>
+// Void Drift fission study: a small copy of the layer stack, Canvas 2D only.
+// World (normal) -> FX (accumulating, screen) -> FX glow (1/8 res, blur 12px, 90%, screen) -> LFX (hard-light)
+const S = 2;                       // device px per world unit in these images
+const FADE = 1 - Math.pow(0.5, 1 / 6); // half-life 0.1 s at 60 Hz
+const BG = 'rgb(5,5,16)';          // lch(1.57% 4.76 285.25)
+const W = [255, 255, 255];
+const FXH = [200, 255, 190], FXG = [96, 224, 72], FXD = [30, 150, 48]; // FX stamp colours, authored for additive clipping
+const MINT = [112, 255, 226], MINTC = [234, 255, 249];
+
+const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * Math.max(0, Math.min(1, t))));
+const HL = c => c.map(v => Math.round((v + 255) / 2)); // LFX source that displays as c over the void
+function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+function soft(c, x, y, r, col, a) { const g = c.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, rgba(col, a)); g.addColorStop(.35, rgba(col, a * .55)); g.addColorStop(1, rgba(col, 0)); c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); }
+function disc(c, x, y, r, col, a) { c.fillStyle = rgba(col, a); c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); }
+function ring(c, x, y, r, w, col, a) { c.strokeStyle = rgba(col, a); c.lineWidth = w; c.beginPath(); c.arc(x, y, r, 0, 7); c.stroke(); }
+function sector(c, x, y, r0, r1, a0, a1, col, a) { c.fillStyle = rgba(col, a); c.beginPath(); c.arc(x, y, r1, a0, a1); c.arc(x, y, r0, a1, a0, true); c.closePath(); c.fill(); }
+function line(c, x, y, ang, len, col, a, w) { c.strokeStyle = rgba(col, a); c.lineWidth = w; c.beginPath(); c.moveTo(x, y); c.lineTo(x + Math.cos(ang) * len, y + Math.sin(ang) * len); c.stroke(); }
+function poly(c, pts, fill) { c.fillStyle = fill; c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath(); c.fill(); }
+
+// ---------- ships (World layer) ----------
+const HULL = ['#c8f4f0', '#83c7d0', '#6193a9', '#437e99', '#365d79', '#264d6b'];
+const CHAR = ['#686c80', '#565a6e', '#474a5c', '#3a3d4e', '#2e3142', '#252838'];
+const SIL = [[18, 0], [-14, -14], [-20, -8], [-20, 8], [-14, 14]];
+function drawFighter(o, sh, accent) {
+  const p = sh.pal || HULL;
+  o.save(); o.translate(sh.x, sh.y); o.rotate(sh.ang || 0);
+  poly(o, [[18, 0], [-6, -4], [-14, -14]], p[0]);
+  poly(o, [[18, 0], [-6, -4], [-10, 0]], p[1]);
+  poly(o, [[-6, -4], [-14, -14], [-10, 0]], p[2]);
+  poly(o, [[18, 0], [-6, 4], [-10, 0]], p[3]);
+  poly(o, [[-6, 4], [-14, 14], [-10, 0]], p[4]);
+  poly(o, [[18, 0], [-6, 4], [-14, 14]], p[5]);
+  poly(o, [[-6, 4], [-14, 14], [-10, 0]], p[4]);
+  poly(o, [[9, 0], [3, -2], [-1, 0], [3, 2]], '#000');
+  o.fillStyle = '#12171e'; o.fillRect(-17, -5, 8, 10);
+  o.fillStyle = 'rgb(61,66,72)'; o.fillRect(-16, -4, 6, 4); o.fillStyle = 'rgb(27,29,31)'; o.fillRect(-16, 0, 6, 4);
+  if (sh.plate) { // pusher plate: the fission engine's one piece of machinery
+    o.fillStyle = 'rgb(97,103,112)'; o.fillRect(-19.5, -8, 2, 8); o.fillStyle = 'rgb(52,56,61)'; o.fillRect(-19.5, 0, 2, 8);
+    o.fillStyle = accent || '#14702e'; o.fillRect(-20.4, -8, .9, 16);
+  }
+  o.restore();
+}
+function drawDrone(o, d) {
+  o.save(); o.translate(d.x, d.y);
+  poly(o, [[8.5, 0], [-6, -5], [-3, 0]], CHAR[0]); poly(o, [[8.5, 0], [-6, 5], [-3, 0]], CHAR[5]);
+  o.fillStyle = 'rgb(27,29,31)'; o.fillRect(-8.5, -1.5, 5.5, 3); o.fillStyle = '#96f02e'; o.fillRect(-1, -.6, 3, 1.2);
+  o.restore();
+}
+function silhouette(sh) { const c = Math.cos(sh.ang || 0), s = Math.sin(sh.ang || 0); return SIL.map(p => [sh.x + p[0] * c - p[1] * s, sh.y + p[0] * s + p[1] * c]); }
+const ACC = ['#f4ffe2', '#96f02e', '#3ac428', '#14702e', '#3a4046'];
+function accentFor(tc) { return tc < 11 ? ACC[0] : ACC[Math.min(4, 1 + Math.floor((tc - 11) / 4))]; }
+
+// ---------- the stack ----------
+class Sim {
+  constructor(P, cfg) {
+    this.P = P; this.cfg = cfg; this.w = cfg.w; this.h = cfg.h;
+    this.fx = mk(this.w * S, this.h * S); this.lfx = mk(this.w * S, this.h * S);
+    this.small = mk(Math.ceil(this.w / 8), Math.ceil(this.h / 8));
+    this.F = this.fx.getContext('2d'); this.L = this.lfx.getContext('2d'); this.sc = this.small.getContext('2d');
+    const r = rng(cfg.seed || 7); this.stars = Array.from({ length: Math.round(this.w * this.h / 700) }, () => [r() * this.w, r() * this.h, .3 + r() * .9, .15 + r() * .5]);
+    this.reset();
+  }
+  reset() {
+    const c = this.cfg; this.t = 0; this.ev = [];
+    this.F.setTransform(1, 0, 0, 1, 0, 0); this.F.globalCompositeOperation = 'source-over'; this.F.globalAlpha = 1; this.F.fillStyle = '#000'; this.F.fillRect(0, 0, this.fx.width, this.fx.height);
+    this.fighter = c.fighter ? { ...c.fighter, ang: 0, plate: true, tc: 0 } : null;
+    this.drone = c.drone ? { ...c.drone } : null;
+    this.target = c.target ? { ...c.target, pal: CHAR } : null;
+    this.ships = [this.fighter, this.target].filter(Boolean);
+  }
+  burst() { const f = this.fighter; return [f.x - 26, f.y]; }
+  step() {
+    const F = this.F, L = this.L;
+    F.setTransform(1, 0, 0, 1, 0, 0); F.globalCompositeOperation = 'source-over'; F.fillStyle = '#000';
+    F.globalAlpha = FADE; F.fillRect(0, 0, this.fx.width, this.fx.height);
+    if (this.t % 12 === 0) { F.globalAlpha = .3; F.fillRect(0, 0, this.fx.width, this.fx.height); } // clears 8-bit residue
+    F.globalAlpha = 1; F.globalCompositeOperation = 'lighter'; F.setTransform(S, 0, 0, S, 0, 0);
+    L.setTransform(1, 0, 0, 1, 0, 0); L.globalCompositeOperation = 'source-over'; L.clearRect(0, 0, this.lfx.width, this.lfx.height); L.setTransform(S, 0, 0, S, 0, 0);
+    const f = this.fighter, d = this.drone;
+    if (f) {
+      if (f.tc === 0) { const b = this.burst(); this.ev.push({ kind: 'pulse', x: b[0], y: b[1], dx: -1, dy: 0, age: 0, rnd: rng(this.t * 31 + 5), tr: [] }); }
+      if (f.tc < 11) f.v += f.acc;
+      f.x += f.v;
+    }
+    if (d && !d.dead) {
+      d.x += d.v;
+      soft(F, d.x - 10, d.y, 4, MINT, .55); disc(F, d.x - 9.5, d.y, 1.1, MINTC, .9);
+      if (d.x >= d.detX) { d.dead = true; this.ev.push({ kind: 'det', x: d.x, y: d.y, age: 0, rnd: rng(99), tr: [] }); this.detT = this.t; }
+    }
+    for (const e of this.ev) { this.P[e.kind](this, e); L.globalCompositeOperation = 'source-over'; e.age++; }
+    this.ev = this.ev.filter(e => e.age <= this.P.life[e.kind]);
+    if (f) f.tc = (f.tc + 1) % 27;
+    this.t++;
+  }
+  compose(out) {
+    const o = out.getContext('2d'), Wp = out.width, Hp = out.height;
+    o.setTransform(1, 0, 0, 1, 0, 0); o.globalCompositeOperation = 'source-over'; o.globalAlpha = 1; o.filter = 'none';
+    o.fillStyle = BG; o.fillRect(0, 0, Wp, Hp);
+    o.save(); o.scale(S, S);
+    for (const s of this.stars) { o.fillStyle = `rgba(200,205,235,${s[3]})`; o.fillRect(s[0], s[1], s[2], s[2]); }
+    if (this.target) drawFighter(o, this.target);
+    if (this.fighter) drawFighter(o, this.fighter, accentFor((this.fighter.tc + 26) % 27));
+    if (this.drone && !this.drone.dead) drawDrone(o, this.drone);
+    o.restore();
+    o.globalCompositeOperation = 'screen'; o.drawImage(this.fx, 0, 0);
+    this.sc.globalCompositeOperation = 'copy'; this.sc.drawImage(this.fx, 0, 0, this.small.width, this.small.height);
+    o.globalAlpha = .9; if ('filter' in o) o.filter = `blur(${12 * S}px)`; o.drawImage(this.small, 0, 0, Wp, Hp); o.filter = 'none'; o.globalAlpha = 1;
+    o.globalCompositeOperation = 'hard-light'; o.drawImage(this.lfx, 0, 0);
+    o.globalCompositeOperation = 'source-over';
+  }
+}
+
+// ---------- the four proposals ----------
+// A. Double flash: white, black, green. Yield is told by the length of the gap.
+const PA = {
+  life: { pulse: 11, det: 27 },
+  pulse(s, e) {
+    const a = e.age, F = s.F, L = s.L, x = e.x + e.dx * a * .6, y = e.y;
+    if (a < 2) { disc(F, x, y, 6, W, 1); soft(F, x, y, 16, W, .8); disc(L, x, y, 8, W, 1); }
+    else if (a < 5) { const r = 8 + (a - 2) * 2; disc(L, x, y, r, [4, 8, 3], .92); ring(L, x, y, r, 1.1, HL([235, 255, 190]), 1); ring(F, x, y, r, .8, FXG, .35); }
+    else if (a < 11) { const k = (a - 5) / 5; soft(F, x, y, 12 + k * 13, mix(FXH, FXG, k * 1.6), a === 7 ? .8 : .6); }
+  },
+  det(s, e) {
+    const a = e.age, F = s.F, L = s.L, x = e.x, y = e.y;
+    if (a < 3) { disc(F, x, y, 11, W, 1); soft(F, x, y, 30, W, .9); disc(L, x, y, a === 0 ? 22 : 15, W, 1); }
+    else if (a < 10) { const r = 16 + (a - 3) * 3; disc(L, x, y, r, [4, 8, 3], .9); ring(L, x, y, r, 1.5, HL([235, 255, 190]), 1); ring(F, x, y, r, 1, FXG, .4); }
+    else if (a < 27) {
+      const k = (a - 10) / 16, env = a < 14 ? .25 + .25 * (a - 10) / 4 : .5 * (1 - (a - 14) / 13);
+      soft(F, x, y, 34 + k * 16, k < .4 ? mix(FXH, FXG, k / .4) : mix(FXG, FXD, (k - .4) / .6), env);
+      if (a < 17) soft(F, x, y, 12, FXH, .3);
+    }
+  },
+  marks(c) {
+    disc(c, 22, 28, 5, W, 1); soft(c, 22, 28, 13, W, .8);
+    disc(c, 68, 28, 11, [4, 8, 3], 1); ring(c, 68, 28, 11, 1.1, HL([235, 255, 190]), 1);
+    soft(c, 118, 28, 16, FXH, .5); soft(c, 164, 28, 21, FXG, .5); soft(c, 208, 28, 21, FXD, .5);
+  }
+};
+
+// B. Plate shadow: the light is a flat wash that contracts; solids cut wedges out of it.
+const WASH = [[205, 228, 190], [150, 200, 132], [96, 166, 92], [56, 126, 64], [30, 90, 46], [18, 60, 33], [10, 40, 24]];
+function wedge(L, bx, by, R, pts) {
+  let cx = 0, cy = 0; pts.forEach(p => { cx += p[0]; cy += p[1]; }); cx /= pts.length; cy /= pts.length;
+  if (Math.hypot(cx - bx, cy - by) > R + 14) return false;
+  const base = Math.atan2(cy - by, cx - bx); let lo = 0, hi = 0, pl = pts[0], ph = pts[0];
+  for (const p of pts) { let d = Math.atan2(p[1] - by, p[0] - bx) - base; d = Math.atan2(Math.sin(d), Math.cos(d)); if (d < lo) { lo = d; pl = p; } if (d > hi) { hi = d; ph = p; } }
+  L.globalCompositeOperation = 'destination-out'; L.fillStyle = '#000'; L.beginPath(); L.moveTo(pl[0], pl[1]);
+  L.lineTo(bx + Math.cos(base + lo) * (R + 2), by + Math.sin(base + lo) * (R + 2)); L.arc(bx, by, R + 2, base + lo, base + hi); L.lineTo(ph[0], ph[1]); L.closePath(); L.fill();
+  L.globalCompositeOperation = 'source-over'; return true;
+}
+function wash(s, e, R, i, al) {
+  const L = s.L; disc(L, e.x, e.y, R, HL(WASH[Math.min(6, i + 1)]), al); disc(L, e.x, e.y, R * .58, HL(WASH[i]), al);
+  const hit = []; for (const sh of s.ships) if (wedge(L, e.x, e.y, R, silhouette(sh))) hit.push(sh); return hit;
+}
+const PB = {
+  life: { pulse: 10, det: 20 },
+  pulse(s, e) {
+    const a = e.age, F = s.F, i = Math.floor(a / 2), R = 32 * [1, .82, .64, .48, .32, .2][i];
+    wash(s, e, R, i, .78 - i * .05);
+    if (a % 2 === 0) ring(F, e.x, e.y, R, .7, FXG, a ? .3 : .55);
+    if (a < 4) { soft(F, e.x, e.y, 7, FXH, .8); disc(F, e.x, e.y, 2.2, W, 1); }
+  },
+  det(s, e) {
+    const a = e.age, F = s.F, L = s.L, i = Math.floor(a / 3), R = 78 * [1, .84, .68, .52, .37, .23, .11][i];
+    const hit = wash(s, e, R, i, .78 - i * .04);
+    if (a < 2) for (const sh of hit) poly(L, silhouette(sh), 'rgba(255,255,255,.8)');
+    if (a % 3 === 0) ring(F, e.x, e.y, R, 1, FXG, a ? .35 : .6);
+    if (a < 3) { disc(F, e.x, e.y, 5, W, 1); soft(F, e.x, e.y, 16, W, .9); } else if (a < 9) soft(F, e.x, e.y, 8, FXH, .5);
+  },
+  marks(c) {
+    disc(c, 30, 28, 24, HL(WASH[1]), 1); disc(c, 30, 28, 14, HL(WASH[0]), 1);
+    disc(c, 92, 28, 24, WASH[1], 1); disc(c, 92, 28, 14, WASH[0], 1);
+    c.fillStyle = '#000'; c.beginPath(); c.moveTo(92, 28); c.arc(92, 28, 26, -.9, .9); c.closePath(); c.fill();
+    ring(c, 150, 28, 20, .8, FXG, .8); soft(c, 200, 28, 7, FXH, .8); disc(c, 200, 28, 2.2, W, 1);
+  }
+};
+
+// C. Chain: straight tracks that are born full length, never move, and end by splitting in two.
+function fork(F, t, col, a, w, gen) {
+  const ex = t.x + Math.cos(t.ang) * t.len, ey = t.y + Math.sin(t.ang) * t.len, l = t.len * .4;
+  for (const sg of [-1, 1]) {
+    const an = t.ang + sg * t.f;
+    if (gen === 1) { line(F, ex, ey, an, l, col, a, w); disc(F, ex + Math.cos(an) * l, ey + Math.sin(an) * l, 1, FXH, .8); }
+    else { const fx = ex + Math.cos(an) * l, fy = ey + Math.sin(an) * l; for (const s2 of [-1, 1]) line(F, fx, fy, an + s2 * .5, l * .45, col, a, w); }
+  }
+}
+const PC = {
+  life: { pulse: 16, det: 13 },
+  pulse(s, e) {
+    const a = e.age, F = s.F, r = e.rnd;
+    if (a < 11) {
+      const b = s.fighter ? s.burst() : [e.x, e.y], n = a === 0 ? 8 : a === 1 ? 4 : 2;
+      for (let i = 0; i < n; i++) e.tr.push({ x: b[0], y: b[1], ang: Math.PI + (r() - .5) * 1.7, len: 8 + 52 * Math.pow(r(), 3), f: .4 + r() * .4, born: a });
+      if (a < 2) disc(s.L, b[0], b[1], 5, W, 1);
+    }
+    for (const t of e.tr) { const g = a - t.born; if (g < 3) line(F, t.x, t.y, t.ang, t.len, g ? FXG : FXH, [.9, .5, .3][g], 1.1); else if (g < 5) fork(F, t, FXG, .7, .8, 1); }
+  },
+  det(s, e) {
+    const a = e.age, F = s.F, r = e.rnd;
+    if (a < 4) for (let i = 0, n = [40, 20, 10, 5][a]; i < n; i++) e.tr.push({ x: e.x, y: e.y, ang: r() * 6.2832, len: 14 + 62 * Math.pow(r(), 2.2), f: .4 + r() * .4, born: a });
+    if (a < 2) { disc(s.L, e.x, e.y, 7, W, 1); soft(F, e.x, e.y, 18, W, .8); } else if (a < 4) disc(s.L, e.x, e.y, 3.5, W, 1);
+    for (const t of e.tr) { const g = a - t.born; if (g < 3) line(F, t.x, t.y, t.ang, t.len, g ? FXG : FXH, [.9, .5, .3][g], 1.2); else if (g < 5) fork(F, t, FXG, .7, .9, 1); else if (g >= 6 && g < 8) fork(F, t, FXD, .9, .7, 2); }
+  },
+  marks(c) {
+    line(c, 8, 28, 0, 40, FXH, .9, 1.1);
+    const t = { x: 70, y: 28, ang: 0, len: 34, f: .55 }; line(c, 70, 28, 0, 34, FXG, .9, 1.1); fork(c, t, FXG, .9, .8, 1);
+    const u = { x: 150, y: 28, ang: 0, len: 34, f: .55 }; line(c, 150, 28, 0, 34, FXG, .9, 1.1); fork(c, u, FXG, .9, .8, 1); fork(c, u, FXD, 1, .7, 2);
+  }
+};
+
+// D. Standing shells: the footprint is there from tick 0; a hot band walks out through counted rings.
+const BW = 6, R0 = 3;
+function shells(s, e, n, a0, a1, per) {
+  const a = e.age, F = s.F, L = s.L, h = Math.floor(a / per), fade = h >= n ? Math.max(0, 1 - (a - n * per) / 6) : 1;
+  for (let k = 0; k < n; k++) {
+    const ra = R0 + k * BW, rb = ra + BW - .9;
+    if (k === h) { sector(L, e.x, e.y, ra, rb, a0, a1, HL([240, 255, 215]), 1); sector(F, e.x, e.y, ra, rb, a0, a1, FXG, .55); }
+    else if (k < h) sector(L, e.x, e.y, ra, rb, a0, a1, [6, 14, 8], .78 * fade);
+    else sector(L, e.x, e.y, ra, rb, a0, a1, HL(mix([70, 190, 60], [20, 105, 45], (k - h) / n)), .9);
+  }
+  if (a < 2) { disc(L, e.x, e.y, R0 - .5, W, 1); soft(F, e.x, e.y, 10, W, .8); }
+}
+const PD = {
+  life: { pulse: 15, det: 24 },
+  pulse(s, e) { shells(s, e, 3, Math.PI - 1.05, Math.PI + 1.05, 3); },
+  det(s, e) { shells(s, e, 6, 0, 6.2832, 3); },
+  marks(c) {
+    const cols = [HL([240, 255, 215]), HL([70, 190, 60]), HL([45, 148, 52]), HL([20, 105, 45])];
+    for (let k = 0; k < 4; k++) sector(c, 38, 28, R0 + k * BW, R0 + k * BW + 5.1, 0, 6.2832, cols[k], 1);
+    const shown = [[240, 255, 215], [70, 190, 60], [45, 148, 52], [20, 105, 45]];
+    for (let k = 0; k < 4; k++) sector(c, 110, 28, R0 + k * BW, R0 + k * BW + 5.1, 0, 6.2832, shown[k], 1);
+    for (let k = 0; k < 3; k++) sector(c, 205, 28, R0 + k * BW, R0 + k * BW + 5.1, Math.PI - 1.05, Math.PI + 1.05, k === 1 ? shown[0] : k ? shown[1] : [6, 14, 8], 1);
+  }
+};
+
+// ---------- page wiring ----------
+const ENG = { w: 230, h: 96, seed: 3, fighter: { x: 20, y: 48, v: 1.0, acc: .11 } };
+const DET = { w: 230, h: 170, seed: 11, drone: { x: 15, y: 90, v: 2.5, detX: 100 }, target: { x: 152, y: 66, ang: 2.5 } };
+const LIVE = { w: 460, h: 200, seed: 5, fighter: { x: -30, y: 52, v: 1.0, acc: .06 }, drone: { x: 20, y: 142, v: 2.2, detX: 250 }, target: { x: 304, y: 118, ang: 2.4 } };
+const ENG_FR = [0, 1, 3, 6, 10, 14, 20, 27], DET_FR = [-8, 0, 2, 5, 9, 14, 22, 36];
+
+function strip(host, P, cfg, frames, t0of, label) {
+  const sim = new Sim(P, cfg); let t0 = null, i = 0;
+  for (let n = 0; n < 400 && i < frames.length; n++) {
+    sim.step(); if (t0 === null) t0 = t0of(sim);
+    const rel = t0 === null ? null : sim.t - 1 - t0;
+    const want = frames[i];
+    if ((rel !== null && rel === want) || (t0 === null && want < 0 && cfg.drone && Math.round((cfg.drone.detX - sim.drone.x) / cfg.drone.v) === -want)) {
+      const fig = document.createElement('figure'), cv = mk(cfg.w * S, cfg.h * S); sim.compose(cv);
+      const cap = document.createElement('figcaption'); cap.textContent = label(want);
+      fig.append(cv, cap); host.append(fig); i++;
+    }
+  }
+}
+const ms = t => `${t < 0 ? '−' : ''}${Math.abs(Math.round(t * 16.67))} ms`;
+const PROPS = { A: PA, B: PB, C: PC, D: PD };
+const lives = [];
+for (const [k, P] of Object.entries(PROPS)) {
+  strip(document.getElementById('eng' + k), P, ENG, ENG_FR, s => s.t > 27 ? 27 : null, t => t === 27 ? 'tick 27 · next push' : `tick ${t} · ${ms(t)}`);
+  strip(document.getElementById('det' + k), P, DET, DET_FR, s => s.detT ?? null, t => t < 0 ? `${ms(t)} · travel` : `tick ${t} · ${ms(t)}`);
+  const m = document.getElementById('mark' + k), mc = m.getContext('2d'); mc.fillStyle = '#17171f'; mc.fillRect(0, 0, m.width, m.height); mc.scale(S, S); P.marks(mc);
+  const cv = document.getElementById('live' + k); const sim = new Sim(P, LIVE);
+  for (let n = 0; n < 112; n++) sim.step(); sim.compose(cv);
+  lives.push({ cv, sim, on: false });
+}
+let playing = false, last = 0;
+const btn = document.getElementById('play');
+function loop(ts) {
+  if (!playing) return;
+  if (ts - last > 15) { last = ts; for (const l of lives) if (l.on) { l.sim.step(); if (l.sim.t > 175) l.sim.reset(); l.sim.compose(l.cv); } }
+  requestAnimationFrame(loop);
+}
+const io = new IntersectionObserver(es => es.forEach(en => { const l = lives.find(l => l.cv === en.target); if (l) l.on = en.isIntersecting; }));
+lives.forEach(l => io.observe(l.cv));
+btn.addEventListener('click', () => { playing = !playing; btn.textContent = playing ? 'Pause the loops' : 'Play the loops'; btn.setAttribute('aria-pressed', playing); if (playing) requestAnimationFrame(loop); });
+
+</script>
+</body>
+</html>
