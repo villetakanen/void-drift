@@ -54,7 +54,8 @@ A static specimen, editable instrument, simulation or discussion may each be rig
 
 Inspect what you build before presenting it. Preserve the relevant game context
 and identify substitutions. Let the designer’s response guide the next step.
-Record useful findings, selected values or variants, reasons and remaining uncertainty.
+Record what was learned: findings, selected values or variants, why they hold and
++what remains uncertain.
 An unsuccessful experiment can be worth retaining when it taught something useful;
 there is no obligation to archive every attempt or immediately replace a rejection.
 
@@ -88,13 +89,24 @@ that intent in owning specs before changing shared implementation.
 
 ## Keep the record useful
 
-Update the page as understanding develops. Preserve reasons and the extent of
-decisions in readable prose, separating observations from interpretations. Use
+The study page records three things: what was studied, what was known and what
+was learned. Write each step in that order. State facts and findings without an
+actor: never refer to the people doing the study, by name or by role, or to the
+agent. Name a person only when someone outside the study was consulted.
+
+Leave process off the page unless process is the subject of the enquiry. Process
+is what a step did or built, where an instrument moved, how or when a capture was
+made, which checks exist and who decided. Write “Assumed, 26 November 2026:”,
+not “These values were set on 26 November and the instrument now opens on them.”
+
+Update the page as understanding develops. Keep why a finding holds and how far a
+decision extends, separating observations from interpretations. Use
 [Studies](../../../docs/specs/studies/spec.md) for publication, metadata and closure
 contracts; use its supported metadata source without duplicating it.
 
 The designer decides whether to accept, rule out, stop or park the study. At closure,
 retain conclusions, uncertainty and useful versioned captures so the record stands
 without its temporary apparatus. Verify the rendered page, media and affected
-consumers. Report automated checks, visual inspection and designer judgment
-separately, with the review URL. A study can end usefully without proposing a change.
+consumers. In the conversation, not on the page, report automated checks, visual
+inspection and designer judgment separately, with the review URL. A study can end
+succesfully without proposing a change.
