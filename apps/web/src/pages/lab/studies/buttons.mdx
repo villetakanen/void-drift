@@ -2,8 +2,8 @@
 layout: ../../../layouts/StudyLayout.astro
 ---
 
-**Accepted by the designer, revision 9, 28 October 2026.** The designer approved
-the study and authorized integration: shared tokens, buttons, groups, the
+**Accepted, revision 9, 28 October 2026.** The study was approved and
+integration authorized: shared tokens, buttons, groups, the
 canonical Lab and the existing application screens.
 
 ## Situations before styling
@@ -42,7 +42,7 @@ destinations, buttons for in-app state transitions and commands.
 
 ![A row of four buttons: Primary action, Secondary action, Unavailable, Destructive action.](/studies/buttons/03-hierarchy-states.png)
 
-*Primary, secondary, unavailable and destructive buttons. Captured 17 November 2026 at 1280px from the study’s interactive example running today’s production button styles; a reconstruction, not the view the designer reviewed.*
+*Primary, secondary, unavailable and destructive buttons. Captured 17 November 2026 at 1280px from the study’s interactive example running today’s production button styles; a reconstruction, not the view reviewed at the time.*
 
 ## Containers
 
@@ -70,16 +70,16 @@ group. The vertical group stays transparent.
 
 ![Three example cards: game-state navigation, a ship blueprint with save and revert, and Lab replay controls, each with its buttons in a vertical group.](/studies/buttons/02-vertical-group.png)
 
-*A · Vertical button group, default state (startup, unsaved blueprint, paused replay). Captured 17 November 2026 at 1280px from the study’s interactive example running today’s production button styles; a reconstruction, not the view the designer reviewed.*
+*A · Vertical button group, default state (startup, unsaved blueprint, paused replay). Captured 17 November 2026 at 1280px from the study’s interactive example running today’s production button styles; a reconstruction, not the view reviewed at the time.*
 
 ![The same three cards with their buttons in anchored action strips.](/studies/buttons/02-action-strip.png)
 
-*B · Anchored action strip, default state. Captured 17 November 2026 at 1280px from the study’s interactive example running today’s production button styles; a reconstruction, not the view the designer reviewed.*
+*B · Anchored action strip, default state. Captured 17 November 2026 at 1280px from the study’s interactive example running today’s production button styles; a reconstruction, not the view reviewed at the time.*
 
 ## Tokens
 
-Before promotion the designer asked for a complete token inventory (revision 7).
-In revision 8 the designer established `--_name` for private component tokens:
+Before promotion a complete token inventory was requested (revision 7).
+Revision 8 established `--_name` for private component tokens:
 declared on the owning component rather than `:root`, for local aliases, derived
 values and implementation details. Shared visual decisions remain public tokens.
 For example, `--_group-spacing: var(--spacing-sm)` supplies both padding and gap.
@@ -102,12 +102,12 @@ The promotion on 28 October 2026 implemented:
 
 ## Ruled out
 
-- **A generic discard confirmation as the lead example** (revision 2): the
-  designer corrected that “dialog buttons” primarily navigate the game’s
+- **A generic discard confirmation as the lead example** (revision 2):
+  corrected, because “dialog buttons” primarily navigate the game’s
   startup, pause, setup and mode states. Confirmation stayed only as a
   supporting example of an action with consequences.
 - **An equal-width strip** (revision 4): replaced by the two containers.
-- **16px vertical spacing** (revision 6): the designer found it too loose;
+- **16px vertical spacing** (revision 6): found too loose;
   vertical padding and gaps were reduced together to 8px.
 - **Study-only 120px/172px minimum widths:** removed at promotion. Horizontal
   buttons size to content; vertical buttons fill their shared container. No

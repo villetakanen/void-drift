@@ -6,23 +6,23 @@ layout: ../../../layouts/StudyLayout.astro
 
 ## Closed / Inconclusive
 
-**19 November 2026 — stopped during exploration by the designer.** The study
+**19 November 2026 — stopped during exploration.** The study
 has not established that the proposed design problem exists, nor adequately
 grounded its investigation in the product. It has not established a need for
 a new combat HUD or selected a design to deliver. Inconclusive does not mean
 the need has been disproved.
 
-**Strongest result, in the designer's assessment:** the finding about grounding
+**Strongest result, as assessed:** the finding about grounding
 the study in the product. Relevant existing behaviour, HUD language and design
 system need to inform the investigation. Existing pirate bearings were brought
 into the discussion late. Inspecting that reference does not make its reuse an
 imperative design direction.
 
-The designer-supplied navigation situations remain the study's motivating
+The supplied navigation situations remain the study's motivating
 reports, not a demonstrated gap in current product feedback. Promising
 positioning and illustration, and preferences discovered in the examples,
 remain bounded study observations. Miniatures were ruled out; no marker form,
-colour vocabulary or distance encoding was accepted. The designer found 02.8
+colour vocabulary or distance encoding was accepted. 02.8 was found
 relevant to section 01, but that positive assessment did not establish the
 problem or accept a solution. No assessment of 02.9 was obtained before closure.
 
@@ -37,7 +37,7 @@ way to fly. The sun offers charging, but the speed-camera view can leave it
 out of sight. A known derelict can be outside the view; energy released from
 one can travel out of sight before the pilot collects it. A pirate can be
 somewhere nearby without the pilot knowing its direction or whether it is
-approaching. These designer-supplied gameplay problems motivate the study.
+approaching. These supplied gameplay problems motivate the study.
 
 The immediate information need is orientation toward relevant offscreen
 objects while keeping the current camera view. Direction is common to all
@@ -64,7 +64,7 @@ additional information is needed at all.
 - **Opponents:** help the pilot locate a pirate outside the view and understand
   whether it is approaching. Gauntlet supplies the current pirate context;
   pirates in Survival remain hypothetical.
-- **Grounding:** these are designer-supplied problems. Mode-specific object
+- **Grounding:** these are supplied problems. Mode-specific object
   availability and existing feedback must be checked when staging examples.
   Available implementation is not evidence that the information need is met.
   Each example must state which objects the pilot knows about and why they
@@ -138,7 +138,7 @@ the study had established that premise.
 
 ### Finding / Establish the information before placing it
 
-**Designer assessment · 19 November 2026:** retain 02.1 as a useful exploration.
+**Assessment · 19 November 2026:** retain 02.1 as a useful exploration.
 The drawings initially appeared unrelated to the intended problem. Explaining
 their placement hypothesis made their purpose understandable and exposed the
 missing decision: the study does not yet know which information would help a
@@ -230,10 +230,10 @@ Sources: `docs/specs/game/gauntlet/spec.md`,
 
 ### Finding / Find what matters beyond the view
 
-**Designer assessment · 19 November 2026:** 02.2 usefully exposed missing
+**Assessment · 19 November 2026:** 02.2 usefully exposed missing
 gameplay requirements. The concrete needs concern navigation to things outside
 the view, rather than explanations of weapon operation. The following are
-designer-supplied gameplay problems, not findings from an agent-run playtest:
+supplied gameplay problems, not findings from a playtest:
 
 | Situation | Missing knowledge | Intended action |
 | --- | --- | --- |
@@ -269,7 +269,7 @@ outside the entire rendered view, without assuming these boundaries coincide.
 missing gameplay requirements. Neither selects indicators or a layout. The
 silent-weapon recommendation is superseded, and the weapon-operation and
 incoming-charge cases are outside the proposed navigation question. Section
-01 now records these originating requirements by explicit designer agreement.
+01 now records these originating requirements by explicit agreement.
 Other information may emerge and earn inclusion during the study; the weapon
 cases remain candidates, not the problems that prompted it. No rendering
 surface or production change is selected.
@@ -292,8 +292,8 @@ icons, labels or positions. This example tests their sufficiency for the four
 originating problems before exploring presentation.
 
 The pilot already knows the sun and derelict, has seen the collectible released,
-and knows a pirate is present. The diagram reveals their authored positions to
-the designer; the player cannot see them. It combines the four needs for
+and knows a pirate is present. The diagram reveals their authored positions;
+the player cannot see them. It combines the four needs for
 comparison without claiming they coexist in a particular production encounter.
 The objects are outside the entire rendered view, not merely in its gutters.
 
@@ -301,7 +301,7 @@ The objects are outside the entire rendered view, not merely in its gutters.
 
 <figure>
   <img src="/studies/combat-hud-2026-11-19/023-navigation-information.jpg" alt="02.3 candidate information: object type and bearing, plus changing pirate separation." style={{width: "100%", height: "auto"}} />
-  <figcaption>02.3 authored information diagram. Retained before the designer selected type, distance and direction as the next working set.</figcaption>
+  <figcaption>02.3 authored information diagram. Retained before type, distance and direction were selected as the next working set.</figcaption>
 </figure>
 
 <div className="combat-hud-prose">
@@ -324,7 +324,7 @@ and decisions about distance remain open. Existing feedback must still be
 accounted for before proposing additional cues. No layout, detection mechanic,
 world-HUD change or production implementation is accepted.
 
-**Designer decision · 19 November 2026:** proceed on the working assumption
+**Decision · 19 November 2026:** proceed on the working assumption
 that the layer presents three types of information: target type, distance and
 direction. Arrange these on a circle inside the active camera area, for objects
 outside the viewport. This selects the basis for the next example, not a final
@@ -358,7 +358,7 @@ shown at its world position.
 
 <figure>
 <img src="/studies/combat-hud-2026-11-19/024-navigation-ring.jpg" alt="02.4 anchor comparison, retained with the correction below; neither alternative was selected." style={{width: "100%", height: "auto"}} />
-<figcaption>02.4 anchor comparison. The designer found no useful advance in this step; the correction below establishes what the next example must hold fixed.</figcaption>
+<figcaption>02.4 anchor comparison. No useful advance was found in this step; the correction below establishes what the next example must hold fixed.</figcaption>
 </figure>
 
 <div className="combat-hud-prose">
@@ -382,7 +382,7 @@ The purpose is to judge this one geometric choice before adding those conditions
 
 ### Correction / Develop the markers within the agreed circle
 
-**Designer assessment · 19 November 2026:** the step added no useful design
+**Assessment · 19 November 2026:** the step added no useful design
 information. It reopened the circle’s placement and used abstract diagrams
 that did not express the game’s design language. The circle at the very edge
 of the active game area is an established direction, not an anchor choice to
@@ -451,7 +451,7 @@ selected, and no production system is changed.
 
 ### Finding / Positioning holds; marker character remains open
 
-**Designer assessment · 19 November 2026:** the positioning and illustration
+**Assessment · 19 November 2026:** the positioning and illustration
 are good and show that the model has promise. None of the three marker
 options feels like the game or like HUD elements. Shared assets and token
 values alone do not establish that character; `docs/design.md` and the design
@@ -484,8 +484,8 @@ construction qualities while preserving the world HUD's content and ownership.
 </div>
 
 <figure>
-<img src="/studies/combat-hud-2026-11-19/026-contact-readouts.jpg" alt="02.6 contact readings, retained with the designer assessment below." style={{width:"100%",height:"auto"}} />
-<figcaption>02.6 capture. The designer judged this further evidence that departing from the existing game HUD language produces examples that do not relate to the game.</figcaption>
+<img src="/studies/combat-hud-2026-11-19/026-contact-readouts.jpg" alt="02.6 contact readings, retained with the assessment below." style={{width:"100%",height:"auto"}} />
+<figcaption>02.6 capture. This was judged further evidence that departing from the existing game HUD language produces examples that do not relate to the game.</figcaption>
 </figure>
 
 <div className="combat-hud-prose">
@@ -513,7 +513,7 @@ of gameplay usefulness. No marker appearance is selected yet.
 
 ### Finding / Use the existing HUD language itself
 
-**Designer assessment · 19 November 2026:** 02.6 is further, strong evidence
+**Assessment · 19 November 2026:** 02.6 is further, strong evidence
 that going outside the existing game HUD language produces examples that do
 not relate to the game. The new directional tip, backing and type hierarchy
 were not selected. Retain this finding alongside the earlier acceptance of
@@ -573,8 +573,8 @@ appearance or production change is accepted by this example alone.
 
 ### Finding / Graphical information
 
-The designer found text, lines and numbers read as helper text rather than HUD,
-and preferred avoiding icons and font-based approaches as much as possible unless
+Text, lines and numbers were found to read as helper text rather than HUD,
+and the preference is to avoid icons and font-based approaches as much as possible unless
 decorative. Positioning and illustration remain promising; no marker is selected.
 
 </div>
@@ -626,7 +626,7 @@ usefulness during play. There is no selected treatment yet.
 
 ### Finding / Information ink, not miniature objects
 
-**Designer assessment · 19 November 2026:** 02.8 was the first step that felt
+**Assessment · 19 November 2026:** 02.8 was the first step that felt
 like it explored section 01. Miniatures are not an option. The world HUD is
 unicolour; the combat HUD may explore one or more colours, but target identity
 should not become distinct object shapes. This settles the rejection of
@@ -645,7 +645,7 @@ its encoding is still unresolved and is deliberately absent from this comparison
 
 <figure id="combat-hud-029">
 <img src="/studies/combat-hud-2026-11-19/029-contact-ink.jpg" alt="02.9 static comparison: one green HUD ink versus colour by target, with identical directional marks." style={{width:"100%",height:"auto"}} />
-<figcaption>02.9 retained capture of the final example: identical authored bearings and marker geometry, one ink versus target colours. Distance was not encoded. No designer selection or gameplay conclusion was obtained before the study closed.</figcaption>
+<figcaption>02.9 retained capture of the final example: identical authored bearings and marker geometry, one ink versus target colours. Distance was not encoded. No selection or gameplay conclusion was obtained before the study closed.</figcaption>
 </figure>
 
 <div className="combat-hud-prose">

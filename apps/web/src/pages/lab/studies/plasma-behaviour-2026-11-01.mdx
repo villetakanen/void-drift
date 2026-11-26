@@ -4,7 +4,7 @@ layout: ../../../layouts/StudyLayout.astro
 
 <h2 id="closure">Outcome / Stopped, unconcluded and broken</h2>
 
-Closed on 1 November 2026 at the designer’s request. The six-build comparison was useful, and the delay comparison yielded a bounded observation. After 02.2, repeated presentation changes and new tools did not produce useful design decisions. Passing technical checks did not change that assessment. No final behaviour reached readiness assessment, and no production tuning or integration plan was approved.
+Closed on 1 November 2026 on request. The six-build comparison was useful, and the delay comparison yielded a bounded observation. After 02.2, repeated presentation changes and new tools did not produce useful design decisions. Passing technical checks did not change that assessment. No final behaviour reached readiness assessment, and no production tuning or integration plan was approved.
 
 <h2 id="purpose">01 / Committing to a burn, recovering from a mistake</h2>
 
@@ -16,7 +16,7 @@ The stills are reconstructions from the surviving page on **22 November 2026**, 
 
 ### 02.1 / Six configurations, one flight sequence
 
-The designer retained this comparison for its delay and thrust contrast, not as final balance. Three side pairs (Light ion, Heavy ion, Plasma) showed immediate versus delayed steering. Three four-engine builds (all Light, Light sides with Plasma aft, all Plasma) exposed whether immediate steering made delayed aft power useful and what changed when every engine had to charge.
+This comparison was retained for its delay and thrust contrast, not as final balance. Three side pairs (Light ion, Heavy ion, Plasma) showed immediate versus delayed steering. Three four-engine builds (all Light, Light sides with Plasma aft, all Plasma) exposed whether immediate steering made delayed aft power useful and what changed when every engine had to charge.
 
 All were Fighters with fitted mass and stabilizers enabled in the corrected fixtures. They started at rest at the same origin, facing right. The fourteen one-second inputs were **LR, LR, coast, L, coast, LR, coast, R, coast, R, coast, LR, LR, LR**. Aft engines fired only on LR. Releasing an engine reset its charge; an uninterrupted side engine kept its own timer. The bench used assembled-engine forces, mount geometry, mass, charge timers and free-fall rotation at 60 ticks/s with four substeps, unlimited power, and no gravity, drag, wrapping or randomness.
 
@@ -109,6 +109,6 @@ Acceleration from rest was combined ready force divided by mass, then the produc
 
 - **Review integration scope separately.** Carry the provisional chassis ownership decision into a future propulsion specification; mixed-force semantics and intended production behaviour still need a decision. Take 0.10 s into a playable trial, not directly into the game. Keep Plasma aft with ion sides as an escape-engine candidate; final force, delay, energy cost and charge decay remain open. Stabilizers were a fixture correction, not a feature proposal. Neither 2× Plasma nor the later force examples were accepted.
 - **Design the flight bench separately.** Start with the successful earlier presentations. Establish predictable, understandable, comparable paths, input sequences, graphs, scales and controls before exploring engines again.
-- **Investigate the failed sequence separately.** Review how the requests, corrections and outcomes led to presentation changes displacing design discussion. The designer considered the failure useful evidence for developing the design factory; causes and proposed lessons remain pending.
+- **Investigate the failed sequence separately.** Review how the requests, corrections and outcomes led to presentation changes displacing design discussion. The failure was considered useful evidence for developing the design factory; causes and proposed lessons remain pending.
 
 *Pre-conversion source: `9fd97337`, `apps/web/src/pages/lab/studies/plasma-behaviour-2026-11-01.astro`. Its retired apparatus in `apps/web/src/components/studies/` was `MovementBench.svelte`, `PlasmaEscape.svelte`, `ForceComposition.svelte`, `StabilizerGeometry.svelte`, `plasma-bench.ts`, `plasma-escape.ts` and `force-composition.ts`.*

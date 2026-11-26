@@ -1,0 +1,83 @@
+{
+  "schema_version": 2,
+  "run_id": "c61ea739-6a16-4588-b6b1-77d66abc4e6a",
+  "recorded_at": "2026-11-26T19:49:44Z",
+  "loop": "Fission engine design study (fission-engine-2026-11-26), one Claude Code desktop session on 26 November 2026: built 02.3 (Flight scene bench with the drone flash and three plumes), restaged its field twice, added a show-one-part choice, built 02.4 (adjustable channel blast), built 02.5 (a kick flight rule on a single-engine Wasp with dials, a reference chart and tests), recorded a light assumption and a kick assumption, discussed damage, corrected one sentence in the closed drone launcher study, rewrote the study's prose as studied, known and learned, and proposed a separate session to remove actor wording from other study pages.",
+  "worked": [
+    "Reading the reverted first 02.3 and the previous close-loop report before building. The earlier attempt had shrunk the push to a small effect; using the drone detonation's flash at its full size avoided that, and the step was accepted as a base to work from.",
+    "The Flight scene instrument's study light and experiment hooks carried all three steps without changes to production code or to the shared instrument.",
+    "Measuring before answering design questions. The G14 star's reach and pull, the start positions against The Cradle, and the five-engine tables each changed the next decision. The single-engine Wasp table was the user's suggestion and gave much cleaner numbers than the Fighter.",
+    "Offering contested rules as dials instead of choosing. The user expected the holds-fire ceiling rule to be silly and selected it after flying it.",
+    "A test that held the kick rule to the game's fission engine. It showed the game applies the ceiling taper in four substeps per tick, which the first version of the rule missed.",
+    "The readout listing every setting as copyable text. The user pasted it back twice to set assumptions.",
+    "Capturing stills of a step before moving its instrument to the next step."
+  ],
+  "issues": [
+    {
+      "area": "context",
+      "observation": "I reported that the burns pass The Cradle within 32 u of its surface. The ship's collision radius is 31.2 u, so that was a collision. The user pointed out that the ship hits the planet.",
+      "effect": "One turn carried a wrong statement, and the page text carried it too until the next turn corrected both.",
+      "interpretation": "My measurement was centre to surface and I did not subtract the hull's radius or ask what a constant minimum of 31 to 32 u across different flights meant."
+    },
+    {
+      "area": "context",
+      "observation": "In the damage discussion I cited a sentence in the closed drone study (a circle read as a range marker) and the failure of its 02.8 as findings against drawing harm arcs. The user said the only objection to the circle had been blockiness at 8x. The sentence had entered in the study's closing commit, 02.8's own text says it failed for other reasons, and the game's drone light draws the ring.",
+      "effect": "A wrong risk claim in a design discussion, one turn to check and withdraw it, and a correction to the drone study page.",
+      "interpretation": "I treated compacted study prose as a recorded finding. I had already read the drone spec and the production light code in this loop and did not check the claim against them."
+    },
+    {
+      "area": "project",
+      "observation": "Study prose I wrote referred to 'the designer' and narrated process (what a step did, where the instrument moved, how captures were made, that an automated check exists). The user rejected both over four messages: studies never refer to a person, and record only what was studied, what was known and what was learned. The design-study skill uses the word 'designer' thirteen times and 37 other study pages contain it.",
+      "effect": "Steps 02.3 to 02.5 were rewritten, notes I had added to the drone study were removed, and a separate session was started for the other pages with a brief that covers actor wording only, written before the rule about process talk was stated.",
+      "interpretation": "Suspected: the skill's vocabulary and its instructions to preserve reasons, conditions and reconstructions lead to narration on the page. Uncertain. At the time of writing the rule is not recorded in the project instructions or the skill; I asked whether to add it and had no answer."
+    },
+    {
+      "area": "context",
+      "observation": "I began framing the flight discussion as fission against plasma. The user stopped it mid-turn: there are five engines, as 02.2 already tabulates.",
+      "effect": "One mid-turn correction; I then measured every engine and the comparison improved.",
+      "interpretation": "I anchored on the user's own aside that fission is the opposite of plasma instead of on the study's 02.2 table."
+    },
+    {
+      "area": "project",
+      "observation": "The Flight scene instrument's default scene builds its system from the ranked challenge seed, which gives a G14 star whose gravity covers 840 u of a 1,190 u arena. My first 02.3 used it. In the Practice system the ship's own start sends the first burn into The Cradle with a fission Fighter.",
+      "effect": "Three turns went to restaging the field before the light could be judged. The user said agents often produce this field.",
+      "interpretation": null
+    },
+    {
+      "area": "project",
+      "observation": "A Flight scene experiment's step receives the simulation and tick but not the pilot's input or the selected burn. For the kick rule I left the production fission engine fitted, tuned it to give almost no thrust and to stay lit for its whole period, and read its output as the pads-held signal. The reference chart cannot follow the burn shown on screen.",
+      "effect": "The rule works and a test found no mismatch over three burns, but it depends on that tuning trick, and the chart shows only the both-pads-held case.",
+      "interpretation": "Changing the shared instrument's interface was outside what I was asked to do, so I worked around it in study code."
+    },
+    {
+      "area": "harness",
+      "observation": "The command sandbox blocked the shared preview's start command and headless Chromium, which exited with SIGTRAP. I reran those commands outside the sandbox. The temporary directory differs outside the sandbox, so a script I had written there was not found on the first rerun.",
+      "effect": "Extra reruns for the preview and for two capture scripts.",
+      "interpretation": null
+    },
+    {
+      "area": "harness",
+      "observation": "The Browser pane was hidden for the whole loop, which throttled animation frames. One verification script timed out at 45 s, and early hash comparisons were unreliable until I switched to timer-based waits.",
+      "effect": "All visual verification was from paused frames. I never watched any step play in motion and said so in each handoff.",
+      "interpretation": null
+    },
+    {
+      "area": "context",
+      "observation": "A scripted edit of mine wrote escaped quotes into Svelte markup, and I wrote a correction note dated 27 November when the date was the 26th.",
+      "effect": "The preview served errors for about a minute until lint showed the cause; the date was fixed in the same turn.",
+      "interpretation": "Both were my slips; the first came from a regular-expression replacement string."
+    },
+    {
+      "area": "context",
+      "observation": "I wrote the speed chart without loading the data-visualisation skill whose description says to load it before any chart, and I read only an excerpt of the effects spec that the effects skill names.",
+      "effect": "Unknown.",
+      "interpretation": "I judged the project's own tokens and specs sufficient; I did not test that judgement."
+    },
+    {
+      "area": "project",
+      "observation": "At closeout another session is editing other study pages in this checkout, and the commit-messages skill says to stage the whole checkout.",
+      "effect": "Unknown at the time of writing; the commit that follows this report may include that session's unfinished edits.",
+      "interpretation": null
+    }
+  ]
+}

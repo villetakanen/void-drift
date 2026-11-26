@@ -12,7 +12,7 @@ The study aimed for outlines distinguishable without labels or color, with color
 
 ## Fighter direction
 
-The designer selected the low-poly **Lance · clipped tips** hull: a pointed Fighter with flat facets, a black forward cockpit, large stacked hull slots, a central aft pair and rotated side-engine slots partly outside the chassis. Lance and Cutlass had been the promising forms; Trident and Dart were outside the intended direction.
+The low-poly **Lance · clipped tips** hull was selected: a pointed Fighter with flat facets, a black forward cockpit, large stacked hull slots, a central aft pair and rotated side-engine slots partly outside the chassis. Lance and Cutlass had been the promising forms; Trident and Dart were outside the intended direction.
 
 ![Agreed Fighter composition with compact mounts](/studies/ship-silhouettes/step-37.png)
 
@@ -36,6 +36,6 @@ The roadster and fast-boat Scout sheets were rejected as too complex and lacking
 
 The Fighter was implemented locally in the shared builder and custom flight, retaining saved builds. The initial 02.9 integration used 66.8° side-engine mounts, a 0.65 drawing scale and a conservative 31.2-unit circular collision envelope. Its lateral overestimate and flight feel needed review.
 
-After flight review on 30 October, the designer found the engines too widely rotated and restored the original 26° angle; the side pair moved inward from ±18 to ±15 units. Fittings, exhaust and flight calculations shared the corrected angle. Following feedback that turning was still too slow, a 2.5× angular-response adjustment gave default fission turning of about 96.6°/s, clockwise with the left engine and counterclockwise with the right. Handling remained open for review. The [builder and test flight](/hangar) show the implemented Fighter.
+After flight review on 30 October, the engines were found too widely rotated and the original 26° angle was restored; the side pair moved inward from ±18 to ±15 units. Fittings, exhaust and flight calculations shared the corrected angle. Following feedback that turning was still too slow, a 2.5× angular-response adjustment gave default fission turning of about 96.6°/s, clockwise with the left engine and counterclockwise with the right. Handling remained open for review. The [builder and test flight](/hangar) show the implemented Fighter.
 
 The full study before conversion is in commit `966cce5b`, at `apps/web/src/pages/lab/studies/ship-silhouettes.astro`. Its deleted components were `apps/web/src/components/studies/FighterCanopyLight.astro`, `FighterCockpitDepth.astro`, `FighterCockpits.astro`, `FighterForms.astro`, `FighterLowPoly.astro`, `FighterSlots.astro`, `FighterWingVariants.astro`, `ScoutSpacecraft.astro`, `ScoutWasp.astro` and `ShipSilhouetteComparison.astro` in the same directory.

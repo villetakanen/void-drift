@@ -59,7 +59,7 @@ export interface Rails {
   thickness: number;
 }
 
-/** 02.4's accepted rails, set by the designer on 17 November 2026. */
+/** 02.4's accepted rails, set on 17 November 2026. */
 export const RAILS_024: Rails = {
   length: 8.4,
   centre: 0.8,
@@ -188,7 +188,7 @@ export function paintAcceptedPlume(ctx: CanvasRenderingContext2D) {
   }
 }
 
-/** 02.6's accepted marking, set by the designer on 17 November 2026. */
+/** 02.6's accepted marking, set on 17 November 2026. */
 export const SERVICE_MARKING = { width: 0.3, gap: 2, outer: 0.5 } as const;
 
 /**

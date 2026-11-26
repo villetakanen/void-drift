@@ -58,7 +58,7 @@ to make the interruption and recovery understandable through the control.
 
 The first experiment embedded the live Practice game with a stock Wasp, the
 current Flight Deck and an empty hamburger parameter pane. It supplied real
-scale and context, but the designer found that managing the ship and flight
+scale and context, but managing the ship and flight
 made the design surface too complicated to work with.
 
 **Finding, 24 November 2026:** this study needs a bespoke Flight Deck instrument.
@@ -72,8 +72,8 @@ the apparatus, not a rejected weapons design.
 
 *Captured before retiring the live example, at 1280 × 720: stock Wasp in Practice,
 full hull and energy, pads at rest, Weapons disabled, parameter pane closed.
-The still preserves the composition; the difficulty of managing flight is the
-designer's assessment, not something demonstrated by this image.*
+The still preserves the composition; the difficulty of managing flight is an
+assessment, not something demonstrated by this image.*
 
 </details>
 
@@ -95,7 +95,7 @@ Pause is a visual specimen, and Weapons remains the existing disabled placeholde
 The adjacent **On / Off / Alert** selector holds a selection but intentionally
 has no effect on the deck yet. The hamburger parameter pane remains empty.
 
-**Designer assessment, 24 November 2026:** this is the right direction and
+**Assessment, 24 November 2026:** this is the right direction and
 establishes the basic tooling. The compact **0 / L / R / F / LF / RF** selector
 holds the pad state; the adjacent **On / Off / Alert** selector is in place but
 intentionally has no effect yet. The weapons control's form and behaviour
@@ -118,10 +118,10 @@ Assume the weapons control is a flap related to the engine controls. How do
 its proportions, connection, surface and markings make the three states read?
 The editor explores that form without adopting it for the game.
 
-The left-hand editor let the designer vary geometry, tint, border, stripes and
-two-line markings while keeping the right-hand flap visible.
+The left-hand editor exposed geometry, tint, border, stripes and
+two-line markings for variation while keeping the right-hand flap visible.
 
-**Selected by the designer, 24 November 2026:** the
+**Selected, 24 November 2026:** the
 [exported configuration](/studies/flight-deck-weapons-2026-11-24/02-3-selected.json)
 defines the weapons flap carried forward into 02.4. Its width is 172.3 px,
 height 128 px, gap 16 px and edge inset 4 px, with a 30° top edge. Auto and Off
@@ -145,7 +145,7 @@ The selected weapons design was paired with a mirrored Pause flap on the left.
 Pause shares its dimensions, spacing, Surface fill at 16% opacity and text
 geometry, with no border or stripes and a single “PAUSE” line.
 
-**Designer assessment, 24 November 2026:** the paired composition looks good;
+**Assessment, 24 November 2026:** the paired composition looks good;
 carry it into design alignment before considering specs or implementation.
 
 ![Selected paired Pause and weapons flaps.](/studies/flight-deck-weapons-2026-11-24/02-4-paired-flaps.jpg)
@@ -166,7 +166,7 @@ modes. It does not begin technical readiness work or authorize implementation.
 
 ### Mode scope under discussion
 
-**Designer proposal, 24 November 2026:** Pause's visual treatment can apply to
+**Proposal, 24 November 2026:** Pause's visual treatment can apply to
 all modes. The Auto and emergency-energy displays can also be shared across
 modes where those conditions occur. Deliberately disabling weapons belongs to
 Gauntlet and Derelicts in this cycle; Practice also exposes the real toggle even
@@ -203,7 +203,7 @@ Emergency remains a temporary restriction, not a third selectable mode.
 
 ### Game-development assumption
 
-**Assumption supplied by the game developer, 24 November 2026:** switching
+**Assumption supplied, 24 November 2026:** switching
 weapons Off makes the plasma rifle eject/vent as though it lost its target.
 This is an assumption for the adoption discussion, not yet an adopted weapon
 rule. The existing rifle contract distinguishes loss of a charging target from
@@ -229,7 +229,7 @@ behavioural decisions and assumptions are in 03.
 | Game screen (`docs/specs/game/game-screen/spec.md`) | Replace the prescribed white outlined buttons and universally disabled Weapons placeholder with the paired flaps. Record shared Pause appearance, weapons status across modes, and the distinction between an available toggle and Survival's status-only display. Preserve pause semantics, gutter placement, touch targets and focus rules. The introductory mode list also omits Gauntlet. |
 | Controls (`docs/specs/game/controls/spec.md`) | Add the On/Off command through mouse, touch and keyboard; emergency disables interaction without clearing the remembered choice. Choose the keyboard binding, define activation and repeated-key behaviour, and distinguish held thrust from a latched weapons choice. Keep thrust mappings unchanged. |
 | Parts (`docs/specs/game/parts/spec.md`) | Revise the blanket automatic-weapons/no-control wording: enabling automatic operation is distinct from commanding a shot. Own the shared firing permission and its relationship to the existing energy reserve; no reserve rebalance is proposed. Define whether Off covers every fitted weapon, including defensive weapons. |
-| Plasma rifle (`docs/specs/game/plasma-rifle/spec.md`) | Resolve and adopt or revise the developer's eject/vent assumption from 03. Clarify its application to charging, a funded release already underway, and subsequent recovery. Avoid silently changing the existing energy-starvation behaviour, which can hold charge. |
+| Plasma rifle (`docs/specs/game/plasma-rifle/spec.md`) | Resolve and adopt or revise the supplied eject/vent assumption from 03. Clarify its application to charging, a funded release already underway, and subsequent recovery. Avoid silently changing the existing energy-starvation behaviour, which can hold charge. |
 | Game modes (`docs/specs/game/spec.md`), Survival (`docs/specs/game/survival/spec.md`), Gauntlet (`docs/specs/game/gauntlet/spec.md`), Derelicts (`docs/specs/game/derelicts/spec.md`), Practice (`docs/specs/game/test-flight/spec.md`) | State one mode-availability rule and cross-reference it: this cycle permits the toggle in Gauntlet, Derelicts and Practice; Survival remains automatic, ranked or unranked. Practice retains its full-energy, no-target character. Gauntlet's entry weapon lock must remain distinct from energy emergency and the pilot's Off choice. |
 
 The Light Ion Cannon (`docs/specs/game/light-ion-cannon/spec.md`) and

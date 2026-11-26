@@ -22,7 +22,7 @@ The Lab instrument is one shared element that owns the measuring. A study hands 
 - It always starts hidden. Hidden, only a menu button in the container's top-right corner remains; visible, the pane's own close button takes that corner. Escape also closes it.
 - Content taller than the screen scrolls inside the pane. Targets stay touch-sized.
 
-**The configuration document.** The instrument is only used if handing it work is easier than building a chart. That hand-over is a configuration: a small document an agent writes, the instrument draws, and the designer adjusts on screen. If a plasma study wants faster acceleration, the designer changes that one value in the pane, compares it with the stock ship, and copies the resulting document back to the agent, or the agent reads it from the page, as the decided values. Nothing in the document is mandatory; it names only what differs.
+**The configuration document.** The instrument is only used if handing it work is easier than building a chart. That hand-over is a configuration: a small document written for the study, drawn by the instrument and adjusted on screen. If a plasma study wants faster acceleration, that one value is changed in the pane and compared with the stock ship, and the resulting document is copied back, or read from the page, as the decided values. Nothing in the document is mandatory; it names only what differs.
 
 The open questions were about that document: what a vehicle in it is, which parameters can change, which ships can be used, and how many vehicles one screen can hold. The game already described ships as loadouts (a chassis with parts in fixed slots) and parts as parameter sets (mass, thrust, speed limit, response), which was a likely starting vocabulary. The default path scale, the slider as a design-system component and device readability checks sat outside this cycle.
 
@@ -192,7 +192,7 @@ The path tool and the time graph put together on the instrument's screen. The sc
 
 ## 03 Readiness: what ships as v1
 
-The accepted design is the composed view of 02.11 with the pane on top: the path tool and its burn row in the left column, the time graph three times and the time slider in the right, the legend across both, all on the console and display materials. The pane overlay was specified but not yet drawn: elevation 3 on the same progression as the two below it (lightness up 5.5 and chroma up 5 per step, so lch(16.5% 20 290)), 45% of the screen wide, and an 11% opaque backdrop over the rest. What the pane holds is filled in by the agent for each study.
+The accepted design is the composed view of 02.11 with the pane on top: the path tool and its burn row in the left column, the time graph three times and the time slider in the right, the legend across both, all on the console and display materials. The pane overlay was specified but not yet drawn: elevation 3 on the same progression as the two below it (lightness up 5.5 and chroma up 5 per step, so lch(16.5% 20 290)), 45% of the screen wide, and an 11% opaque backdrop over the rest. What the pane holds is filled in for each study.
 
 **Ready to reuse.**
 
@@ -208,7 +208,7 @@ The accepted design is the composed view of 02.11 with the pane on top: the path
 2. The pane overlay, drawn to the specification above, with a slot the host fills. Its default content is the existing value editor and the document's Copy and Load, set in the accepted controls.
 3. Where it lives: the components move out of the study folder into the Lab's own components; the frozen copies stay with the study as its record.
 4. A Lab page and a study embed. The Lab page fills its container; in a study the instrument takes the full window and snaps into place.
-5. How agents call it: a specification of the contract and one rule in the design-study skill, that motion, engine and hull comparisons use this instrument and its configuration document rather than new charts.
+5. How a study calls it: a specification of the contract and one rule in the design-study skill, that motion, engine and hull comparisons use this instrument and its configuration document rather than new charts.
 6. Design-system pages: the new components join the shared design system, each with a Lab reference page as the buttons have. The toggle and the ring slider go with the inputs, beside the buttons; the path tool and the time graph on a Graphs page; the burn row, the legend and the pane overlay on a Lab components page; the elevation steps and the console and display materials with the foundations.
 7. Tests: unit tests for the burns, the schema and the calculation; one browser test of the composed view, the burn switch, the slider and the pane.
 
@@ -227,9 +227,9 @@ Each step was to leave the instrument working and be reviewable on its own. This
 
 1. Data first: move the configuration schema, the burns and the calculation into one Lab module, unchanged, with unit tests (each burn is 14 s, the schema accepts the 02.7 document and rejects a broken loadout, the calculation is deterministic).
 2. The component, built from the 02.11 view and taking a configuration document; check it renders the 02.7 document exactly as 02.11 does.
-3. The pane, with a slot and the default value editor and Copy and Load. Review point: the designer judges elevation 3 and the backdrop in place.
-4. Design-system promotion and the reference pages listed under 03: the toggle (two and three parts, with the lime-tint hover) and the ring slider become shared input styles; the elevation steps and the console and display materials become foundation tokens. Review point: the designer checks each page against its accepted section.
-5. The Lab page, with a starting document and Load. Review point: the designer uses it for one real comparison.
+3. The pane, with a slot and the default value editor and Copy and Load. Review point: elevation 3 and the backdrop are judged in place.
+4. Design-system promotion and the reference pages listed under 03: the toggle (two and three parts, with the lime-tint hover) and the ring slider become shared input styles; the elevation steps and the console and display materials become foundation tokens. Review point: each page is checked against its accepted section.
+5. The Lab page, with a starting document and Load. Review point: it is used for one real comparison.
 6. The study embed and the contract: the full-window embed, the specification (the document, the burns, the views and the decisions above, with targets kept apart from what is built), the rule in the design-study skill, and the new inputs, graphs and foundations in the design guide and the design-system specification.
 7. Verification: lint, type and Astro checks, the unit tests, a browser test of the view, burn switch, slider and pane, a render check of every new reference page, and a human review on the iPad for readability. Mark the study integrated only after these pass and the review is recorded.
 

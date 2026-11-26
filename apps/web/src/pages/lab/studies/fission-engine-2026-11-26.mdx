@@ -6,7 +6,9 @@ status: open
 question: How should the fission engine work in flight, and what should its burn look like and leave behind?
 ---
 
+import InstrumentBand from '../../../components/lab/instrument/InstrumentBand.astro';
 import MasterSpecimen from '../../../components/studies/fission-engine-2026-11-26/MasterSpecimen.astro';
+import KickBench from '../../../components/studies/fission-engine-2026-11-26/KickBench.svelte';
 
 <section>
 
@@ -46,10 +48,10 @@ the pulse alone. This study takes the whole engine.
 ### 02.1 / The catalogue body as an SVG master
 
 The engine’s body is 17 flat faces in each of four lightings: the catalogue
-pose, two side-lit poses and one lit from aft. Until now those faces existed
-only as coordinate lists in the game’s engine art. This step copies them,
-unchanged and in drawing order, into one SVG master that follows the
-conventions of the service ion’s master.
+pose, two side-lit poses and one lit from aft. In the game those faces exist
+only as coordinate lists in its engine art. The SVG master holds them
+unchanged and in drawing order, following the conventions of the service
+ion’s master.
 
 <MasterSpecimen />
 
@@ -63,9 +65,8 @@ The game does not read the master yet. The body’s form is unchanged.
 
 ### 02.2 / What kind of engine is fission?
 
-This step is research on paper. It compares how each engine family answers the
-pilot’s input today, then sets out options for fission. Nothing is built and
-no option is selected.
+How each engine family answers the pilot’s input today, and the options that
+leaves for fission.
 
 The figures are the catalogue’s on 26 November 2026. Thrust is given as a
 multiple of the Light ion’s.
@@ -135,5 +136,229 @@ one fission event at a point. The engine would lay a row of smaller ones.
   from weapons, and weapon rules own damage.
 - If the wake harms, whom, for how long, and does it spare the ship that made
   it?
+
+### 02.3 / The explosion and its plume
+
+**Studied.** What the engine’s push looks like as a nuclear explosion. It goes
+off outside the ship, or in the engine’s reaction channel, and throws the ship
+violently forward. Three plumes were compared on a Fighter with Fission in its
+left aft slot and Service ions on its sides. The flight was the game’s as it
+stands: one explosion at the start of each push, every 0.45 s while the engine
+is held.
+
+**Known.** The drone’s detonation gives fission its light. Its flash is a
+white core 14 u in radius, with pale light over everything within 180 u and
+hulls lit on the side that faces the blast. It lasts two ticks and is softer
+on the second. Green stays on the FX surface, pale tips ride on LFX, and
+sparks 4.5 u wide travel at about 226 u/s and fork 32% of the way along. The
+Fighter is about 31 u long.
+
+Each plume opened with that flash and was built from those marks.
+
+| Plume | Where the charge goes off | What follows the flash |
+| --- | --- | --- |
+| Burst astern | In open space, 22 u behind the nozzle | Fourteen sparks leave in every direction the hull does not shade. Three ticks later the hull throws six of its own back at the blast. |
+| **Channel blast** | Inside the reaction channel | A white lance down the exhaust’s line, 180 u long within seven ticks, that leaves its length in green. Seven sparks in a cone 9° either side, at one and a half times the drone’s speed. |
+| Fire line | 10 u behind the nozzle | The place burns white for a fifth of a second. A green fire is fed there for one second, and its glow swells from 28 u to 52 u in radius as it fades. No sparks. |
+
+Light stayed where it was made and did not carry the ship’s speed. It affected
+nothing it touched.
+
+**Learned.** Channel blast is the engine’s plume.
+
+<details>
+<summary>The three plumes at the flash and 0.2 s after it</summary>
+
+<figure>
+  <img src="/studies/fission-engine-2026-11-26/02-3-burst-astern-flash.jpg" alt="Burst astern at the flash: a white core behind the Fighter, pale green light around it and the hull lit from behind, over the fan of sparks from the explosion before." width="960" height="560" loading="lazy" style="max-width: 100%; height: auto;" />
+  <img src="/studies/fission-engine-2026-11-26/02-3-burst-astern-plume.jpg" alt="Burst astern 0.2 s later: green forked tracks spreading in a wide fan behind the Fighter." width="960" height="560" loading="lazy" style="max-width: 100%; height: auto;" />
+  <figcaption>Burst astern, at 0.47 s and 0.67 s.</figcaption>
+</figure>
+<figure>
+  <img src="/studies/fission-engine-2026-11-26/02-3-channel-blast-flash.jpg" alt="Channel blast at the flash: a white core at the nozzle and pale green light around the Fighter." width="960" height="560" loading="lazy" style="max-width: 100%; height: auto;" />
+  <img src="/studies/fission-engine-2026-11-26/02-3-channel-blast-plume.jpg" alt="Channel blast 0.2 s later: a narrow green lance straight behind the Fighter, ending in forked tracks with pale tips." width="960" height="560" loading="lazy" style="max-width: 100%; height: auto;" />
+  <figcaption>Channel blast, the selected plume, at 0.47 s and 0.67 s.</figcaption>
+</figure>
+<figure>
+  <img src="/studies/fission-engine-2026-11-26/02-3-fire-line-flash.jpg" alt="Fire line at the flash: a white core behind the Fighter and pale green light around it, with the fire of the explosion before further back." width="960" height="560" loading="lazy" style="max-width: 100%; height: auto;" />
+  <img src="/studies/fission-engine-2026-11-26/02-3-fire-line-plume.jpg" alt="Fire line 0.2 s later: a round green fire with a white centre behind the Fighter." width="960" height="560" loading="lazy" style="max-width: 100%; height: auto;" />
+  <figcaption>Fire line, at 0.47 s and 0.67 s.</figcaption>
+</figure>
+
+Burn B1 at 4× (2 CSS px/u). 0.47 s is the second explosion’s flash; 0.67 s is
+twelve ticks later.
+
+</details>
+
+#### The field
+
+The Flight scene instrument’s default scene builds its system from the ranked
+challenge seed. That gives a G14 star whose gravity reaches 840 u of the
+arena’s 1,190 u radius. A ship 500 u out feels a pull of 141 u/s², about two
+fifths of the fission engine’s own 336 u/s² on this Fighter. Burn B3 from
+there ends in the star at 7.6 s.
+
+In the Practice system the G7 Sun’s gravity reaches 324 u. From Practice’s own
+start, 500 u from the Sun, burn B1 strikes The Cradle at 2.2 s. From 90 u
+further out, B1 passes The Cradle at 2.6 s with 36 u between hull and surface,
+and B2 passes Venus at 8.4 s with 37 u. Both bend in those planets’ gravity
+and neither enters the Sun’s. B3 strikes The Cradle at 6.3 s. The plumes were
+compared from that start.
+
+### 02.4 / The channel blast, part by part
+
+**Studied.** The shape of the channel blast’s three parts, each on its own
+and together, on 02.3’s flight. Is the blast open, or directed by a conical
+chamber? How wide can the particles leave before they stop reading as thrown
+through a nozzle? Which start belongs to the lance: a flame against the
+nozzle, or a drop?
+
+**Known.** 02.3’s channel blast, in the third column below.
+
+**Learned.** The values in the last column are the working assumption for the
+engine’s light on FX and LFX, as of 26 November 2026.
+
+| Part | Property | Range studied | 02.3 | Assumed |
+| --- | --- | --- | --- | --- |
+| Flash | Shape | Round, or a cone aft of 20° to 180° | Round | Cone, 110° |
+| | White core radius | 4 to 40 u | 14 u | 26 u |
+| | Reach of the pale light | 60 to 300 u | 180 u | 180 u |
+| | Pale light brightness | 0 to 1 | 0.30 | 0.20 |
+| | Length | 1 to 6 ticks | 2 ticks | 3 ticks |
+| Particles | In each explosion | 0 to 24 | 7 | 7 |
+| | Leaving angle, either side of the exhaust | 0° to 60° | 9° | 16° |
+| | Length before the split | 5 to 200 u | 50 u | 50 u |
+| | Angle between the branches | 10° to 60° | 30° | 11° |
+| | Length after the split, longer branch | 0 to 300 u | 115 u | 115 u |
+| | Speed | 100 to 600 u/s | 340 u/s | 340 u/s |
+| Lance | Length | 40 to 400 u | 180 u | 190 u |
+| | Width | 4 to 60 u | 20 u | 16 u |
+| | Widest point, along the length | 0% to 90% | 16% | 16% |
+| | Start, blunt to pointed | 0.15 to 2 | 0.50 | 0.70 |
+| | Far end, full to thin | 0.5 to 3 | 0.50 | 2.70 |
+| | White lance lasts | 2 to 20 ticks | 7 ticks | 7 ticks |
+| | Green is fed for | 0 to 30 ticks | 10 ticks | 7 ticks |
+
+The assumed flash is directed aft. Its core is nearly twice as wide as
+02.3’s, and its light over space is dimmer. A cone leaves the hull outside the
+flash, so the hull stays dark. Each tick of a flash after the first is softer.
+
+The assumed particles leave in a wider cone and their branches stay close
+together. A particle travels a first length, then splits into a long and a
+short branch; the short one travels about a quarter as far. Lengths vary by a
+fifth either way from one particle to the next.
+
+The assumed lance is a little longer and narrower than 02.3’s, and its far end
+is drawn out thin. Its widest point stayed near the nozzle: a flame, not a
+drop. Length and width are measured to the edge of the glow; the bright part
+is narrower. The white lance grows from two fifths of its length to the whole
+of it and thins as it goes.
+
+<details>
+<summary>The assumed light at the flash, the lance and the split</summary>
+
+<figure>
+  <img src="/studies/fission-engine-2026-11-26/02-4-assumed-flash.jpg" alt="The assumed flash: a wide white wedge from the Fighter’s nozzle and pale green light in a cone behind it. The hull is not lit." width="960" height="560" loading="lazy" style="max-width: 100%; height: auto;" />
+  <figcaption>The flash, at 0.47 s.</figcaption>
+</figure>
+<figure>
+  <img src="/studies/fission-engine-2026-11-26/02-4-assumed-lance.jpg" alt="The assumed lance three ticks later: a narrow white and green lance behind the Fighter with a thin far end, and particles leaving beside it." width="960" height="560" loading="lazy" style="max-width: 100%; height: auto;" />
+  <figcaption>The lance, at 0.52 s.</figcaption>
+</figure>
+<figure>
+  <img src="/studies/fission-engine-2026-11-26/02-4-assumed-split.jpg" alt="The assumed particles at their split: seven green tracks in a narrow fan behind the Fighter, each ending in two pale tips close together." width="960" height="560" loading="lazy" style="max-width: 100%; height: auto;" />
+  <figcaption>The particles’ split, at 0.68 s.</figcaption>
+</figure>
+
+The Fighter of 02.3 on burn B1 in the Practice system, at 4× (2 CSS px/u):
+three moments of the second explosion.
+
+</details>
+
+### 02.5 / The kick
+
+**Studied.** How the engine flies, from one premise: it kicks the moment the
+pads go down, and a kick cannot be taken back. How large and how sudden is a
+kick? What does holding the pads do? Does the engine keep kicking at the
+ceiling? A Wasp flies with Fission as its one engine, in a field with no
+gravity, and each kick sets off one explosion with 02.4’s light.
+
+**Known.** Each of the game’s five engines alone on the Wasp, with both pads
+held from rest and no gravity. Speed is in u/s.
+
+| Engine | 0.1 s | 0.2 s | 0.5 s | 1 s | 2 s | 3 s | 6 s | Ceiling |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Service ion | 12 | 24 | 58 | 108 | 188 | 248 | 350 | 421 |
+| Light ion | 35 | 67 | 148 | 244 | 349 | 394 | 425 | 428 |
+| Heavy ion | 52 | 98 | 205 | 312 | 398 | 422 | 431 | 431 |
+| Plasma | 0 | 0 | 117 | 245 | 365 | 407 | 428 | 429 |
+| Fission | 59 | 102 | 124 | 212 | 318 | 366 | 425 | 437 |
+
+The engines differ in when speed arrives and hardly in how much: all but the
+Service ion are within 6 u/s of each other at 6 s. Today’s fission push is a
+Heavy ion’s thrust for a fifth of a second, 102 u/s against 98 at 0.2 s,
+followed by 0.27 s of nothing. From 0.5 s to 3 s it trails the Light ion.
+Releasing the pads cuts a push short.
+
+Every engine shares one cruise ceiling, and thrust along the direction of
+travel shrinks to nothing at it. Fission’s pushes therefore gain less each
+time: 102, 77, 59, 46, 35 u/s and on down. Nothing in the game slows a ship
+that is above its ceiling.
+
+**Learned.** The values in the last column are the working assumption for how
+the engine flies, as of 26 November 2026.
+
+| Property | Range studied | Today’s engine | Assumed |
+| --- | --- | --- | --- |
+| Speed one kick adds | 20 to 300 u/s | 116 u/s | 78 u/s |
+| Kick delivered over | 1 to 11 ticks | 11 ticks | 1 tick |
+| Wait from one kick to the next | 0.3 to 2 s | 0.45 s | 0.30 s |
+| Holding the pads | Repeats while held, or one kick per press | Repeats | Repeats |
+| At the ceiling | Tapers, overshoots, or holds fire | Tapers | Holds fire |
+
+Today’s engine written as a kick flies within 1% of the game’s fission: 59,
+102, 126, 215, 322, 369 and 426 u/s at the table’s seven times.
+
+A kick delivered over one tick leaves nothing to cut short. The wait runs from
+the kick whatever the pads do, so letting go and pressing again does not bring
+the next kick sooner. With one kick per press, burn B1 gives three kicks and
+B3 six; repeating at today’s wait, B1 gives fifteen.
+
+The three rules at the ceiling fly differently.
+
+- **Tapers** is the game’s rule for every engine. A 150 u/s kick from rest
+  lands 132 u/s, and later kicks land less while their explosions stay the
+  same size.
+- **Overshoots** lands every kick whole and lets the ship pass its ceiling.
+  The excess then has to be drained by a rule of its own.
+- **Holds fire** sets a kick off only when the whole of it fits under the
+  ceiling. With 150 u/s kicks, two fit under 437 u/s and the engine then stays
+  silent at 300 u/s for as long as the pads are held.
+
+Holding fire sets this engine apart from every other. Held from rest on the
+Wasp, the assumed engine reads:
+
+| Engine | 0.1 s | 0.2 s | 0.5 s | 1 s | 2 s | 3 s | 6 s |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Fission, assumed | 78 | 78 | 156 | 312 | 390 | 390 | 390 |
+| Heavy ion | 52 | 98 | 205 | 312 | 398 | 422 | 431 |
+| Fission today | 59 | 102 | 124 | 212 | 318 | 366 | 425 |
+
+Five kicks fit under the 437 u/s ceiling. The fifth lands 1.2 s after the pads
+go down and takes the ship to 390 u/s; a sixth would pass the ceiling, so the
+engine falls silent while the pads stay down. The assumed engine is the
+fastest of the five in the first tenth of a second and level with the Heavy
+ion at 1 s. At 2 s only the Heavy ion is ahead of it. From 3 s on it is the
+slowest but the Service ion, 47 u/s under its own ceiling. It kicks again only
+once the ship has lost speed or turned its heading away from its travel.
+
+Kicks of every size set off the same explosion; the light does not follow the
+kick’s strength.
+
+The field is the default arena with its star at the smallest of its family
+and no planets. The ship starts 1,100 u from the star, whose gravity reaches
+124 u.
+
+<InstrumentBand><KickBench client:visible /></InstrumentBand>
 
 </section>
