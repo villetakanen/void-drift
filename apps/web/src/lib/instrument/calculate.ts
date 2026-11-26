@@ -110,12 +110,14 @@ export type Measure =
   | "collection"
   | "consumption"
   | "netPower"
+  | "battery"
   | "batteryChange";
 /** signed: the measure can go negative, so its axis is symmetric about zero. */
 export const MEASURES: Record<
   Measure,
   { label: string; unit: string; signed: boolean }
 > = {
+  battery: { label: "Battery", unit: "E", signed: false },
   batteryChange: { label: "Battery change", unit: "E", signed: true },
   collection: { label: "Collection", unit: "E/s", signed: false },
   consumption: { label: "Consumption", unit: "E/s", signed: false },
@@ -170,6 +172,8 @@ export type Track = {
   unaffected?: Sample[];
   /** Sample indices of contacts with a body, marked on the path. */
   contacts?: number[];
+  /** Sample indices of discrete events on each measured trace. */
+  marks?: Partial<Record<Measure, number[]>>;
   /** A reference value per measure, drawn as a dashed line in the track's colour. */
   references?: Partial<Record<Measure, number>>;
 };

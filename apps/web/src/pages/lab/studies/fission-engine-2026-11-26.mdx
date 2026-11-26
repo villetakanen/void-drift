@@ -1,13 +1,14 @@
 ---
 layout: ../../../layouts/StudyLayout.astro
 title: Fission engine
-phase: exploration
+phase: scope
 status: open
 question: How should the fission engine work in flight, and what should its burn look like and leave behind?
 ---
 
 import InstrumentBand from '../../../components/lab/instrument/InstrumentBand.astro';
 import MasterSpecimen from '../../../components/studies/fission-engine-2026-11-26/MasterSpecimen.astro';
+import FittingBench from "../../../components/studies/fission-engine-2026-11-26/FittingBench.svelte";
 import KickBench from '../../../components/studies/fission-engine-2026-11-26/KickBench.svelte';
 
 <section>
@@ -360,5 +361,109 @@ and no planets. The ship starts 1,100 u from the star, whose gravity reaches
 124 u.
 
 <InstrumentBand><KickBench client:visible /></InstrumentBand>
+
+### 02.6 / Swapping ion for fission
+
+**Studied.** What does an ion-to-fission swap buy on a Wasp
+whose only engine changes, and on a Fighter with fission aft or on its sides?
+
+| Hull | Ion reference | Fission comparison |
+| --- | --- | --- |
+| Wasp | One Light ion | One fission |
+| Fighter | Two side Light ions, one aft Light ion | Same side ions with one or two aft fission engines; or two side fission engines with one aft Light ion |
+
+Overlay the fittings on the Motion instrument’s B2 turn from rest, without
+gravity. The first six seconds on both
+pads show launch, repeat kicks and the approach to each fitting’s ceiling.
+Two seconds on the left pad and one coasting separate the paths before both
+pads go down again. Compare Fighter · side fission with Fighter · aft ion from 6 to 8 s. Both carry one aft Light ion, idle during the left-pad turn. Only the left side engine fires. A side kick uses the Fighter mount angle and lever to change both velocity and spin.
+
+| Fission control | Starting point | What changes |
+| --- | --- | --- |
+| Push per ignition | Impulse equivalent to 78 u/s on the reference fission Wasp | Apply the same impulse to both hulls. Speed gained depends on current fitted mass. |
+| Kick interval | 0.267 s (16 ticks) | Time from ignition to the next eligible ignition while held. |
+| Maximum-speed gain | +42 u/s | Each fitting uses its structural ceiling. Keep fission’s contribution above ion and plasma. |
+| Engine mass | 17 | Add the selected mass to the fitting. Keep impulse fixed as mass changes. |
+| Energy per ignition | 0.5 E per engine | A pair must afford both ignitions together. |
+
+**Initial tuning, 26 November 2026.** Push equivalent to 78 u/s on the reference Wasp, 16 ticks (0.267 s) between kicks, +42 u/s maximum-speed gain, mass 17 and 0.5 E per ignition. The push is calibrated on the original mass-76 Wasp; at fitted mass 77 the first kick gives about 77 u/s.
+
+The Values pane shows fitted mass and structural ceiling. Dots on the speed traces mark actual ignitions. The first kick and the final partial kick are especially
+useful on the Fighter, where the side ions can still contribute acceleration
+between ignitions. Compare the paths after the turn as well as the
+speed reached on the straight.
+
+Each fitting starts with its full battery and receives a steady 3 E/s throughout
+the burn. Life support, ion thrust and stabilizers draw continuously.
+Fission charges once per engine that fires, including the last partial kick.
+A held pair waits until both kicks are affordable. The battery graph shows
+when a fitting can sustain its rhythm and when it has to wait.
+
+<InstrumentBand><FittingBench client:visible /></InstrumentBand>
+
+</section>
+
+<section>
+
+## 03 / Fit the game
+
+A fission ignition kicks the ship forward and throws damaging particles aft.
+The catalogue body and the channel blast carry through from 02. The light
+values, Wasp kick size and repeat interval remain working assumptions.
+
+- **Exhaust damage.** Each firing nozzle sends two travelling arcs aft.
+  Each arc spans the spark fan (currently 16° either side of the nozzle
+  axis), travels at the leading edge of the sparks and is 1 u thick in
+  the direction of travel. Its reach and lifetime follow the spark tips.
+  Each arc follows the drone wave’s contact rule: it deals 3 damage once
+  to each damageable body its front reaches. Both arcs can hit the same
+  body for 6 damage. A hit throws counter-sparks back towards the nozzle.
+  The green light left behind is safe to cross.
+- **Weapons off.** The engine still kicks and its exhaust still deals damage.
+- **Speed ceiling.** Fission must raise the ship’s maximum speed more than
+  ion or plasma. The last kick delivers as much of its push as the structural
+  speed ceiling allows. On the straight run in 02.5, the sixth kick would
+  add the remaining 47 u/s and take the Wasp to 437 u/s. At the ceiling in
+  the direction of push, the engine stays silent. With the pads held, it
+  fires again as soon as the push is eligible and the engine is ready.
+- **Mass and timing.** The same engine gives a heavier ship a smaller change
+  in speed. Paired engines fire together once both can pay. Their impulses
+  add before the structural ceiling limits the combined push.
+- **Energy and exhaust per nozzle.** Each firing engine pays its full
+  ignition cost and emits both arcs, even on the last partial kick. At the
+  initial 02.6 tuning, a pair spends 1 E and sends four arcs. A kick
+  withheld at the ceiling spends no energy and emits no arcs.
+
+- **Side-mounted kick.** Keep the 02.6 response. A side nozzle delivers
+  the full impulse along its mount angle. Its offset from the centre of
+  mass turns the ship. On B2 with the initial tuning, the first tick on
+  the left pad takes the side-fission Fighter to 30°/s against 4.1°/s
+  for the all-ion Fighter. Both reach the existing 180°/s turn limit.
+  The abrupt onset is part of the fitting’s character.
+
+</section>
+
+<section>
+
+## 04 / Map the implications
+
+The adoption proposal is for the existing unsanctioned Fission engine
+(`fusion` in saved fittings). Its catalogue body stays. The 02.6 values
+are initial tuning; 03 defines the behaviour those values serve.
+
+| Owner | What adoption would touch |
+| --- | --- |
+| Ships and Parts | The Ships spec gives every engine forward taper and continuous draw. Record a fission-specific exception for whole impulses, a clipped final push and payment per firing nozzle. Keep the installed-engine ceiling calculation. A fission engine spec could own its cadence, mount response, damage and tuning alongside the other part-specific specs. |
+| Flight, controls and power | In `build-flight.ts`, engine duty and power draw currently follow held commands. A successful ignition must agree across impulse, battery, exhaust and light. Preserve each hull’s pad routing, linked engines and stabilizers, including when weapons are off. Review flight consumers such as Gauntlet actors and the Scout predictor that calculate thrust and energy together. |
+| Exhaust contact and damage | The Drone Launcher spec and `drone-flight.ts` already define moving-front contact, one hit per body per wave and attribution to the carrier. Each fission nozzle needs two independently tracked fronts. A simple collision model sweeps each 1 u thick arc from its previous radius to its current radius within the spark fan, using the nominal spark trajectory. Individual spark variations are visual. A pair can produce four contacts on one target. Drone radiation belongs to the detonation alone. |
+| Flight rendering | The Render spec, `flight-frame.ts`, the engine renderer and `drone-fx.ts` own the relevant passes and marks. Place the 02.4 flash, lance and forked particles at each actual firing nozzle, retain green on FX and draw the bright tips on LFX. Counter-sparks originate at actual contacts. Fading light has no collision lifetime. |
+| Catalogue and Hangar | The part schema and `buildStats` own mass and installed speed contribution. The Hangar shows the fitting’s resulting ceiling and needs to describe energy per ignition. Keep existing saves addressable by the same part ID. The study proposes no change to Playground or ranked eligibility. |
+| Lab and shared examples | [Ship propulsion](/lab/ship-propulsion), [engine specimens](/lab/ds/engines) and [parts](/lab/ds/parts) should show the adopted motion, light and figures where applicable. The [Motion instrument](/lab/instrument) currently exposes pulse timing and treats energy analysis separately from flight. The [Flight scene](/lab/flight-scene) needs live ignition and contact events to show the result. The 02.6 comparison supplies a reference for both. |
+
+**Questions for adoption.** How should a kick steer a ship already above its structural
+ceiling through gravity? Ships preserves existing overspeed, whereas the
+02.6 bench starts from rest without gravity. Finally, should the shared
+Motion instrument model battery-limited ignition for other studies, or is
+that coupling specific to the fission comparison?
 
 </section>

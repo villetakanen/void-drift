@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "run_id": "7191cd49-5470-4c26-995d-633060a2b08e",
+  "recorded_at": "2026-11-26T20:49:22.490753+00:00",
+  "loop": "Fission engine study: fitting comparison, game fit and adoption scope",
+  "worked": [
+    "The common B2 input made the side-fission and all-ion Fighters comparable at the first tick of the turn.",
+    "Separate speed, ignition and battery traces exposed the cost of each nozzle alongside its contribution to motion."
+  ],
+  "issues": [
+    {
+      "area": "harness",
+      "observation": "Chromium failed to load the fitting bench module during one preview check.",
+      "effect": "The interaction check needed a preview restart and a second run.",
+      "interpretation": null
+    },
+    {
+      "area": "context",
+      "observation": "The request for five fittings followed a list of four.",
+      "effect": "I supplied a twin-aft-fission Fighter as the fifth and disclosed that choice.",
+      "interpretation": null
+    }
+  ]
+}

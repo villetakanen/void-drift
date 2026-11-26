@@ -160,6 +160,15 @@ const at = (t: Track) => Math.max(0, Math.min(tick, values(t).length - 1));
       {#each lines(values(t)) as points}
         <polyline {points} fill="none" stroke={t.color} stroke-width="1.6" />
       {/each}
+      {#each t.marks?.[measure] ?? [] as mark}
+        <circle
+          cx={x(mark)}
+          cy={y(values(t)[mark])}
+          r="3"
+          fill={t.color}
+          stroke="var(--color-elev-1)"
+        />
+      {/each}
     {/each}
     <line
       x1={x(tick)}
