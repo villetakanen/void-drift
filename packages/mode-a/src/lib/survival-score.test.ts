@@ -56,6 +56,23 @@ describe("survival score", () => {
     expect(sim.survivalScore).toBe(10 + 2 * shards.length);
   });
 
+  it("credits no wreck, shard or energy cell to an enemy blast", () => {
+    const sim = new Simulation(gameSettings("wasp"));
+    const salvage = sim.salvage;
+    if (!salvage) throw new Error("Expected salvage");
+    salvage.nextPass = 0;
+    sim.start();
+    sim.step(idle);
+    const wreck = salvage.bodies.find((body) => body.kind === "wreck");
+    if (!wreck) throw new Error("Expected wreck");
+    salvage.applyDamage(wreck, wreck.hull, false);
+    const shards = salvage.bodies.filter((body) => body.kind === "fragment");
+    expect(shards.length).toBeGreaterThan(0);
+    salvage.applyDamage(shards[0], shards[0].hull, false);
+    expect(sim.survivalScore).toBe(0);
+    expect(salvage.bodies.some((body) => body.kind === "cell")).toBe(false);
+  });
+
   it.each(["weapon", "ram", "power loss"])(
     "credits a pirate finish by %s",
     (cause) => {

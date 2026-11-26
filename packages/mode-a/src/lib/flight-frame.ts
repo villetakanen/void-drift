@@ -12,6 +12,7 @@ import {
   drawBuild,
   drawNonEngineFitting,
 } from "./build-renderer";
+import { DRONE_SEAT, drawDrone } from "./drone-art";
 import type { FlightFx } from "./gravity-fold-fx";
 import {
   drawPlasmaRifleCharge,
@@ -281,15 +282,30 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
           y - radius - 30 > view.y + view.height ||
           !combat?.weapons.some(
             (weapon) =>
-              weapon.kind === "plasma-rifle" &&
-              weapon.plasma &&
-              (weapon.plasma.phase === "charging" ||
-                weapon.plasma.phase === "venting") &&
-              weapon.plasma.charge > 0,
+              weapon.kind === "drone-launcher" ||
+              (weapon.kind === "plasma-rifle" &&
+                weapon.plasma &&
+                (weapon.plasma.phase === "charging" ||
+                  weapon.plasma.phase === "venting") &&
+                weapon.plasma.charge > 0),
           )
         )
           return undefined;
         return (context: CanvasRenderingContext2D, mount: BuildMount) => {
+          if (mount.part === "drone-launcher") {
+            const weapon = combat.weapons.find(
+              (w) => w.mount.key === mount.key,
+            );
+            drawNonEngineFitting(context, mount);
+            if (weapon && weapon.readyAt <= combat.time) {
+              context.save();
+              context.scale(1 / BUILD_FLIGHT_SCALE, 1 / BUILD_FLIGHT_SCALE);
+              context.translate(DRONE_SEAT, 0);
+              drawDrone(context);
+              context.restore();
+            }
+            return true;
+          }
           if (mount.part !== "plasma-rifle") return false;
           const weapon = combat.weapons.find(
             (item) =>
@@ -350,6 +366,20 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
             "charcoal",
           );
         }
+      for (const drone of sim.droneFlight.drones) {
+        if (
+          drone.x + 4 < view.x ||
+          drone.x - 4 > view.x + view.width ||
+          drone.y + 4 < view.y ||
+          drone.y - 4 > view.y + view.height
+        )
+          continue;
+        ctx.save();
+        ctx.translate(drone.x, drone.y);
+        ctx.rotate(drone.rotation);
+        drawDrone(ctx);
+        ctx.restore();
+      }
     },
   },
   {

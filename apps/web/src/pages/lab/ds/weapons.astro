@@ -1,9 +1,11 @@
 ---
+import launcher from "../../../../../../packages/mode-a/src/lib/art/weapons/drone-launcher.svg?raw";
 import master from "../../../../../../packages/mode-a/src/lib/art/weapons/plasma-rifle.svg?raw";
-import LabPlasmaRifle from "../../../components/lab/LabPlasmaRifle.svelte";
+import LabWeaponArtwork from "../../../components/lab/LabWeaponArtwork.svelte";
 import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
 ---
 
 <DesignSystemLayout title="Weapons" wide>
-  <LabPlasmaRifle master={master} client:load />
+  <LabWeaponArtwork id="plasma-rifle" master={master} client:load />
+  <LabWeaponArtwork id="drone-launcher" master={launcher} client:load />
 </DesignSystemLayout>

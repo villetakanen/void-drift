@@ -13,6 +13,7 @@ import type {
 } from "./salvage";
 import { CHASSIS } from "./schemas/loadout";
 import {
+  DRONE_LAUNCHER,
   ION_CANNON,
   PLASMA_RIFLE,
   POINT_DEFENCE,
@@ -26,6 +27,21 @@ export interface WeaponAcquisition {
     WeaponState,
     { id: number; x: number; y: number; distance: number }
   >;
+}
+export const PLAYER_BODY_ID = 900000;
+export function isDroneEnemyHull(carrierId: number, body: SalvageBody) {
+  return (
+    body.kind === "ship" &&
+    body.carrierId === undefined &&
+    body.hull > 0 &&
+    (carrierId === PLAYER_BODY_ID) !== (body.id === PLAYER_BODY_ID)
+  );
+}
+export interface DronePursuit {
+  x: number;
+  y: number;
+  carrierId: number;
+  target: number | null;
 }
 export interface AcquisitionShooter {
   system: SalvageSystem;
@@ -46,7 +62,13 @@ type AcquisitionChoice = {
 type AcquisitionRequest = {
   shooter: AcquisitionShooter;
   weapon?: WeaponState;
-  kind: "cannon" | "laser" | "ion-point-defence" | "plasma-rifle";
+  linkedLaunchers?: WeaponState[];
+  kind:
+    | "cannon"
+    | "laser"
+    | "ion-point-defence"
+    | "plasma-rifle"
+    | "drone-launcher";
   forwardX?: number;
   forwardY?: number;
   x: number;
@@ -70,6 +92,7 @@ export function acquireFleetTargets(
   planets: readonly Planet[],
   dt: number,
   metrics?: TargetingMetrics,
+  drones: readonly DronePursuit[] = [],
 ): Map<SalvageSystem, WeaponAcquisition> {
   const started = metrics ? performance.now() : 0;
   const results = new Map<SalvageSystem, WeaponAcquisition>();
@@ -128,16 +151,36 @@ export function acquireFleetTargets(
       slots.cannon = request;
       requests.push(request);
     }
+    let launcher: AcquisitionRequest | undefined;
     for (const weapon of shooter.system.weapons) {
       if (
         weapon.kind !== "laser" &&
         weapon.kind !== "ion-point-defence" &&
-        weapon.kind !== "plasma-rifle"
+        weapon.kind !== "plasma-rifle" &&
+        !(
+          weapon.kind === "drone-launcher" &&
+          shooter.system.time + dt + 1e-9 >= weapon.readyAt
+        )
       )
         continue;
+      if (weapon.kind === "drone-launcher" && launcher) {
+        launcher.linkedLaunchers ??= [];
+        launcher.linkedLaunchers.push(weapon);
+        continue;
+      }
       const pose = weaponPose(shooter.ship, weapon.mount, weapon.angle);
-      const x = weapon.kind === "plasma-rifle" ? pose.muzzleX : pose.x;
-      const y = weapon.kind === "plasma-rifle" ? pose.muzzleY : pose.y;
+      const x =
+        weapon.kind === "drone-launcher"
+          ? shooter.ship.pos.x
+          : weapon.kind === "plasma-rifle"
+            ? pose.muzzleX
+            : pose.x;
+      const y =
+        weapon.kind === "drone-launcher"
+          ? shooter.ship.pos.y
+          : weapon.kind === "plasma-rifle"
+            ? pose.muzzleY
+            : pose.y;
       const request = slots.weapons.get(weapon) ?? {
         shooter,
         weapon,
@@ -168,13 +211,23 @@ export function acquireFleetTargets(
               : POINT_DEFENCE.trackingRange,
         ),
       });
+      if (weapon.kind === "drone-launcher") {
+        launcher = request;
+        launcher.linkedLaunchers = undefined;
+      }
       slots.weapons.set(weapon, request);
       requests.push(request);
     }
   }
   if (metrics)
-    metrics.activeRequests = (metrics.activeRequests ?? 0) + requests.length;
-  if (!requests.length) return results;
+    metrics.activeRequests =
+      (metrics.activeRequests ?? 0) + requests.length + drones.length;
+  if (!requests.length && !drones.length) return results;
+  const pursuits = drones.map((drone) => ({
+    drone,
+    id: null as number | null,
+    best: Infinity,
+  }));
   const visible = (request: AcquisitionRequest, endX: number, endY: number) => {
     if (!request.blocked) return true;
     if (metrics) metrics.visibilityTests = (metrics.visibilityTests ?? 0) + 1;
@@ -190,11 +243,34 @@ export function acquireFleetTargets(
   for (const body of roster) {
     if (metrics) metrics.bodyVisits++;
     if (body.kind === "cell" || body.hull <= 0) continue;
+    if (body.kind === "ship" && body.carrierId === undefined) {
+      for (const pursuit of pursuits) {
+        const drone = pursuit.drone;
+        if (!isDroneEnemyHull(drone.carrierId, body)) continue;
+        if (metrics) metrics.comparisons++;
+        const distance = (drone.x - body.x) ** 2 + (drone.y - body.y) ** 2;
+        if (distance >= 500 ** 2) continue;
+        const order = body.id === drone.target ? -1 : distance;
+        if (
+          order < pursuit.best ||
+          (order === pursuit.best && body.id < (pursuit.id ?? Infinity))
+        ) {
+          pursuit.best = order;
+          pursuit.id = body.id;
+        }
+      }
+    }
     for (const request of requests) {
       const { shooter, weapon } = request;
       if (
         body.id === shooter.shooterId ||
-        (shooter.aimId !== undefined && body.id !== shooter.aimId) ||
+        (body.carrierId !== undefined &&
+          (request.kind !== "ion-point-defence" ||
+            ((shooter.shooterId ?? PLAYER_BODY_ID) === PLAYER_BODY_ID) ===
+              (body.carrierId === PLAYER_BODY_ID))) ||
+        (shooter.aimId !== undefined &&
+          body.id !== shooter.aimId &&
+          body.carrierId !== shooter.aimId) ||
         (shooter.aimTargets && !shooter.aimTargets.includes(body))
       )
         continue;
@@ -261,6 +337,29 @@ export function acquireFleetTargets(
         continue;
       }
       if (!weapon) continue;
+      if (request.kind === "drone-launcher") {
+        if (
+          body.kind !== "ship" ||
+          body.carrierId !== undefined ||
+          centreSquared > DRONE_LAUNCHER.range ** 2
+        )
+          continue;
+        const distance = Math.sqrt(centreSquared);
+        if (
+          !request.best ||
+          distance < request.best.distance ||
+          (distance === request.best.distance && body.id < request.best.id)
+        )
+          request.best = {
+            id: body.id,
+            x: body.x,
+            y: body.y,
+            distance,
+            priority: 0,
+            order: distance,
+          };
+        continue;
+      }
       if (request.kind === "plasma-rifle") {
         if (body.kind !== "ship" && body.kind !== "wreck") continue;
         if (centreSquared > PLASMA_RIFLE.range ** 2 + 1e-9) continue;
@@ -398,6 +497,7 @@ export function acquireFleetTargets(
         request.best = candidate;
     }
   }
+  for (const pursuit of pursuits) pursuit.drone.target = pursuit.id;
   for (const request of requests) {
     if (!request.weapon || !request.best) continue;
     const keep =
@@ -408,6 +508,9 @@ export function acquireFleetTargets(
           ? request.retained.priority === request.best.priority
           : request.best.distance >
             request.retained.distance - POINT_DEFENCE.retention);
+    if (request.linkedLaunchers)
+      for (const mount of request.linkedLaunchers)
+        request.result.targets.set(mount, request.best);
     results
       .get(request.shooter.system)
       ?.targets.set(

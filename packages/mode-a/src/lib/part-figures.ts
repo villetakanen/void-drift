@@ -1,6 +1,12 @@
+import { DRONE_RADIATION_DAMAGE, DRONE_WAVE_DAMAGE } from "./drone-flight";
 import { GRAVITY_COLLECTION } from "./gravity-collection";
 import { PARTS, type PartId } from "./schemas/loadout";
-import { ION_CANNON, POINT_DEFENCE, WEAPONS } from "./schemas/salvage";
+import {
+  DRONE_LAUNCHER,
+  ION_CANNON,
+  POINT_DEFENCE,
+  WEAPONS,
+} from "./schemas/salvage";
 
 export type FigureIcon =
   | "mass"
@@ -50,6 +56,15 @@ export function partFigures(id: PartId): Figure[] {
         value: `+${part.speedContribution}`,
         label: "units per second added to the cruise ceiling",
       },
+    ];
+  if (id === "drone-launcher")
+    return [
+      mass,
+      ...weapon(
+        `${trim(DRONE_WAVE_DAMAGE / DRONE_LAUNCHER.cooldown)}–${trim((DRONE_RADIATION_DAMAGE + DRONE_WAVE_DAMAGE) / DRONE_LAUNCHER.cooldown)}/s`,
+        DRONE_LAUNCHER.energy / DRONE_LAUNCHER.cooldown,
+        DRONE_LAUNCHER.range,
+      ),
     ];
   if (id === "light-ion-cannon")
     return [

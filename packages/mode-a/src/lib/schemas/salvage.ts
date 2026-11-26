@@ -32,6 +32,8 @@ export const WeaponEventSchema = z.discriminatedUnion("kind", [
 export type WeaponEvent = z.infer<typeof WeaponEventSchema>;
 
 export const SalvagePhysicalStateSchema = z.object({
+  /** Carrier identity on an encounter drone contact. */
+  carrierId: z.number().int().optional(),
   initialHull: z.number().positive().optional(),
   releasedMask: z.number().int().min(0).max(255).optional(),
   shardIndex: z.number().int().min(0).max(7).optional(),
@@ -122,6 +124,19 @@ export function ionCannonDamage(distance: number) {
     Math.min(3, Math.floor(distance / (ION_CANNON.range / 4)))
   ];
 }
+export const DroneLauncherSchema = z.object({
+  range: z.literal(250),
+  energy: z.literal(2),
+  cooldown: z.literal(3),
+  airborneLimit: z.literal(3),
+});
+export const DRONE_LAUNCHER = DroneLauncherSchema.parse({
+  range: 250,
+  energy: 2,
+  cooldown: 3,
+  airborneLimit: 3,
+});
+
 /** Plasma rifle acquisition envelope and charge-cycle timing. */
 const PLASMA_STREAM_REACH = 130;
 const PLASMA_STREAM_SPEED = 7800;
@@ -300,8 +315,7 @@ export function pointDefenceDamage(distance: number) {
   return POINT_DEFENCE.bands[Math.min(3, Math.floor(distance / band))];
 }
 export const WeaponConfigSchema = z.object({
-  /** Fraction of energy capacity below which no weapon fires. */
-  energyFloor: z.number().min(0).max(1),
+  reserve: z.literal(10),
   rail: ShotSchema.extend({
     speed: z.number().positive(),
     recoilStrength: z.number().nonnegative(),
@@ -319,7 +333,7 @@ export const WeaponConfigSchema = z.object({
 });
 /** Trial tuning, separate from engine draw and saved fittings. Angles are radians. */
 export const WEAPONS = WeaponConfigSchema.parse({
-  energyFloor: 0.1,
+  reserve: 10,
   rail: {
     damage: 100,
     energy: 3,

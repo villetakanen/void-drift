@@ -101,28 +101,30 @@ describe("Plasma rifle charge cycle", () => {
   });
 
   it("holds paid charge at the fitted reserve and debits one funded release", () => {
-    const f = fixture(["plasma-rifle", null], 22, 200);
+    const f = fixture(["plasma-rifle", null], 12.001, 200);
     const [rifle] = f.rifles;
     f.advance(0.6);
     expect(rifle.plasma?.charge).toBeCloseTo(0.4 / 0.7);
-    expect(f.resources.power).toBeCloseTo(20);
+    expect(f.resources.power).toBeCloseTo(10.001);
     f.advance(0.6);
     expect(rifle.plasma?.charge).toBeCloseTo(0.4 / 0.7);
     expect(f.system.plasmaVents).toBe(0);
 
-    f.resources.power = 21.5;
+    f.resources.power = 11.501;
     f.advance(0.3);
     expect(rifle.plasma?.charge).toBeCloseTo(1);
     expect(rifle.plasma?.phase).toBe("charging");
-    expect(f.resources.power).toBeCloseTo(20);
-    f.resources.power = 23.499;
+    expect(f.resources.power).toBeCloseTo(10.001);
+    expect(f.system.weaponsEnergyEmergency(13.499)).toBe(true);
+    expect(f.system.weaponsEnergyEmergency(13.5)).toBe(false);
+    f.resources.power = 13.5;
     f.step();
     expect(f.system.plasmaReleases).toBe(0);
-    expect(f.resources.power).toBeCloseTo(23.499);
-    f.resources.power = 23.5;
+    expect(f.resources.power).toBeCloseTo(13.5);
+    f.resources.power = 13.501;
     f.step();
     expect(f.system.plasmaReleases).toBe(1);
-    expect(f.resources.power).toBeCloseTo(20);
+    expect(f.resources.power).toBeCloseTo(10.001);
     expect(f.system.energySpent).toBeCloseTo(7);
   });
 
@@ -175,7 +177,7 @@ describe("Plasma rifle charge cycle", () => {
       PLASMA_RIFLE.chargePowerPerSecond * PLASMA_RIFLE.chargeSeconds;
     const f = fixture(
       ["plasma-rifle", null],
-      capacity * WEAPONS.energyFloor + chargePower,
+      WEAPONS.reserve + chargePower + 0.001,
       capacity,
     );
     const [rifle] = f.rifles;
@@ -227,19 +229,19 @@ describe("Plasma rifle charge cycle", () => {
   });
 
   it("vents a full lock that is replaced on the step release power recovers", () => {
-    const f = fixture(["plasma-rifle", null], 13.5);
+    const f = fixture(["plasma-rifle", null], 13.501);
     const [rifle] = f.rifles;
     f.advance(0.7);
     expect(rifle.plasma?.charge).toBeCloseTo(1);
     expect(f.system.plasmaReleases).toBe(0);
 
-    f.resources.power = 13.5;
+    f.resources.power = 13.501;
     f.step(substep, [f.target(21)]);
     expect(rifle.plasma?.phase).toBe("venting");
     expect(rifle.plasma?.remaining).toBeCloseTo(0.3 - substep);
     expect(f.system.plasmaReleases).toBe(0);
     expect(f.system.plasmaVents).toBe(1);
-    expect(f.resources.power).toBeCloseTo(13.5);
+    expect(f.resources.power).toBeCloseTo(13.501);
   });
 
   it.each([true, false])(
@@ -249,7 +251,7 @@ describe("Plasma rifle charge cycle", () => {
         rifleFirst
           ? ["plasma-rifle", "light-ion-cannon"]
           : ["light-ion-cannon", "plasma-rifle"],
-        13.5,
+        13.501,
       );
       const [rifle] = f.rifles;
       const cannon = f.system.weapons.find(
@@ -261,7 +263,7 @@ describe("Plasma rifle charge cycle", () => {
       expect(rifle.plasma?.charge).toBeCloseTo(1);
       expect(f.system.plasmaReleases).toBe(0);
       cannon.readyAt = 0;
-      f.resources.power = 13.5;
+      f.resources.power = 13.501;
       f.step();
       expect(f.system.plasmaReleases).toBe(rifleFirst ? 1 : 0);
       expect(f.system.ionDischarges).toBe(rifleFirst ? 0 : 1);
@@ -269,24 +271,24 @@ describe("Plasma rifle charge cycle", () => {
   );
 
   it("funds two fitted rifles independently and releases them in slot order", () => {
-    const f = fixture(["plasma-rifle", "plasma-rifle"], 17);
+    const f = fixture(["plasma-rifle", "plasma-rifle"], 17.001);
     const [first, second] = f.rifles;
     f.advance(0.7);
     expect(first.plasma?.charge).toBeCloseTo(1);
     expect(second.plasma?.charge).toBeCloseTo(1);
     expect(f.system.plasmaReleases).toBe(0);
-    f.resources.power = 13.5;
+    f.resources.power = 13.501;
     f.step();
     expect(first.plasma?.phase).toBe("firing");
     expect(second.plasma?.phase).toBe("charging");
     expect(second.plasma?.charge).toBeCloseTo(1);
     expect(f.system.plasmaReleases).toBe(1);
-    expect(f.resources.power).toBeCloseTo(10);
-    f.resources.power = 13.5;
+    expect(f.resources.power).toBeCloseTo(10.001);
+    f.resources.power = 13.501;
     f.step();
     expect(second.plasma?.phase).toBe("firing");
     expect(f.system.plasmaReleases).toBe(2);
-    expect(f.resources.power).toBeCloseTo(10);
+    expect(f.resources.power).toBeCloseTo(10.001);
   });
 
   it("matches the isolated held cycle across substep partitions", () => {

@@ -27,6 +27,7 @@ export const EngineIdSchema = z.enum([
 ]);
 export const ReleaseClassSchema = z.enum(["scored", "preview"]);
 export const PartIdSchema = z.enum([
+  "drone-launcher",
   "plasma-rifle",
   "light-ion-cannon",
   "ion-point-defence",
@@ -191,6 +192,18 @@ export const CHASSIS = {
   }),
 };
 export const PARTS = {
+  "drone-launcher": PartSchema.parse({
+    id: "drone-launcher",
+    name: "Drone Launcher",
+    releaseClass: "preview",
+    description:
+      "Launches a pursuit drone at enemies within 250 units. Each launch costs 2 energy and reloads in 3 seconds. Up to three drones can fly at once. Returning drones recover their build energy.",
+    category: "G",
+    mass: 17.5,
+    thrust: 0,
+    limit: 0,
+    draw: 0,
+  }),
   "plasma-rifle": PartSchema.parse({
     id: "plasma-rifle",
     name: "Plasma rifle",
@@ -210,7 +223,7 @@ export const PARTS = {
     releaseClass: "scored",
     name: "Light Ion Cannon",
     description:
-      "12–48 damage/s · 3 shots/s · 300-unit reach · 0.2p/shot (0.6p/s sustained). Ship-width forward acquisition; offset cannons may miss. Fires above 10 power and at least 10% capacity.",
+      "12–48 damage/s · 3 shots/s · 300-unit reach · 0.2p/shot (0.6p/s sustained). Ship-width forward acquisition; offset cannons may miss. Each shot leaves more than 10 energy in reserve.",
     category: "G",
     mass: 9,
     thrust: 0,
@@ -223,7 +236,7 @@ export const PARTS = {
     releaseClass: "scored",
     name: "Ion Point Defence",
     description:
-      "8–24 damage/s · 3 shots/s · 200-unit reach · 0.1p/shot (0.3p/s sustained). Turns at 180°/s towards the closest target within 300 units. Fires above 10 power and at least 10% capacity.",
+      "8–24 damage/s · 3 shots/s · 200-unit reach · 0.1p/shot (0.3p/s sustained). Turns at 180°/s towards the closest target within 300 units. Each shot leaves more than 10 energy in reserve.",
     category: "G",
     mass: 10,
     thrust: 0,
@@ -247,7 +260,7 @@ export const PARTS = {
     releaseClass: "preview",
     name: "Laser",
     description:
-      "Short-range rotating pulse laser. Prioritizes incoming debris, then derelicts. Active in Test flight; fires above 10 power and at least 10% capacity.",
+      "Short-range rotating pulse laser. Prioritizes incoming debris, then derelicts. Active in Test flight; each shot leaves more than 10 energy in reserve.",
     category: "G",
     mass: 9,
     thrust: 0,

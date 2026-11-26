@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { liveShipBody, type SalvageBody } from "./salvage";
-import { buildStats, defaultLoadout, type Loadout } from "./schemas/loadout";
-import { WEAPONS } from "./schemas/salvage";
+import { defaultLoadout, type Loadout } from "./schemas/loadout";
 import { gameSettings, Simulation, stockSettings } from "./simulation";
 
 const still = { leftThruster: false, rightThruster: false, fire: false };
@@ -45,12 +44,13 @@ describe("run-local weapons choice", () => {
   );
 
   it.each<[Loadout["hull"], boolean]>([
-    [["plasma-rifle", null, "battery"], true],
-    [["ion-point-defence", null, "battery"], false],
+    [["plasma-rifle", null, "battery"], false],
+    [["light-ion-cannon", null, "battery"], true],
+    [["ion-point-defence", "light-ion-cannon", "battery"], false],
     [["plasma-rifle", "light-ion-cannon", "battery"], false],
     [["rail", null, "battery"], false],
   ])(
-    "derives emergency at the percentage reserve for %j",
+    "reports emergency from the cheapest next debit for %j",
     (hull, atReserve) => {
       const loadout = defaultLoadout("corvette");
       loadout.hull = hull;
@@ -60,8 +60,7 @@ describe("run-local weapons choice", () => {
         loadout,
       });
       sim.start();
-      sim.state.resources.power =
-        buildStats(loadout).capacity * WEAPONS.energyFloor;
+      sim.state.resources.power = 10.15;
       expect(sim.weaponsEnergyEmergency).toBe(atReserve);
       sim.state.resources.power = 10;
       expect(sim.weaponsEnergyEmergency).toBe(hull[0] !== "rail");

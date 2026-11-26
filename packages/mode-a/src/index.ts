@@ -6,6 +6,7 @@ export * from "./lib/cruiser";
 export * from "./lib/derelict-collision";
 export * from "./lib/derelict-geometry";
 export * from "./lib/derelict-renderer";
+export * from "./lib/drone-art";
 export * from "./lib/enemy-ai";
 export * from "./lib/engine-art";
 export * from "./lib/fiddler";

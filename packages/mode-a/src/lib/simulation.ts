@@ -25,6 +25,7 @@ import {
 import { solarCharge } from "./build-flight";
 import { buildCollisionRadius, buildPlumeEmitters } from "./build-renderer";
 import { SHIP_PROFILE_BY_ID } from "./config";
+import { DroneFlight } from "./drone-flight";
 import { createStar } from "./game-loop";
 import {
   createPirate,
@@ -59,14 +60,19 @@ import {
   PRACTICE_VENUS_RADIUS,
   PRACTICE_VENUS_TRAVEL_SPEED,
 } from "./practice-venus";
-import type { TargetingMetrics, WeaponEvent, WeaponState } from "./salvage";
+import type {
+  SalvageBody,
+  TargetingMetrics,
+  WeaponEvent,
+  WeaponState,
+} from "./salvage";
 import {
-  clearsWeaponReserve,
   contactTime,
   type FlightTickInput,
   fittedWeaponKinds,
   liveShipBody,
   SalvageSystem,
+  weaponsEnergyEmergency,
 } from "./salvage";
 import {
   type FlightSettings,
@@ -86,13 +92,18 @@ import {
 import {
   type DerelictsResult,
   DerelictsResultSchema,
+  DRONE_LAUNCHER,
   ENCOUNTER,
   RANKED_SURVIVAL_ENCOUNTER,
   SURVIVAL_ENCOUNTER,
 } from "./schemas/salvage";
 import type { ShipProfileId } from "./schemas/ship-profile";
 import { generateSolarSystem } from "./solar-system";
-import { acquireFleetTargets } from "./targeting";
+import {
+  acquireFleetTargets,
+  PLAYER_BODY_ID,
+  type WeaponAcquisition,
+} from "./targeting";
 import { ATMOSPHERE_TUNING, GRAVITY_TUNING, PRACTICE_SYSTEM } from "./tuning";
 import { applyYellowFamilyProfile } from "./yellow-star-family";
 
@@ -217,21 +228,36 @@ export class Simulation {
   private survivalPiratesIssued = 0;
   private playerEntryComplete = false;
   private playerWeaponsChoice: "auto" | "off" = "auto";
-  private readonly playerWeaponKinds: ReturnType<typeof fittedWeaponKinds>;
+  readonly droneFlight = new DroneFlight();
+  private readonly carrierIds = new WeakMap<GauntletActor, number>();
+  private nextCarrierId = PLAYER_BODY_ID;
+  private carrierId(actor: GauntletActor) {
+    let id = this.carrierIds.get(actor);
+    if (id === undefined) {
+      id = ++this.nextCarrierId;
+      this.carrierIds.set(actor, id);
+      const carrierId = id;
+      if (actor.combat.weapons.some((w) => w.kind === "drone-launcher"))
+        actor.combat.launchDrone = (ship, weapon, target) =>
+          this.droneFlight.launch(carrierId, ship, weapon.mount, target);
+    }
+    return id;
+  }
+  private readonly playerWeaponKinds: Pick<WeaponState, "kind">[];
   private readonly playerCapacity: number;
   get weaponsChoice(): "auto" | "off" {
     return this.playerWeaponsChoice;
   }
   get weaponsEnergyEmergency(): boolean {
     return (
-      this.playerWeaponKinds.length > 0 &&
-      this.playerWeaponKinds.every(
-        (kind) =>
-          !clearsWeaponReserve(
-            kind,
-            this.state.resources.power,
-            this.playerCapacity,
-          ),
+      this.salvage?.weaponsEnergyEmergency(
+        this.state.resources.power,
+        STEP / 4,
+      ) ??
+      weaponsEnergyEmergency(
+        this.state.resources.power,
+        this.playerWeaponKinds,
+        STEP / 4,
       )
     );
   }
@@ -424,7 +450,7 @@ export class Simulation {
     this.opponentPlans = this.opponents.map(() => null);
     this.opponentCommands = this.opponents.map(() => NO_PILOT_COMMAND);
     this.playerWeaponKinds = this.settings.loadout
-      ? fittedWeaponKinds(this.settings.loadout)
+      ? fittedWeaponKinds(this.settings.loadout).map((kind) => ({ kind }))
       : [];
     this.playerCapacity = this.settings.loadout
       ? buildStats(this.settings.loadout).capacity
@@ -446,6 +472,9 @@ export class Simulation {
             ? RANKED_SURVIVAL_ENCOUNTER
             : SURVIVAL_ENCOUNTER,
       );
+    if (this.salvage?.weapons.some((w) => w.kind === "drone-launcher"))
+      this.salvage.launchDrone = (ship, weapon, target) =>
+        this.droneFlight.launch(PLAYER_BODY_ID, ship, weapon.mount, target);
   }
   /** The plume emitters in mount order, with this tick's output; read-only. */
   get emitters(): readonly Readonly<PlumeEmitter>[] {
@@ -528,6 +557,7 @@ export class Simulation {
   }
   step(input: FlightTickInput) {
     if (this.state.status !== "PLAYING") return;
+    this.droneFlight.pruneEvents(this.ticks * STEP);
     const beforeX = this.ship.pos.x;
     const beforeY = this.ship.pos.y;
     let delivered = 0;
@@ -630,7 +660,11 @@ export class Simulation {
           pirate.resources.hull - pirateCombatDamage[index] > 0,
       );
       let survivalTarget: ReturnType<typeof liveShipBody> | undefined;
-      if (this.opponents.length) {
+      let physical: SalvageBody[] = [];
+      let droneBodies: SalvageBody[] = [];
+      let acquisition: WeaponAcquisition | undefined;
+      let preparedBodies: Set<SalvageBody> | undefined;
+      if (this.opponents.length || this.droneFlight.active) {
         for (let index = 0; index < this.opponents.length; index++) {
           const pirate = this.opponents[index];
           if (pirate.lifecycle === "destroyed") continue;
@@ -789,23 +823,27 @@ export class Simulation {
               pirateCombatDamage[second] += GAUNTLET_SHIP_CONTACT.damage;
             }
           }
+          const fleetPlayer = this.settings.mode === "gauntlet";
           const needsRoster =
-            this.settings.mode === "survival" ||
+            this.droneFlight.active ||
             !!this.salvage?.hasActivePlasma ||
             this.opponents.some((actor) => actor.combat.hasActivePlasma) ||
-            (playerCanFire && !!this.salvage?.needsWeaponRoster(STEP / 4)) ||
+            ((playerCanFire || !fleetPlayer) &&
+              !!this.salvage?.needsWeaponRoster(STEP / 4)) ||
             this.opponents.some(
               (actor, index) =>
                 piratesCanFire[index] &&
                 actor.combat.needsWeaponRoster(STEP / 4),
             );
           // One set of physical adapters is shared for this combat substep.
+          if (this.droneFlight.drones.length)
+            droneBodies = this.droneFlight.bodies();
           const roster = needsRoster
             ? [
                 liveShipBody(
-                  900000,
+                  PLAYER_BODY_ID,
                   this.ship,
-                  playerHullAtSubstep,
+                  this.state.resources.hull - playerCombatDamage,
                   (amount) => {
                     playerCombatDamage += amount;
                   },
@@ -817,7 +855,7 @@ export class Simulation {
                     ? []
                     : [
                         liveShipBody(
-                          900001 + targetIndex,
+                          this.carrierId(target),
                           target.ship,
                           target.resources.hull -
                             pirateCombatDamage[targetIndex],
@@ -828,17 +866,20 @@ export class Simulation {
                         ),
                       ],
                 ),
+                ...droneBodies,
               ]
             : [];
-          const fleetPlayer = this.settings.mode === "gauntlet";
-          if (!fleetPlayer)
-            survivalTarget = roster.find((body) => body.id === 900001);
+          physical = roster;
+          if (!fleetPlayer && this.opponent)
+            survivalTarget = roster.find(
+              (body) => body.id === this.carrierId(this.opponents[0]),
+            );
           const requests = [];
-          if (fleetPlayer && this.salvage && playerCanFire)
+          if (this.salvage && (playerCanFire || !fleetPlayer))
             requests.push({
               system: this.salvage,
               ship: this.ship,
-              shooterId: 900000,
+              shooterId: PLAYER_BODY_ID,
             });
           for (let index = 0; index < this.opponents.length; index++) {
             const actor = this.opponents[index];
@@ -846,8 +887,8 @@ export class Simulation {
               requests.push({
                 system: actor.combat,
                 ship: actor.ship,
-                shooterId: 900001 + index,
-                aimId: 900000,
+                shooterId: this.carrierId(actor),
+                aimId: PLAYER_BODY_ID,
               });
           }
           if (this.salvage) {
@@ -860,14 +901,27 @@ export class Simulation {
             actor.combat.plasmaBurstEvents.length = 0;
             actor.combat.targetingMetrics = this.targetingMetrics;
           }
+          if (!fleetPlayer && this.salvage)
+            preparedBodies = this.salvage.prepareEncounter(
+              STEP / 4,
+              this.star,
+              this.planets,
+            );
           const acquisitions = acquireFleetTargets(
-            roster,
+            needsRoster && !fleetPlayer && this.salvage
+              ? [...roster, ...this.salvage.bodies]
+              : roster,
             requests,
             this.star,
             this.planets,
             STEP / 4,
             this.targetingMetrics,
+            this.droneFlight.drones,
           );
+          acquisition = this.salvage
+            ? acquisitions.get(this.salvage)
+            : undefined;
+          if (droneBodies.length) this.droneFlight.move(STEP / 4, roster);
           if (fleetPlayer && this.salvage && playerCanFire) {
             this.salvage.stepWeapons(
               STEP / 4,
@@ -878,7 +932,7 @@ export class Simulation {
               this.planets,
               roster,
               undefined,
-              { shooterId: 900000 },
+              { shooterId: PLAYER_BODY_ID },
               acquisitions.get(this.salvage),
               { x: previousX, y: previousY, rotation: previousRotation },
               this.weaponsChoice === "auto",
@@ -889,7 +943,7 @@ export class Simulation {
               this.star,
               this.planets,
               roster,
-              900000,
+              PLAYER_BODY_ID,
             );
           }
           for (let index = 0; index < this.opponents.length; index++) {
@@ -900,7 +954,7 @@ export class Simulation {
                 this.star,
                 this.planets,
                 roster,
-                900001 + index,
+                this.carrierId(pirate),
               );
               continue;
             }
@@ -913,7 +967,7 @@ export class Simulation {
               this.planets,
               roster,
               undefined,
-              { shooterId: 900001 + index, aimId: 900000 },
+              { shooterId: this.carrierId(pirate), aimId: PLAYER_BODY_ID },
               acquisitions.get(pirate.combat),
               opponentPrevious[index],
             );
@@ -945,6 +999,59 @@ export class Simulation {
           survivalTarget,
           this.weaponsChoice === "auto" &&
             (this.settings.mode !== "derelicts" || this.playerEntryComplete),
+          {
+            extraBodies: droneBodies,
+            shooterId: PLAYER_BODY_ID,
+            acquisition,
+            preparedBodies,
+          },
+        );
+      }
+      if (this.droneFlight.active) {
+        const bodies =
+          this.salvage && this.settings.mode !== "gauntlet"
+            ? [...physical, ...this.salvage.bodies]
+            : physical;
+        this.droneFlight.resolve(
+          STEP / 4,
+          visualEnd - STEP / 4,
+          bodies,
+          this.star,
+          this.planets,
+          (body, amount, carrierId) => {
+            if (body.kind === "ship") {
+              const opponent = this.opponents.findIndex(
+                (actor) => this.carrierId(actor) === body.id,
+              );
+              if (opponent < 0) body.onDamage?.(amount);
+              else if (carrierId === PLAYER_BODY_ID)
+                playerDamagesPirate(opponent, amount);
+              else pirateCombatDamage[opponent] += amount;
+              body.hull = Math.max(0, body.hull - amount);
+            } else
+              this.salvage?.applyDamage(
+                body,
+                amount,
+                carrierId === PLAYER_BODY_ID,
+              );
+          },
+          (id) => {
+            if (id === PLAYER_BODY_ID)
+              this.state.resources.power = Math.min(
+                this.playerCapacity,
+                this.state.resources.power + DRONE_LAUNCHER.energy,
+              );
+            else {
+              const carrier = this.opponents.find(
+                (actor) => this.carrierId(actor) === id,
+              );
+              if (carrier)
+                carrier.resources.power = Math.min(
+                  carrier.stats.capacity,
+                  carrier.resources.power + DRONE_LAUNCHER.energy,
+                );
+            }
+          },
         );
       }
       if (

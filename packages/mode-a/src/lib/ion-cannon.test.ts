@@ -109,8 +109,8 @@ describe("Light Ion Cannon", () => {
     const f = fixture();
     f.energy.capacity = 50;
     f.target();
-    // The first shot crosses the 10-power firing floor.
-    f.resources.power = 10 + ION_CANNON.energy / 2;
+    // Only the first shot leaves more than 10 energy.
+    f.resources.power = 10 + ION_CANNON.energy * 1.5;
     f.step();
     expect(f.system.ionDischarges).toBe(1);
     expect(f.system.weapons[0].readyAt).toBeGreaterThan(0);

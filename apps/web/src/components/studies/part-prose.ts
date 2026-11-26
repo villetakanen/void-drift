@@ -1,7 +1,7 @@
 // Sanctioned copy comes from the catalog; unsanctioned drafts remain study-local.
 import { PARTS, type PartId } from "@void-drift/mode-a";
 
-export const PART_PROSE: Record<PartId, string> = {
+export const PART_PROSE: Partial<Record<PartId, string>> = {
   "plasma-rifle": PARTS["plasma-rifle"].fluff,
   "light-ion-cannon": PARTS["light-ion-cannon"].fluff,
   "ion-point-defence": PARTS["ion-point-defence"].fluff,

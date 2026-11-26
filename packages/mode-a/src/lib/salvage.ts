@@ -49,6 +49,7 @@ import type { SalvagePhysicalState } from "./schemas/salvage";
 import {
   DamageAmountSchema,
   type DestructionCause,
+  DRONE_LAUNCHER,
   ENCOUNTER,
   type EncounterConfig,
   ION_CANNON,
@@ -71,7 +72,11 @@ import {
   type WeaponEvent,
   WeaponEventSchema,
 } from "./schemas/salvage";
-import { acquireFleetTargets, type WeaponAcquisition } from "./targeting";
+import {
+  acquireFleetTargets,
+  PLAYER_BODY_ID,
+  type WeaponAcquisition,
+} from "./targeting";
 
 /** Study reference: Wasp, Service ion, rifle and Light Ion Cannon. */
 const ventReferenceLoadout = defaultLoadout("wasp");
@@ -156,7 +161,8 @@ export interface WeaponState {
     | "laser"
     | "light-ion-cannon"
     | "ion-point-defence"
-    | "plasma-rifle";
+    | "plasma-rifle"
+    | "drone-launcher";
   angle: number;
   readyAt: number;
   target: number | null;
@@ -286,6 +292,7 @@ function isFunctionalWeapon(
     part === "light-ion-cannon" ||
     part === "ion-point-defence" ||
     part === "laser" ||
+    part === "drone-launcher" ||
     part === "plasma-rifle"
   );
 }
@@ -294,33 +301,56 @@ export function fittedWeaponKinds(loadout: Loadout) {
   return fittedParts(loadout).filter(isFunctionalWeapon);
 }
 
-function plasmaReserve(capacity: number) {
-  return Math.max(10, capacity * WEAPONS.energyFloor);
-}
+type WeaponDebit = Pick<WeaponState, "kind" | "plasma">;
 
-function clearsIonReserve(power: number, capacity: number) {
-  return power > 10 && power + 1e-9 >= capacity * WEAPONS.energyFloor;
+function nextDebit(weapon: WeaponDebit, dt: number) {
+  switch (weapon.kind) {
+    case "drone-launcher":
+      return DRONE_LAUNCHER.energy;
+    case "ion-point-defence":
+      return POINT_DEFENCE.energy;
+    case "light-ion-cannon":
+      return ION_CANNON.energy;
+    case "plasma-rifle": {
+      const charge =
+        weapon.plasma?.phase === "charging" ? weapon.plasma.charge : 0;
+      if (charge === 1) return PLASMA_RIFLE.releasePower;
+      return (
+        Math.min(dt, (1 - charge) * PLASMA_RIFLE.chargeSeconds) *
+        PLASMA_RIFLE.chargePowerPerSecond
+      );
+    }
+    default:
+      return WEAPONS[weapon.kind].energy;
+  }
 }
-
-export function clearsWeaponReserve(
-  kind: WeaponState["kind"],
+export function weaponsEnergyEmergency(
   power: number,
-  capacity: number,
-): boolean {
-  return kind === "plasma-rifle"
-    ? power > plasmaReserve(capacity)
-    : clearsIonReserve(power, capacity);
-}
-
-/** Reserve and shot affordability are separate gates. */
-function canFire(resources: Resources, capacity: number, cost: number) {
+  mounts: readonly WeaponDebit[],
+  dt: number,
+) {
   return (
-    clearsIonReserve(resources.power, capacity) &&
-    resources.power + 1e-9 >= cost
+    mounts.length > 0 &&
+    mounts.every((mount) => power < WEAPONS.reserve + nextDebit(mount, dt))
   );
+}
+function canFire(resources: Resources, cost: number) {
+  return resources.power > WEAPONS.reserve + cost;
+}
+/** Fixed shot prices are in tenths. Subtract in that unit so e.g. 10.3 - 0.1 lands on 10.2. */
+function payShot(resources: Resources, cost: number) {
+  resources.power = (resources.power * 10 - cost * 10) / 10;
 }
 /** Bounded, deterministic gameplay. No Canvas, wall clock, or cosmetic randomness. */
 export class SalvageSystem {
+  launchDrone?: (
+    ship: GameObject,
+    mount: WeaponState,
+    targetId: number,
+  ) => boolean;
+  weaponsEnergyEmergency(power: number, dt = 1 / 240) {
+    return weaponsEnergyEmergency(power, this.weapons, dt);
+  }
   targetingMetrics?: TargetingMetrics;
   private aimingBodies: readonly SalvageBody[] | null = null;
   private activeBodies: readonly SalvageBody[] | null = null;
@@ -329,10 +359,16 @@ export class SalvageSystem {
   }
   private shooterId: number | null = null;
   private aimId: number | null = null;
-  private acquisitionEligible(body: SalvageBody) {
+  private acquisitionEligible(body: SalvageBody, pointDefence = false) {
     return (
       body.id !== this.shooterId &&
-      (this.aimId === null || body.id === this.aimId)
+      (body.carrierId === undefined ||
+        (pointDefence &&
+          ((this.shooterId ?? PLAYER_BODY_ID) === PLAYER_BODY_ID) !==
+            (body.carrierId === PLAYER_BODY_ID))) &&
+      (this.aimId === null ||
+        body.id === this.aimId ||
+        body.carrierId === this.aimId)
     );
   }
   private contactEligible(body: SalvageBody) {
@@ -672,7 +708,8 @@ export class SalvageSystem {
       this.destroyed++;
       this.playerKills++;
     }
-    if (!playerRelease) this.emit("break", body.x, body.y);
+    if (!playerRelease)
+      this.emit("break", body.x, body.y, body.x, body.y, time);
     for (let i = 0; i < DERELICT_SHARDS.length; i++)
       this.release(body, i, cause === "player-ram");
     if (playerRelease) {
@@ -702,13 +739,18 @@ export class SalvageSystem {
     }
   }
   /** Shared weapon damage entry point; preserves production breakup and events. */
-  applyDamage(body: SalvageBody, amount: number) {
+  applyDamage(body: SalvageBody, amount: number, playerWeapon = true) {
     const damage = DamageAmountSchema.parse(amount);
     if (!this.bodies.includes(body))
       throw new Error("Damage target is not in this simulation");
-    this.damage(body, damage);
+    this.damage(body, damage, this.time, playerWeapon);
   }
-  private damage(body: SalvageBody, amount: number, time = this.time) {
+  private damage(
+    body: SalvageBody,
+    amount: number,
+    time = this.time,
+    playerWeapon = true,
+  ) {
     if (body.hull <= 0) return;
     if (body.kind === "ship") {
       body.onDamage?.(amount);
@@ -716,10 +758,11 @@ export class SalvageSystem {
       if (body.hull > 0) this.emit("impact", body.x, body.y);
       return;
     }
-    this.hits++;
+    if (playerWeapon) this.hits++;
     if (body.kind === "wreck" && body.initialHull === undefined)
       body.initialHull = body.hull;
-    if (body.hull <= amount) this.destroy(body, "player-weapon", time);
+    if (body.hull <= amount)
+      this.destroy(body, playerWeapon ? "player-weapon" : "environment", time);
     else {
       body.hull -= amount;
       if (body.kind === "wreck") {
@@ -848,10 +891,9 @@ export class SalvageSystem {
     ship: GameObject,
     star: Star,
     resources: Resources,
-    capacity: number,
     planets: readonly Planet[],
   ) {
-    if (!canFire(resources, capacity, ION_CANNON.energy)) return false;
+    if (!canFire(resources, ION_CANNON.energy)) return false;
     const pose = weaponPose(ship, weapon.mount);
     const contactStarted = this.targetingMetrics ? performance.now() : 0;
     const { distance, hit } = this.ionContact(
@@ -863,7 +905,7 @@ export class SalvageSystem {
     );
     if (this.targetingMetrics)
       this.targetingMetrics.contactMs += performance.now() - contactStarted;
-    resources.power = Math.max(0, resources.power - ION_CANNON.energy);
+    payShot(resources, ION_CANNON.energy);
     this.energySpent += ION_CANNON.energy;
     weapon.readyAt = this.time + ION_CANNON.cooldown;
     this.ionDischarges++;
@@ -926,7 +968,7 @@ export class SalvageSystem {
     const nearby = (this.aimingBodies ?? this.weaponBodies)
       .flatMap<CandidateOption>((body) => {
         if (this.targetingMetrics) this.targetingMetrics.bodyVisits++;
-        if (!this.acquisitionEligible(body)) return [];
+        if (!this.acquisitionEligible(body, true)) return [];
         if (this.targetingMetrics) this.targetingMetrics.comparisons++;
         if (body.kind === "cell" || body.hull <= 0) return [];
         if (body.kind === "ship") {
@@ -1018,7 +1060,6 @@ export class SalvageSystem {
     ship: GameObject,
     star: Star,
     resources: Resources,
-    capacity: number,
     planets: readonly Planet[],
     acquisition: WeaponAcquisition,
     allowFire: boolean,
@@ -1062,8 +1103,8 @@ export class SalvageSystem {
       this.targetingMetrics.contactMs += performance.now() - contactStarted;
     // World geometry first, or nothing within reach: no discharge, cost or cooldown.
     if (!hit || distance > POINT_DEFENCE.reach) return funded;
-    if (!canFire(resources, capacity, POINT_DEFENCE.energy)) return false;
-    resources.power = Math.max(0, resources.power - POINT_DEFENCE.energy);
+    if (!canFire(resources, POINT_DEFENCE.energy)) return false;
+    payShot(resources, POINT_DEFENCE.energy);
     this.energySpent += POINT_DEFENCE.energy;
     weapon.readyAt = this.time + POINT_DEFENCE.cooldown;
     this.pointDefenceDischarges++;
@@ -1098,7 +1139,6 @@ export class SalvageSystem {
     weapon: WeaponState,
     dt: number,
     resources: Resources,
-    capacity: number,
     ship: GameObject,
     previousShip: { x: number; y: number; rotation: number } | undefined,
     vents: PendingPlasmaVent[],
@@ -1108,7 +1148,6 @@ export class SalvageSystem {
     const state = weapon.plasma;
     if (!state) return;
     let left = dt;
-    const reserve = plasmaReserve(capacity);
     const target = allowFire ? weapon.target : null;
     while (true) {
       if (state.phase === "charging" && state.targetId !== target) {
@@ -1118,7 +1157,7 @@ export class SalvageSystem {
         if (
           target === null ||
           left <= 0 ||
-          !clearsWeaponReserve(weapon.kind, resources.power, capacity)
+          !canFire(resources, nextDebit(weapon, left))
         )
           break;
         state.phase = "charging";
@@ -1126,13 +1165,11 @@ export class SalvageSystem {
       }
       if (state.phase === "charging") {
         const chargeTime = (1 - state.charge) * PLASMA_RIFLE.chargeSeconds;
-        const affordableTime =
-          Math.max(0, resources.power - reserve) /
-          PLASMA_RIFLE.chargePowerPerSecond;
-        const consumed = Math.min(left, chargeTime, affordableTime);
+        const consumed = Math.min(left, chargeTime);
         if (consumed > 0) {
           const energy = consumed * PLASMA_RIFLE.chargePowerPerSecond;
-          resources.power = Math.max(reserve, resources.power - energy);
+          if (!canFire(resources, energy)) break;
+          resources.power -= energy;
           this.energySpent += energy;
           state.charge = Math.min(
             1,
@@ -1142,11 +1179,8 @@ export class SalvageSystem {
         }
         if (state.charge >= 1 - 1e-9) {
           state.charge = 1;
-          if (resources.power + 1e-9 >= reserve + PLASMA_RIFLE.releasePower) {
-            resources.power = Math.max(
-              reserve,
-              resources.power - PLASMA_RIFLE.releasePower,
-            );
+          if (canFire(resources, PLASMA_RIFLE.releasePower)) {
+            payShot(resources, PLASMA_RIFLE.releasePower);
             this.energySpent += PLASMA_RIFLE.releasePower;
             this.plasmaReleases++;
             const elapsed = dt - left;
@@ -1370,19 +1404,15 @@ export class SalvageSystem {
     }
   }
   /**
-   * Power after life support and engines goes to defence weapons (point
-   * defences, lasers), then guns (Light Ion Cannons). `weapons` is in
-   * build-mount order, so each class walks it once in that order, drawing on the
-   * power and world the earlier shots left. The cannon volley is captured after
-   * the defence class and before the first gun; a cannon power shortfall stops
-   * the remaining cannons, while rails check the energy floor themselves.
+   * Defence draws first, then guns draw in fitted mount order. Each mount acts
+   * on the power and physical contacts left by earlier shots, using the fleet
+   * acquisition captured at the beginning of this substep.
    */
   private fireWeapons(
     dt: number,
     ship: GameObject,
     star: Star,
     resources: Resources,
-    capacity: number,
     planets: readonly Planet[],
     acquisition: WeaponAcquisition,
     previousShip: { x: number; y: number; rotation: number } | undefined,
@@ -1402,7 +1432,6 @@ export class SalvageSystem {
           ship,
           star,
           resources,
-          capacity,
           planets,
           acquisition,
           allowFire,
@@ -1414,7 +1443,6 @@ export class SalvageSystem {
           ship,
           star,
           resources,
-          capacity,
           planets,
           acquisition,
           allowFire,
@@ -1435,7 +1463,6 @@ export class SalvageSystem {
             ship,
             star,
             resources,
-            capacity,
             planets,
           );
       } else if (weapon.kind === "plasma-rifle") {
@@ -1443,13 +1470,26 @@ export class SalvageSystem {
           weapon,
           dt,
           resources,
-          capacity,
           ship,
           previousShip,
           vents,
           kicks,
           allowFire,
         );
+      } else if (weapon.kind === "drone-launcher") {
+        const target = acquisition.targets.get(weapon);
+        weapon.target = target?.id ?? null;
+        if (
+          target &&
+          allowFire &&
+          this.time + 1e-9 >= weapon.readyAt &&
+          canFire(resources, DRONE_LAUNCHER.energy) &&
+          this.launchDrone?.(ship, weapon, target.id)
+        ) {
+          payShot(resources, DRONE_LAUNCHER.energy);
+          this.energySpent += DRONE_LAUNCHER.energy;
+          weapon.readyAt = this.time + DRONE_LAUNCHER.cooldown;
+        }
       } else if (weapon.kind === "rail")
         this.fireRailOrLaser(
           weapon,
@@ -1457,7 +1497,6 @@ export class SalvageSystem {
           ship,
           star,
           resources,
-          capacity,
           planets,
           acquisition,
           allowFire,
@@ -1472,7 +1511,6 @@ export class SalvageSystem {
     ship: GameObject,
     star: Star,
     resources: Resources,
-    capacity: number,
     planets: readonly Planet[],
     acquisition: WeaponAcquisition,
     allowFire: boolean,
@@ -1504,7 +1542,7 @@ export class SalvageSystem {
     if (
       !allowFire ||
       this.time + 1e-9 < weapon.readyAt ||
-      !canFire(resources, capacity, config.energy)
+      !canFire(resources, config.energy)
     )
       return;
     const pose = weaponPose(ship, weapon.mount, weapon.angle);
@@ -1649,7 +1687,7 @@ export class SalvageSystem {
       this.damage(hit, config.damage, this.time - dt);
     }
     weapon.readyAt = this.time + config.cooldown;
-    resources.power -= config.energy;
+    payShot(resources, config.energy);
     this.energySpent += config.energy;
   }
 
@@ -2033,7 +2071,7 @@ export class SalvageSystem {
     ship: GameObject,
     star: Star,
     resources: Resources,
-    capacity: number,
+    _capacity: number,
     planets: readonly Planet[],
     targets: SalvageBody | readonly SalvageBody[],
     aimTargets?: readonly SalvageBody[],
@@ -2079,7 +2117,6 @@ export class SalvageSystem {
         ship,
         star,
         resources,
-        capacity,
         planets,
         selected,
         previousShip,
@@ -2168,29 +2205,18 @@ export class SalvageSystem {
     }
   }
 
-  step(
-    dt: number,
-    ship: GameObject,
-    star: Star,
-    resources: Resources,
-    capacity: number,
-    previousX: number,
-    previousY: number,
-    wrapped: boolean,
-    planets: readonly Planet[] = [],
-    previousRotation = ship.rotation,
-    hostile?: SalvageBody,
-    allowFire = true,
-  ) {
-    this.time += dt;
+  /** Apply arrivals and immediate world losses before any ship acquires targets.
+   * The returned cohort also determines which salvage bodies move this substep. */
+  prepareEncounter(dt: number, star: Star, planets: readonly Planet[]) {
+    const endTime = this.time + dt;
     this.plasmaContactEvents.length = 0;
     this.plasmaBurstEvents.length = 0;
     this.events = this.events.filter(
       (event) =>
-        this.time - event.time <=
+        endTime - event.time <=
         (event.kind === "energy-release" ? DERELICT_RELEASE_CUE.duration : 0.2),
     );
-    while (this.time + 1e-9 >= this.nextPass) {
+    while (endTime + 1e-9 >= this.nextPass) {
       this.spawn();
       this.nextPass +=
         this.encounter.intervalMin +
@@ -2225,27 +2251,58 @@ export class SalvageSystem {
             ) !== Infinity,
         )
       )
-        this.destroy(body, "environment");
+        this.destroy(body, "environment", endTime);
     }
+    return existingBodies;
+  }
+
+  step(
+    dt: number,
+    ship: GameObject,
+    star: Star,
+    resources: Resources,
+    capacity: number,
+    previousX: number,
+    previousY: number,
+    wrapped: boolean,
+    planets: readonly Planet[] = [],
+    previousRotation = ship.rotation,
+    hostile?: SalvageBody,
+    allowFire = true,
+    options?: {
+      extraBodies: readonly SalvageBody[];
+      shooterId: number;
+      acquisition?: WeaponAcquisition;
+      preparedBodies?: Set<SalvageBody>;
+    },
+  ) {
+    const existingBodies =
+      options?.preparedBodies ?? this.prepareEncounter(dt, star, planets);
+    this.time += dt;
+    const hazards = [star, ...planets];
     // Live ships participate in weapons queries only. Their flight and ram
     // contacts are advanced by the opponent simulation.
     const hostileIndex = this.bodies.length;
+    const contacts = options?.extraBodies;
     if (hostile) this.bodies.push(hostile);
-    const acquisition = acquireFleetTargets(
-      this.bodies,
-      [{ system: this, ship }],
-      star,
-      planets,
-      0,
-      this.targetingMetrics,
-    ).get(this);
+    if (contacts?.length) this.bodies.push(...contacts);
+    this.shooterId = options?.shooterId ?? null;
+    const acquisition =
+      options?.acquisition ??
+      acquireFleetTargets(
+        this.bodies,
+        [{ system: this, ship, shooterId: options?.shooterId }],
+        star,
+        planets,
+        0,
+        this.targetingMetrics,
+      ).get(this);
     if (!acquisition) throw new Error("Missing weapon acquisition");
     this.fireWeapons(
       dt,
       ship,
       star,
       resources,
-      capacity,
       planets,
       acquisition,
       {
@@ -2386,17 +2443,31 @@ export class SalvageSystem {
       star,
       planets,
       this.bodies,
-      undefined,
+      options?.shooterId,
       true,
       bodyEnd,
       births,
     );
-    this.sweepVentAreas(dt, this.bodies, undefined, true, bodyEnd, births);
+    this.sweepVentAreas(
+      dt,
+      this.bodies,
+      options?.shooterId,
+      true,
+      bodyEnd,
+      births,
+    );
 
-    if (hostile) this.bodies.splice(hostileIndex, 1);
+    this.shooterId = null;
+    const externalCount = Number(!!hostile) + (contacts?.length ?? 0);
+    const external = externalCount
+      ? this.bodies.splice(hostileIndex, externalCount)
+      : null;
     const shotTargets =
-      hostile && this.shots.length
-        ? [...existingBodies, hostile]
+      external && this.shots.length
+        ? [
+            ...existingBodies,
+            ...external.filter((body) => body.id !== options?.shooterId),
+          ]
         : existingBodies;
     this.shots = this.shots.filter((shot) => {
       let first = contactTime(
@@ -2439,7 +2510,7 @@ export class SalvageSystem {
         );
         if (
           time < first &&
-          (body === hostile ||
+          (!existingBodies.has(body) ||
             (time < terminal(body).time && time < shipTime(body)))
         ) {
           first = time;

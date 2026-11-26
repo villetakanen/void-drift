@@ -58,7 +58,7 @@ describe("mounted plasma charge light", () => {
     flight.step(0.7);
     expect(flight.light()).toEqual(dark);
     flight.resources.power = 12.625;
-    flight.step(0.7);
+    flight.step(0.5);
     const held = flight.light();
     expect(held.center).toBeGreaterThan(0);
     flight.step(0.7);

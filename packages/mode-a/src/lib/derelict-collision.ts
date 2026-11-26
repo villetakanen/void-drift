@@ -190,7 +190,7 @@ export function getDerelictWorldPolygons(shape: DerelictBodyShape): Point[][] {
     })),
   );
 }
-function distanceToPolygon(
+export function distanceToPolygon(
   p: Point,
   poly: readonly Point[],
 ): { distance: number; point: Point } {

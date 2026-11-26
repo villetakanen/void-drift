@@ -3,10 +3,16 @@ import { describe, expect, it } from "vitest";
 import { weaponPose } from "./build-renderer";
 import { derelictClosestPoint } from "./derelict-collision";
 import { createStar } from "./game-loop";
-import { type SalvageBody, SalvageSystem, type WeaponState } from "./salvage";
+import {
+  liveShipBody,
+  type SalvageBody,
+  SalvageSystem,
+  type WeaponState,
+} from "./salvage";
 import { defaultLoadout, type Loadout, LoadoutSchema } from "./schemas/loadout";
 import { POINT_DEFENCE, pointDefenceDamage } from "./schemas/salvage";
 import { STEP } from "./simulation";
+import { PLAYER_BODY_ID } from "./targeting";
 
 const PART = "ion-point-defence" as const;
 const DEG = Math.PI / 180;
@@ -225,6 +231,44 @@ describe("Ion Point Defence", () => {
     expect(pointDefenceDamage(POINT_DEFENCE.reach + 0.001)).toBe(0);
   });
 
+  it("acquires an enemy drone outside the ship aim filter and delivers actual damage", () => {
+    const f = fixture((b) => {
+      b.hull[0] = PART;
+    });
+    const [mount] = f.turrets();
+    const pivot = weaponPose(f.ship, mount.mount, mount.angle);
+    const drone = (id: number, carrierId: number, dx: number, dy: number) => ({
+      ...liveShipBody(
+        id,
+        { ...f.ship, pos: new Vec2(pivot.x + dx, pivot.y + dy) },
+        4,
+        () => {},
+      ),
+      carrierId,
+    });
+    const hostile = drone(10, 42, 40, 0);
+    const friendly = drone(11, PLAYER_BODY_ID, 10, 15);
+    let damage = 0;
+    hostile.onDamage = (amount) => {
+      damage += amount;
+    };
+    for (let i = 0; i < 120 && !damage; i++)
+      f.system.stepWeapons(
+        STEP,
+        f.ship,
+        f.star,
+        f.resources,
+        100,
+        [],
+        [friendly, hostile],
+        undefined,
+        { shooterId: PLAYER_BODY_ID, aimId: 42 },
+      );
+    expect(mount.target).toBe(hostile.id);
+    expect(damage).toBeGreaterThanOrEqual(4);
+    expect(hostile.hull).toBe(0);
+    expect(friendly.hull).toBe(4);
+  });
   it("damages only the muzzle's first contact", () => {
     const f = fixture((b) => (b.hull[0] = PART));
     const [w] = f.turrets();
@@ -244,7 +288,7 @@ describe("Ion Point Defence", () => {
     f.place(a, f.body(0, 0, "wreck"), 30, 0);
     f.align(a);
     f.align(b);
-    f.resources.power = 10 + POINT_DEFENCE.energy / 2;
+    f.resources.power = 10 + POINT_DEFENCE.energy * 1.5;
     f.step();
     expect(f.system.pointDefenceDischarges).toBe(1);
     expect(a.readyAt).toBeGreaterThan(0);
@@ -266,7 +310,7 @@ describe("Ion Point Defence", () => {
     f.place(w, f.body(0, 0, "wreck"), 30, f.ship.rotation);
     f.align(w);
     expect(f.system.ionTrigger(f.ship, f.star, f.planets)).toBe(true);
-    f.resources.power = 10 + POINT_DEFENCE.energy / 2;
+    f.resources.power = 10.3;
     f.step();
     expect(f.system.pointDefenceDischarges).toBe(1);
     expect(f.system.ionDischarges).toBe(0);

@@ -6,6 +6,12 @@ import {
 } from "@void-drift/core";
 import { drawCockpitMaterial } from "./cockpit-material";
 import { CRUISER } from "./cruiser";
+import {
+  DRONE_SEAT,
+  drawDroneLauncher,
+  LAUNCHER_ANCHOR,
+  LAUNCHER_ENVELOPE,
+} from "./drone-art";
 import { ENGINE_ART, ENGINE_MARKINGS } from "./engine-art";
 import { FIDDLER } from "./fiddler";
 import { FIGHTER } from "./fighter";
@@ -540,6 +546,10 @@ export function drawNonEngineFitting(
   weaponAngle = mount.angle,
 ) {
   if (!mount.part) return;
+  if (mount.part === "drone-launcher") {
+    drawDroneLauncher(ctx, BUILD_FLIGHT_SCALE);
+    return;
+  }
   if (mount.part === "plasma-rifle") {
     drawPlasmaRifle(ctx, BUILD_FLIGHT_SCALE);
     return;
@@ -781,6 +791,8 @@ function polygon(
   ctx.fill();
 }
 export function barrelLength(mount: BuildMount) {
+  if (mount.part === "drone-launcher")
+    return LAUNCHER_ANCHOR / BUILD_FLIGHT_SCALE;
   if (mount.part === "plasma-rifle")
     return (
       (-PLASMA_RIFLE_MOUTHS.primary[1] * PLASMA_RIFLE_SCALE) /
@@ -817,6 +829,18 @@ export function weaponPose(
     angle,
     muzzleX: x + Math.cos(angle) * length - Math.sin(angle) * lateral,
     muzzleY: y + Math.sin(angle) * length + Math.cos(angle) * lateral,
+  };
+}
+
+export function droneRailPose(
+  ship: Pick<GameObject, "pos" | "rotation">,
+  mount: BuildMount,
+) {
+  const pose = weaponPose(ship, mount);
+  return {
+    ...pose,
+    x: pose.x + Math.cos(pose.angle) * DRONE_SEAT,
+    y: pose.y + Math.sin(pose.angle) * DRONE_SEAT,
   };
 }
 
@@ -915,10 +939,13 @@ function baseBuildCollisionRadius(build: Loadout) {
 export function buildCollisionRadius(build: Loadout) {
   let radius = baseBuildCollisionRadius(build);
   for (const mount of buildMounts(build)) {
-    if (mount.part !== "plasma-rifle") continue;
+    if (mount.part !== "plasma-rifle" && mount.part !== "drone-launcher")
+      continue;
     const cos = Math.cos(mount.angle),
       sin = Math.sin(mount.angle);
-    for (const [forward, across] of PLASMA_RIFLE_ENVELOPE) {
+    for (const [forward, across] of mount.part === "drone-launcher"
+      ? LAUNCHER_ENVELOPE
+      : PLASMA_RIFLE_ENVELOPE) {
       radius = Math.max(
         radius,
         Math.hypot(

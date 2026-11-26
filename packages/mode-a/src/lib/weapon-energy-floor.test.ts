@@ -1,10 +1,11 @@
 import { Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { createStar } from "./game-loop";
-import { type SalvageBody, SalvageSystem } from "./salvage";
+import { liveShipBody, type SalvageBody, SalvageSystem } from "./salvage";
 import { buildStats, defaultLoadout, LoadoutSchema } from "./schemas/loadout";
-import { WEAPONS } from "./schemas/salvage";
+import { ION_CANNON, POINT_DEFENCE, WEAPONS } from "./schemas/salvage";
 import { Simulation, STEP, stockSettings } from "./simulation";
+import { PLAYER_BODY_ID } from "./targeting";
 
 type Kind = "light-ion-cannon" | "ion-point-defence" | "laser";
 const KINDS: Kind[] = ["light-ion-cannon", "ion-point-defence", "laser"];
@@ -63,10 +64,16 @@ const WINDOW = 40;
 
 describe("Weapon energy floor", () => {
   it.each(KINDS)(
-    "%s stays silent just under the floor and at exactly 10 power",
+    "%s stays silent just under the floor and at the exact debit threshold",
     (kind) => {
       const capacity = 100;
-      const floor = capacity * WEAPONS.energyFloor;
+      const floor =
+        WEAPONS.reserve +
+        {
+          "light-ion-cannon": ION_CANNON,
+          "ion-point-defence": POINT_DEFENCE,
+          laser: WEAPONS.laser,
+        }[kind].energy;
       const under = fixture(kind, capacity);
       under.resources.power = floor - 0.01;
       under.step(WINDOW);
@@ -79,17 +86,89 @@ describe("Weapon energy floor", () => {
       expect(at.system.energySpent).toBe(0);
     },
   );
-  it("is a fraction of capacity, so a larger ship has a proportionally larger floor", () => {
+  it("uses the same debit threshold on ships of every capacity", () => {
     const small = fixture("light-ion-cannon", 50);
     const large = fixture("light-ion-cannon", 400);
-    // Enough for the small ship, under the large ship's floor.
-    const power = 11;
+    // Only enough to fund one shot on either ship.
+    const power = 10.21;
     small.resources.power = power;
     large.resources.power = power;
     small.step(WINDOW);
     large.step(WINDOW);
     expect(small.system.energySpent).toBeGreaterThan(0);
-    expect(large.system.energySpent).toBe(0);
+    expect(large.system.energySpent).toBe(ION_CANNON.energy);
+    expect(large.resources.power).toBeCloseTo(10.01);
+  });
+  it("holds every launcher at equality and charges only mounts the carrier can release", () => {
+    const loadout = defaultLoadout("fighter");
+    loadout.hull.fill("drone-launcher");
+    loadout.aft.fill("drone-launcher");
+    const system = new SalvageSystem(LoadoutSchema.parse(loadout), 21);
+    const ship = {
+      pos: new Vec2(400, 400),
+      vel: new Vec2(0, 0),
+      acc: new Vec2(0, 0),
+      rotation: 0,
+      radius: 20,
+    };
+    const star = createStar("G", 1800, 1000);
+    const enemy = liveShipBody(
+      2,
+      { ...ship, pos: new Vec2(650, 400) },
+      100,
+      () => {},
+    );
+    let airborne = 0;
+    system.launchDrone = (_ship, _mount, targetId) => {
+      expect(targetId).toBe(enemy.id);
+      if (airborne === 3) return false;
+      airborne++;
+      return true;
+    };
+    const resources = { power: 12, hull: 100 };
+    const step = (allowFire = true) =>
+      system.stepWeapons(
+        STEP / 4,
+        ship,
+        star,
+        resources,
+        200,
+        [],
+        [enemy],
+        undefined,
+        { shooterId: PLAYER_BODY_ID },
+        undefined,
+        undefined,
+        allowFire,
+      );
+    expect(system.weaponsEnergyEmergency(11.99)).toBe(true);
+    expect(system.weaponsEnergyEmergency(12)).toBe(false);
+    step();
+    expect(airborne).toBe(0);
+    resources.power = 100;
+    step(false);
+    expect(airborne).toBe(0);
+    step();
+    expect(airborne).toBe(3);
+    expect(resources.power).toBe(94);
+    expect(system.weapons.map((mount) => mount.readyAt)).toEqual([
+      system.time + 3,
+      system.time + 3,
+      system.time + 3,
+      0,
+    ]);
+    airborne--;
+    step();
+    expect(airborne).toBe(3);
+    expect(resources.power).toBe(92);
+    expect(system.weapons[3].readyAt).toBe(system.time + 3);
+    airborne = 0;
+    // One substep has elapsed since the first three mounts fired.
+    for (let i = 1; i < 3 / (STEP / 4) - 1; i++) step();
+    expect(airborne).toBe(0);
+    step();
+    expect(airborne).toBe(3);
+    expect(resources.power).toBe(86);
   });
   it("reads the real build capacity through the simulation", () => {
     const loadout = defaultLoadout("fighter");
@@ -97,7 +176,7 @@ describe("Weapon energy floor", () => {
     loadout.hull[1] = "battery";
     const capacity = buildStats(loadout).capacity;
     expect(capacity).not.toBe(100);
-    const floor = capacity * WEAPONS.energyFloor;
+    const floor = WEAPONS.reserve + ION_CANNON.energy;
     const run = (power: number) => {
       const sim = new Simulation({
         ...stockSettings(),

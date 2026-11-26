@@ -13,6 +13,7 @@ as the starting point for release notes.
 
 ### Done
 
+- [Drone Launcher](specs/game/drone-launcher/spec.md) — Fit a launcher in the Playground and send up to three drones after enemy ships.
 - [Field Guide](specs/game/field-guide/spec.md) — Browse a Void Drift reference without launching the game. Old Credits links still work.
 - [Click-safe title screen](specs/game/landing-page/spec.md) — Clicking outside the menu no longer selects text or takes focus from the menu.
 - [Switch automatic weapons on or off](specs/game/controls/spec.md#automatic-weapons-command) — Tap or click Weapons, or press and release Shift on its own, in Practice or after reaching the arena in Derelicts and Gauntlet.

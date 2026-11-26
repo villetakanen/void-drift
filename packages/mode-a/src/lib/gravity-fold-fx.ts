@@ -19,6 +19,7 @@ import {
   buildMounts,
   weaponPose,
 } from "./build-renderer";
+import { DroneLight } from "./drone-fx";
 import {
   drawPlasmaEruption,
   drawPlasmaSpew,
@@ -89,6 +90,7 @@ export function drawGravityFold(
 /** One persistent scene surface in play, Lab and multi-ship diagnostics. */
 export class FlightFx {
   readonly surface = new FxSurface();
+  private readonly droneLight = new DroneLight();
   private simulation?: Simulation;
   private readonly weaponSparks = new FxSparks();
   private weaponEvents = new WeakMap<Simulation, number>();
@@ -103,6 +105,7 @@ export class FlightFx {
   }
   clear() {
     this.surface.clear();
+    this.droneLight.clear();
     this.weaponSparks.clear();
     this.weaponEvents = new WeakMap();
     this.weaponTime = 0;
@@ -124,6 +127,7 @@ export class FlightFx {
     if (sim.salvage) this.stampPlasma(ctx, sim.salvage, sim.ticks * STEP);
     for (const actor of sim.opponents)
       this.stampPlasma(ctx, actor.combat, sim.ticks * STEP);
+    this.droneLight.stamp(ctx, this.pass, sim, sim.ticks * STEP);
     sim.plume.stamp(ctx, this.pass);
     stampHeatBand(ctx, this.pass, sim.ship, sim.airSample);
     for (const opponent of sim.opponents)
@@ -275,6 +279,7 @@ export class FlightFx {
   drawLfx(ctx: CanvasRenderingContext2D, sim: Simulation) {
     this.plasmaLivePass.begin(ctx, false);
     try {
+      this.droneLight.live(ctx, this.plasmaLivePass, sim, sim.ticks * STEP);
       if (sim.salvage) this.drawPlasmaLive(ctx, sim.salvage, sim.ticks * STEP);
       for (const actor of sim.opponents)
         this.drawPlasmaLive(ctx, actor.combat, sim.ticks * STEP);

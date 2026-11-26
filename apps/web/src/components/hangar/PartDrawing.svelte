@@ -7,6 +7,7 @@ import {
   ENGINE_MARKINGS,
   engineArtId,
   ION_CANNON_ART,
+  LAUNCHER_PATHS,
   PARTS,
   type PartId,
   PLASMA_RIFLE_PATHS,
@@ -65,6 +66,12 @@ const marking = $derived(
         </g>
       {/if}
     </g>
+  </svg>
+{:else if part.id === "drone-launcher"}
+  <svg aria-hidden="true" viewBox="-4.25283 0 8.505661 22.138202">
+    {#each LAUNCHER_PATHS as [fill, d]}
+      <path {fill} {d} />
+    {/each}
   </svg>
 {:else if part.id === "plasma-rifle"}
   <svg aria-hidden="true" viewBox="-8 -26 16 40">
