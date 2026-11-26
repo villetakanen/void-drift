@@ -1,0 +1,64 @@
+{
+  "schema_version": 2,
+  "run_id": "5f73fe43-4f8d-49a1-b5d0-6ef0fca4a55e",
+  "recorded_at": "2026-11-26T18:08:36Z",
+  "loop": "Fission engine design study (fission-engine-2026-11-26), one Claude Code desktop session: opened the study in MDX with frontmatter metadata, wrote part 01, built 02.1 (SVG master of the catalogue body) and 02.2 (options research), built and then removed 02.3 and 02.4 (flight light examples), analysed why the study procedure failed, and prepared a memory purge script.",
+  "worked": [
+    "02.1: the fission engine SVG master was generated from the game's engine art and read back through the game's engine-master converter with identical faces in all four poses; the designer called this step very well done.",
+    "02.2: the comparison of fission with the ion family and plasma, and the options for how a burn answers input, what it leaves and what it costs, were written after a conversation and kept as options with none selected.",
+    "The Flight scene instrument's study light hook let a study replace one engine's plume with its own FX and LFX painters without touching production code.",
+    "When the designer stopped the study, comparing the current study skill's text with the dated memory notes located the cause quickly; the designer described the recovery as pitch perfect.",
+    "A second agent was editing the same checkout; adding only this study's entry beside its edits to the study index and the studies spec avoided overwriting its work.",
+    "The memory purge script was tested against a throwaway fake home folder before being handed over, and lists by default."
+  ],
+  "issues": [
+    {
+      "area": "context",
+      "observation": "Ten memory notes about how to run studies, most dated 11 to 16 November, predate the design-study skill rewritten on 24 November. I loaded the skill, then opened seven of those notes and planned around them. Where they differed from the skill I followed the notes: part 01 was written at about 200 words from a two-sentence brief with no discussion of the intended qualities, and feedback on 02.3 was answered by building 02.4 in the same turn.",
+      "effect": "The engine's actual intent (a nuclear explosion that pushes the ship, as final and dangerous as the drone's detonation) surfaced only after 02.3 had been built. 02.3 and 02.4 were built and then deleted, the study was stopped at 02.2, and the designer reported frustration.",
+      "interpretation": "Suspected: I treated dated memory notes as refinements of the current skill instead of as background that the skill supersedes. How much of this was my own weighting and how much the way the notes are presented is uncertain."
+    },
+    {
+      "area": "harness",
+      "observation": "The memory index arrived in the same block as the project instructions, under the header saying those instructions must be followed, and its one-line summaries are phrased as commands. Neither the project instructions nor the skill say whether memory or a skill takes precedence. The system prompt also told me to save feedback as memory, and I saved a new study-procedure note during this loop although an existing note says durable decisions belong in the repository.",
+      "effect": "Stale procedure steered the loop before any note was opened, and one more procedure note was added to the store that caused the problem.",
+      "interpretation": "Suspected explanation only; I did not test whether the loop would have gone differently without the index."
+    },
+    {
+      "area": "context",
+      "observation": "I did not read docs/design.md, which the design-study skill says to read first, nor the render, FX and LFX specs that the fx-development skill names. I read the drone's light code instead.",
+      "effect": "Unknown. The 02.3 and 02.4 examples were built without those documents.",
+      "interpretation": "My omission; no memory note told me to skip them."
+    },
+    {
+      "area": "context",
+      "observation": "What a push should express was never agreed before 02.3 was built. I proposed a reading in my first reply, the designer moved on without confirming it, and I built three treatments on readings of my own when asked for some ideas based on the drone study.",
+      "effect": "The designer judged all three far from the goal.",
+      "interpretation": "Both the skill and one memory note say to settle this first, so this is not explained by memory overriding the skill."
+    },
+    {
+      "area": "project",
+      "observation": "Another agent worked in the same checkout throughout: it deleted legacy study components, edited the same studies spec paragraph and study index file, and its commit c243fa76 included this study's files as they stood mid-work, including the 02.3 bench.",
+      "effect": "One scripted spec edit of mine failed its assertion because the text had changed underneath it, lint failed several times on files that were not mine, and part of this study entered history under an unrelated commit message.",
+      "interpretation": "The commit-messages skill says to stage the whole checkout, so the shared commit is probably intended behaviour; uncertain."
+    },
+    {
+      "area": "project",
+      "observation": "The studies spec and the study index name each frontmatter-owning study individually, so opening a study with frontmatter metadata required editing both.",
+      "effect": "Two extra edits, both in files the other agent was changing at the same time.",
+      "interpretation": null
+    },
+    {
+      "area": "harness",
+      "observation": "The command sandbox blocked several things: reading the memory folder from the shell, pnpm dev:status (it exited with an operation-not-permitted error), and launching headless Chromium for captures, which exited with SIGTRAP.",
+      "effect": "Memory notes were read one at a time with the file tool, the preview's state was inferred from its log, and one capture script was rerun outside the sandbox. The stills it produced were later deleted with 02.3.",
+      "interpretation": null
+    },
+    {
+      "area": "project",
+      "observation": "Embedding the SVG master through an SVG image element inside a rotated, clipped group rendered magnified slivers in the preview.",
+      "effect": "The 02.1 specimen was rewritten to draw the master's polygons inline, parsed from the file at build time.",
+      "interpretation": null
+    }
+  ]
+}
