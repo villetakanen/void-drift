@@ -3,13 +3,16 @@ import {
   ASSEMBLED_ION_DEFAULTS,
   AssembledIonSettingsSchema,
   applyBuildEngines,
+  buildStats,
+  buyFissionIgnition,
   type EngineTimers,
+  type FissionTick,
   PARTS,
+  PaidIgnitionPartSchema,
   PartSchema,
 } from "@void-drift/mode-a";
 import { type BurnId, DT, inputAt, TOTAL_TICKS } from "./burns";
 import type { ExperimentProperties, InstrumentVehicle } from "./config";
-import { LEGACY_FISSION } from "./legacy-fission";
 
 /** One calculated moment: position, velocity, and turn rate in °/s. */
 export type Sample = {
@@ -18,6 +21,7 @@ export type Sample = {
   vx: number;
   vy: number;
   spin: number;
+  ignitionEnergy?: number;
 };
 
 /**
@@ -47,7 +51,10 @@ export function calculate(
   const { loadout } = vehicle;
   const parts = {
     ...PARTS,
-    fusion: PartSchema.parse({ ...LEGACY_FISSION, ...properties.fusion }),
+    fusion: PaidIgnitionPartSchema.parse({
+      ...PARTS.fusion,
+      ...properties.fusion,
+    }),
     plasma: PartSchema.parse({ ...PARTS.plasma, ...properties.plasma }),
   };
   const ion = AssembledIonSettingsSchema.parse({
@@ -61,6 +68,10 @@ export function calculate(
     rotation: 0,
     radius: 16,
   };
+  const stats = buildStats(loadout, parts);
+  const frame: FissionTick = { carrierId: 0, tick: 0, readyAt: {}, events: [] };
+  const resources = { power: Infinity };
+  let ignitionEnergy = 0;
   const timers: EngineTimers = {};
   const motion = { velocity: 0 };
   const samples: Sample[] = [];
@@ -71,10 +82,12 @@ export function calculate(
       vx: ship.vel.x,
       vy: ship.vel.y,
       spin: (motion.velocity * 180) / Math.PI,
+      ignitionEnergy,
     });
   record();
   for (let tick = 0; tick < TOTAL_TICKS; tick++) {
     const input = inputAt(burn, tick);
+    ignitionEnergy = 0;
     for (let sub = 0; sub < 4; sub++) {
       applyBuildEngines(
         ship,
@@ -87,7 +100,24 @@ export function calculate(
         motion,
         ion,
         parts,
+        stats,
       );
+      if (sub === 0) {
+        frame.tick = tick;
+        frame.events.length = 0;
+        buyFissionIgnition(
+          ship,
+          loadout,
+          { leftThruster: input.left, rightThruster: input.right, fire: false },
+          resources,
+          motion,
+          ion,
+          parts,
+          stats,
+          frame,
+        );
+        ignitionEnergy = frame.events.length * parts.fusion.energyPerIgnition;
+      }
       if (flight.pull) {
         const g = flight.pull(ship.pos.x, ship.pos.y);
         ship.vel.x += (g.x * DT) / 4;

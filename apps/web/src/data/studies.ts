@@ -114,108 +114,12 @@ export const studies = z.array(studySchema).parse([
       "What atmospheric envelope makes the existing rotating rock worlds feel surrounded by air and gives a pilot a readable choice when skimming their edge?",
   },
   {
-    slug: "inhabited-worlds-2026-11-15",
-    title: "Inhabited worlds · Earth prototype",
-    status: "stopped",
-    phase: "exploration",
-    question:
-      "What visual treatment makes an inhabited world with an atmosphere convincing at flight scale, using recognizable Earth to establish a language for fictional worlds?",
-  },
-  {
-    slug: "earth-2026-11-14",
-    title: "Earth-like planets",
-    status: "stopped",
-    phase: "exploration",
-    question:
-      "What visual treatment makes an inhabited Earth-like planet feel like a convincing world beside Mercury and Venus at flight scale, using Earth as the first prototype?",
-  },
-  {
-    slug: "venus-2026-11-13",
-    title: "Venus-like planets",
-    status: "open",
-    phase: "scope",
-    question:
-      "What cloud, light and motion treatment gives a Venus-like planet a dense, enveloped character beside Mercury, while keeping its body readable at flight scale?",
-  },
-  {
-    slug: "mercury-2026-11-12",
-    title: "Rock planets in the charging field · v0.1",
-    status: "open",
-    phase: "scope",
-    question:
-      "What visual language makes airless rock planets of different sizes feel like barren worlds exposed to a nearby star, while keeping their surfaces and boundaries readable inside its charging field?",
-  },
-  {
-    slug: "plasma-projector-2026-11-11",
-    title: "Plasma Projector",
-    status: "stopped",
-    phase: "exploration",
-    question:
-      "How should a plasma projector gather and release a close-range burst so that approaching, devastating a target and escaping becomes a distinct flying manoeuvre?",
-  },
-  {
-    slug: "stellar-characters-2026-11-11",
-    title: "Stellar characters",
-    status: "accepted",
-    phase: "scope",
-    question:
-      "What distinct stellar characters can Void Drift offer, and how should their colour, surface and surrounding activity communicate the opportunities and dangers of approaching them?",
-  },
-  {
-    slug: "stellar-encounters-2026-11-11",
-    title: "Stellar encounters: different stars, different decisions",
-    status: "stopped",
-    phase: "scope",
-    question:
-      "How should different kinds of stars create recognisably different situations, so that a pilot can read what they are approaching and adapt how they fly—while the stars remain grounded in real stellar physics at an arcade scale?",
-  },
-  {
-    slug: "fission-light-2026-11-11",
-    title: "Fission light: a push, then a wait",
-    status: "open",
-    phase: "exploration",
-    question:
-      "How does a fission engine’s light show each separate push as a very big one, and the wait before the next, and stay distinct from ion and plasma light?",
-  },
-  {
-    slug: "ship-slots-2026-11-11",
-    title: "Ship slots: a part outside the scored rules",
-    status: "stopped",
-    phase: "exploration",
-    question:
-      "How does a slot on the ship drawing show that the part fitted in it sits outside the scored rules: permitted and unscored with Playground on, forbidden and blocking launch with Playground off?",
-  },
-  {
-    slug: "part-rows-2026-11-11",
-    title: "Part rows: offered, fitted, unsanctioned, forbidden",
-    status: "accepted",
-    phase: "scope",
-    question:
-      "How does a part look in the Hangar’s part list when it is offered, fitted, unsanctioned or forbidden?",
-  },
-  {
-    slug: "buttons-2026-11-11",
-    title: "Actions: quiet buttons and links beside one lit call",
-    status: "accepted",
-    phase: "scope",
-    question:
-      "What are actions made of beside the filled call to action, as quiet buttons and as links, in every state and among other actions, so that they belong to the same console as the tabs, toggle and switch?",
-  },
-  {
     slug: "plasma-light-2026-11-11",
     title: "Plasma light: power gathered, then released",
     status: "accepted",
     phase: "scope",
     question:
       "How does a plasma engine’s light show power gathering through its charge and then released, and stay distinct from ion light on the same ship?",
-  },
-  {
-    slug: "run-status-2026-11-10",
-    title: "Run status: a promise before launch",
-    status: "open",
-    phase: "problem",
-    question:
-      "What words and shared marker make it clear, before launch and during flight, that Playground permits unrestricted selection and turns scoring off?",
   },
   {
     slug: "flight-scene-instrument-2026-11-10",
@@ -226,78 +130,6 @@ export const studies = z.array(studySchema).parse([
       "What does one shared instrument look like that plays a fixed burn through the game’s own layers, so a study can judge how a ship, its effects and its weapons look in flight?",
   },
   {
-    slug: "ion-point-defence-2026-11-08",
-    title: "Ion Point Defence: a turret that meets the threat",
-    status: "accepted",
-    phase: "scope",
-    question:
-      "How should a small rotating ion turret look, turn and fire so that it becomes the game’s dependable baseline defence?",
-  },
-  {
-    slug: "light-ion-cannon-2026-11-08",
-    title: "Light Ion Cannon: an instant line of force",
-    status: "accepted",
-    phase: "scope",
-    question:
-      "How should an instant ion ray look and feel, and what reach and firing rhythm make it a satisfying baseline weapon?",
-  },
-  {
-    slug: "suns-2026-11-07",
-    title: "Suns: stellar character in play",
-    status: "accepted",
-    phase: "scope",
-    question:
-      "How should real stars and the game’s fiction shape suns whose character, behaviour and consequences are readable in play?",
-  },
-  {
-    slug: "derelict-three-2026-11-06",
-    title: "Derelict three: a broken monument, still alive",
-    status: "accepted",
-    phase: "scope",
-    question:
-      "How does the supplied draft become a monumental, broken structure with energy still active inside, while preserving its silhouette and colour language?",
-  },
-  {
-    slug: "derelict-draft-two-2026-11-06",
-    title: "Derelict draft two: the monumental shard",
-    status: "stopped",
-    phase: "exploration",
-    question:
-      "How faithfully can the supplied silhouette, material colours and rotating energy square carry into the game?",
-  },
-  {
-    slug: "derelicts-2026-11-06",
-    title: "Derelicts: a broken structure, a passing opportunity",
-    status: "stopped",
-    phase: "exploration",
-    question:
-      "How does a remnant of a broken megastructure read as one coherent object, then break into dangerous splinters and an energy fragment worth chasing?",
-  },
-  {
-    slug: "run-countdown-2026-11-05",
-    title: "Run countdown: three seconds of light",
-    status: "accepted",
-    phase: "scope",
-    question:
-      "How does a 3, 2, 1 countdown painted on the effects surface give a run a readable, characterful threshold without hiding the ship it releases?",
-  },
-  {
-    slug: "ship-motion-laws-2026-11-04",
-    title: "Ship motion: a law for assembled ships",
-    status: "open",
-    phase: "exploration",
-    question:
-      "What shared flight rule makes mass and propulsion layout produce distinct, predictable handling, while preserving control through a gravity well?",
-  },
-  {
-    slug: "gilded-surfaces-2026-11-03",
-    title: "Gilded glass: a surface language",
-    status: "accepted",
-    phase: "scope",
-    question:
-      "How does green–space–gold become a consistent material language across round, curved, cornered and faceted surfaces?",
-  },
-  {
     slug: "lhi-fiddler-2026-11-03",
     title: "Ship 05 / LHI Fiddler Heavy Assault Corvette",
     status: "accepted",
@@ -306,44 +138,12 @@ export const studies = z.array(studySchema).parse([
       "How can a heavy twin-blade corvette carry an abundant loadout and still look unmistakably related to Wasp?",
   },
   {
-    slug: "gravity-coil-fx-2026-11-03",
-    title: "Gravity coil: potential in motion",
-    status: "accepted",
-    phase: "scope",
-    question:
-      "When and how does gravity becoming potential create an exotic light show that remains readable alongside engine FX?",
-  },
-  {
-    slug: "gravity-coil-form-2026-11-03",
-    title: "Gravity coil: static visual form",
-    status: "accepted",
-    phase: "scope",
-    question:
-      "What visual construction makes the chosen coil shape feel like complete equipment on its own and part of this game when fitted to a ship?",
-  },
-  {
     slug: "gravity-coil-2026-11-03",
     title: "Gravity coil",
     status: "stopped",
     phase: "exploration",
     question:
       "What makes a gravity coil read as substantial technical machinery beside a ship’s engines?",
-  },
-  {
-    slug: "ship-utility-language-2026-11-02",
-    title: "The visual language of ship utilities",
-    status: "stopped",
-    phase: "exploration",
-    question:
-      "How do we build utilities that look good alongside Void Drift’s ships and engines, and feel like machinery from the same world?",
-  },
-  {
-    slug: "utilities-2026-11-02",
-    title: "Utilities: energy, charging and repair",
-    status: "stopped",
-    phase: "exploration",
-    question:
-      "How should four utility devices express their roles and remain recognizable above or below a ship?",
   },
   {
     slug: "lab-instrument-2026-11-01",

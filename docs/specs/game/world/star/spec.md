@@ -18,13 +18,13 @@ verified: [{ by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }]
 A steady G Sun offers collectable energy inside its gravitational well. The
 pilot trades income against the pull, exposure and terminal contact. Other
 stellar families and further Sun effect design are deferred. The accepted
-[study](../../../../../apps/web/src/pages/lab/studies/suns-2026-11-07.astro)
+[study](../../../../../apps/web/src/pages/lab/studies/suns-2026-11-07.mdx)
 retains experiments; the [closure](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-11-07-suns-closure.md)
 records acceptance, not production validation.
 
 #### Yellow-family gameplay profile
 
-The [stellar-characters study](../../../../../apps/web/src/pages/lab/studies/stellar-characters-2026-11-11.astro#03)
+The [stellar-characters study](../../../../../apps/web/src/pages/lab/studies/stellar-characters-2026-11-11.mdx#03)
 closed accepted on 11 November 2026. Its final yellow-family reference has
 surface radii 36–140 u, reference radius 70, size-related warm colour, a World
 body, persistent FX corona and outward rings on LFX. With `s = radius / 70`,

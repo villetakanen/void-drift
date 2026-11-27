@@ -9,7 +9,7 @@ here.
 
 - **The study is accepted** (11 November 2026): "Actions: quiet buttons and
   links beside one lit call", `/lab/studies/buttons-2026-11-11`, source
-  `apps/web/src/pages/lab/studies/buttons-2026-11-11.astro`. Registry entry in
+  `apps/web/src/pages/lab/studies/buttons-2026-11-11.mdx`. Registry entry in
   `apps/web/src/data/studies.ts` reads `scope` / `accepted`.
 - **The accepted design** is the sheet in section 02.14. Its reference
   implementation is `apps/web/src/components/studies/ActionSheet0214.svelte`.
@@ -93,7 +93,7 @@ From section 04 of the study. Slices 2, 3 and 4 can go in any order after 1.
 
 ## Also uncommitted from the study itself
 
-- `apps/web/src/pages/lab/studies/buttons-2026-11-11.astro`
+- `apps/web/src/pages/lab/studies/buttons-2026-11-11.mdx`
 - `apps/web/src/pages/lab/reviews/buttons-2026-11-11.astro`
 - `apps/web/src/data/studies.ts` (one entry)
 - `apps/web/src/components/studies/Action*.svelte` (twelve components, 02.1 to
@@ -109,7 +109,7 @@ Continue the implementation of the accepted actions study in this repository.
 Read first, in this order:
 1. AGENTS.md or CLAUDE.md at the repository root: working method, authority and evidence rules. Follow them.
 2. docs/plans/2026-11-11-actions-implementation-handoff.md: the state of the work and what is left.
-3. Sections 02.14, 03 and 04 of apps/web/src/pages/lab/studies/buttons-2026-11-11.astro, and the reference CSS in apps/web/src/components/studies/ActionSheet0214.svelte.
+3. Sections 02.14, 03 and 04 of apps/web/src/pages/lab/studies/buttons-2026-11-11.mdx, and the reference CSS in apps/web/src/components/studies/ActionSheet0214.svelte.
 
 Task: finish slice 1 ("The language") and stop. A previous session was interrupted partway. Its uncommitted changes are in packages/core/src/lib/styles/{tokens,surfaces,buttons}.css, apps/web/src/components/lab/LabActions.svelte, apps/web/src/pages/lab/ds/actions.astro and apps/web/src/data/lab-pages.ts. None of it has been rendered or tested. Review it against the reference before building on it; fix what is wrong instead of starting over.
 

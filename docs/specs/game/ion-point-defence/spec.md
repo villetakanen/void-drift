@@ -11,7 +11,7 @@ verified:
 
 ## Context
 
-Pilots fit a turret that tracks nearby material and fires a short instant ray from the [Light Ion Cannon](../light-ion-cannon/spec.md) family. Its form, mounting, turning and rhythm come from the accepted [Ion Point Defence study](../../../../apps/web/src/pages/lab/studies/ion-point-defence-2026-11-08.astro).
+Pilots fit a turret that tracks nearby material and fires a short instant ray from the [Light Ion Cannon](../light-ion-cannon/spec.md) family. Its form, mounting, turning and rhythm come from the accepted [Ion Point Defence study](../../../../apps/web/src/pages/lab/studies/ion-point-defence-2026-11-08.mdx).
 
 ## Blueprint
 

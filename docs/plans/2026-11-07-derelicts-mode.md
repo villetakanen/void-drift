@@ -38,7 +38,7 @@ Authoritative contracts:
 - [Practice](../specs/game/test-flight/spec.md)
 - [Derelicts](../specs/game/derelicts/spec.md)
 - [Hangar](../specs/game/hangar/spec.md)
-- [Accepted visual study](../../apps/web/src/pages/lab/studies/derelict-three-2026-11-06.astro), especially 03 and 04
+- [Accepted visual study](../../apps/web/src/pages/lab/studies/derelict-three-2026-11-06.mdx), especially 03 and 04
 - [Study closure and owner decisions](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-11-06-derelict-three-closure.md)
 
 The study accepts the supplied hull/material direction, working 110-unit extent,

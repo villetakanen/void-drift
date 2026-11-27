@@ -1,0 +1,65 @@
+---
+layout: ../../../layouts/StudyLayout.astro
+title: "Gravity coil: potential in motion"
+status: accepted
+phase: scope
+question: "When and how does gravity becoming potential create an exotic light show that remains readable alongside engine FX?"
+---
+
+## Outcome / Alpha trial
+
+The approved treatment is **J**, a purple, soft, dispersed fold at **273° and 250% brightness**, twice the original width and height, centred **15 ship drawing units** from each coil, away from the planet. Each fitted coil has independent grain; its light adds to the shared engine FX surface. The two-coil turning flyby was the accepted visual reference. The design was accepted and implementation authorized; the original page's last change was 8 November 2026 (Git history; formatting only).
+
+Each fitted coil automatically generates **1 energy/second** inside any planet's influence, during thrust or coasting. Coils stack; overlapping wells do not. Storage capacity caps collection. Gravity and motion are unchanged. FX follow actual collection and fade when storage is full or the ship leaves the field. The rate remains a balancing hypothesis. A **0.25-second** fade and the nearest influencing planet as visual direction are implementation choices to review in play. Baseline consumption is **3 energy/second** before engine draw: one coil offsets one third, two offset two thirds, before solar charging. This improves endurance, not unlimited propulsion.
+
+The intended fiction is gravitational pull becoming potential as a ship passes a planet. The effect must coexist with engine light and remain readable through thrust, coasting and turning. These study decisions and authorization exclude changing starter fleets, gravity strength, engine tuning, storage artwork or solar Loading coil behavior.
+
+## Overlap and conversion
+
+<h3 id="overlap">02.1 / Two effects, one pixel</h3>
+
+**A / Add** was selected: the coil and engine add light with Canvas `lighter` on the transparent FX surface. This settled compositing, not the violet fixture's colour, shape or opacity. Screen tested luminous coexistence, alpha blending a foreground effect, Burn disruption and Override exclusive ownership. Burn affected overlap rather than opaque black; Override replaced pixels above **5% source alpha** with opaque colour, ignoring opacity for the later mark. The enlarged static fixture did not establish flight-scale readability or accumulation.
+
+![Five overlap comparisons with a beam and violet field](/studies/gravity-coil-fx-2026-11-03/reconstruction-0.png)
+
+*Reconstruction, 27 November 2026, 1280 px viewport: surviving default overlap fixture, production Light ion beam and provisional violet ellipse. It is not evidence of the earlier review.*
+
+<h3 id="conversion">02.2 / What does conversion do?</h3>
+
+Gather and Fold remained useful motion references; Capture was rejected and removed. The line treatment was not carried forward. The enlarged bench used production coil artwork at **4×** fitted size and an ion mark; field direction was a cue, not a planet tether. Its deterministic eight-second sequence was idle until **1 s**, engaged **1–2 s**, converted until **5 s**, released until **6.5 s**, then returned to idle; it had no random or simulated resource gain. It did not represent a ship mount, flight motion or plume accumulation.
+
+![Gather and Fold sketches at three seconds](/studies/gravity-coil-fx-2026-11-03/reconstruction-1.png)
+
+*Reconstruction, 27 November 2026, 1280 px viewport, sequence scrubbed to 3 s with engine FX. A still cannot demonstrate intake or completion motion.*
+
+<h3 id="fizzles">02.3 / The space left behind</h3>
+
+**E / Granular fold** was chosen for its promising shifting pixel volume, but was too faint; brightness, size, colour and timing were not settled. D gathered from the incoming field, E kept local fold movement, F dispersed residue beyond the device, and G left static behind an unseen gathering front. All used Add, provisional violet, real coil artwork and the ion mark. Emissions ran from **1–5 s**; fizzles lived **0.7–1.5 s**. This was not a moving ship or flight-scale wake.
+
+![Four granular conversion sketches at three seconds](/studies/gravity-coil-fx-2026-11-03/reconstruction-2.png)
+
+*Reconstruction, 27 November 2026, 1280 px viewport, sequence scrubbed to 3 s with engine FX. Motion and aftermath cannot be assessed from this frame.*
+
+<h3 id="offset-fold">02.4 / A dispersed fold downstream</h3>
+
+Dense and coarse bright proposals H and I were rejected because they lost E's character and felt too condensed. Visibility should come from dispersed, softer disturbance and dim edges, not more bright grains packed at the centre. J spread E's emission rate over a wider volume, softened the grains and faded the outer region. Both centres were **15 units** downstream; the lower samples used **0.65** flight scale at **100%** browser zoom. J's starting controls were **273° and 100%**. Neither used the rejected one-pixel flight-scale minimum. Full ships and moving-camera visibility remained untested here.
+
+![E and J offset fold comparison](/studies/gravity-coil-fx-2026-11-03/reconstruction-3.png)
+
+*Reconstruction, 27 November 2026, 1280 px viewport: cropped E (left) and J (right) specimens, Fold FX enabled, surviving J controls at 173° and 250%; these differ from the original starting treatment and the accepted purple flight trial. A single frame does not establish movement or flight visibility.*
+
+<h3 id="planet-flight">02.5 / J in a powered flyby</h3>
+
+The selected trial used two purple J folds at **273° and 250%**, twice the width and height, retaining the original **15-unit** centre distance for coverage without moving closer to the coil. Purple restored contrast with mint engine trails; sparse grains brighten only on overlapping pixels and bright engine cores can saturate. Add's visible contribution remained under review.
+
+The repeatable three-second fixture started a Fighter **350 units left and 140 above** the first planet, moving right at **60 units/s**, heading zero. Both engines powered the approach; the left engine alone turned the ship from **1–1.6 s**, then both resumed. It used real simulation, stock gravity, moving planets, power drain and collisions, with coils in both hull slots replacing the starter battery. The renderer pointed folds away from the nearest well, fading over **0.25 s** when collection stopped. The readout showed actual deposited energy.
+
+![A frame from the J planetary flight fixture](/studies/gravity-coil-fx-2026-11-03/reconstruction-4.png)
+
+*Reconstruction, 27 November 2026, 1280 px viewport, powered flyby and game camera at default settings. The fold is not discernible in this frame; it cannot establish the accepted turning motion, whose evidence is unavailable in this static record.*
+
+## Delivery and limits
+
+The simulation supplied influence, equipment, fixed substeps and capacity-limited power; rendering supplied engine trails and mount transforms. Delivery called for collection accounting, shared fold rendering, an activity fade, catalog and living-spec updates. No dependency, storage migration or physics-constant change was needed. The accepted behavior was recorded in `docs/history/ship-builder.md`; starter loadouts remained unchanged. Human balance and sustained device-performance review were separate from automated correctness. [Study-quality review and implementation evidence](/lab/reviews/gravity-coil-fx-2026-11-03).
+
+Full pre-conversion study: `b6e638d3b033248bbb8a1e1594306b0c94f1f67a`, `apps/web/src/pages/lab/studies/gravity-coil-fx-2026-11-03.astro`. Retired study apparatus: `apps/web/src/components/studies/GravityFxOverlap.svelte`, `GravityFxMotion.svelte`, `GravityFxFizzles.svelte`, `GravityFoldVisibility.svelte`, `GravityFoldFlight.svelte`.

@@ -15,7 +15,6 @@ import { EnergyAnalysis } from "./energy";
 // properties are sparse overrides shared across the experiment.
 
 import { gameSchema } from "./external-schema";
-import { LEGACY_FISSION } from "./legacy-fission";
 
 // Supported production values shared by every vehicle in an experiment.
 const PartChange = z
@@ -23,15 +22,21 @@ const PartChange = z
     thrust: z.number().finite().positive(),
     speedContribution: z.number().finite().min(0),
     chargeSeconds: z.number().finite().min(0).max(5),
-    pulsePeriod: z.number().finite().positive(),
-    pulseOn: z.number().finite().positive(),
   })
   .partial()
   .strict();
 export const ExperimentProperties = z
   .object({
     ion: gameSchema(AssembledIonSettingsSchema.partial().strict()),
-    fusion: PartChange,
+    fusion: z
+      .object({
+        impulse: z.number().finite().positive(),
+        speedContribution: z.number().finite().nonnegative(),
+        recoveryTicks: z.number().int().positive(),
+        energyPerIgnition: z.number().finite().positive(),
+      })
+      .partial()
+      .strict(),
     plasma: PartChange,
   })
   .partial()
@@ -81,10 +86,10 @@ export const PARAMETERS: Record<Family, Parameter[]> = {
     { key: "maxTurn", label: "Turn cap", unit: "°/s" },
   ],
   fusion: [
-    { key: "thrust", label: "Thrust", unit: "force" },
+    { key: "impulse", label: "Impulse per ignition", unit: "impulse" },
     { key: "speedContribution", label: "Cruise contribution", unit: "u/s" },
-    { key: "pulsePeriod", label: "Pulse period", unit: "s" },
-    { key: "pulseOn", label: "Pulse on", unit: "s" },
+    { key: "recoveryTicks", label: "Recovery", unit: "ticks" },
+    { key: "energyPerIgnition", label: "Energy per ignition", unit: "E" },
   ],
   plasma: [
     { key: "thrust", label: "Thrust", unit: "force" },
@@ -97,7 +102,7 @@ export function stockValue(family: Family, key: string): number {
     family === "ion"
       ? ASSEMBLED_ION_DEFAULTS
       : family === "fusion"
-        ? LEGACY_FISSION
+        ? PARTS.fusion
         : PARTS.plasma;
   const value = source[key];
   return typeof value === "number" ? value : Number.NaN;

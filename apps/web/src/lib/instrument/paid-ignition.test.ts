@@ -17,7 +17,7 @@ const replay = (vehicle: (typeof FISSION_COMPARISON.vehicles)[number]) =>
   calculatePaidIgnition(vehicle, "turn", "white");
 
 describe("paid ignition in the Motion instrument", () => {
-  it("exports an opt-in comparison, separate from the ordinary budget and pulse overrides", () => {
+  it("exports an opt-in comparison, separate from the ordinary budget and Fission overrides", () => {
     const config = InstrumentConfig.parse(FISSION_COMPARISON);
     expect(InstrumentConfig.parse(JSON.parse(serialize(config)))).toEqual(
       config,
@@ -34,7 +34,7 @@ describe("paid ignition in the Motion instrument", () => {
     ).toBe(false);
   });
 
-  it("marks the result sample of a paid Wasp kick, not the held ion command or the ordinary pulse", () => {
+  it("marks the result sample of a paid Wasp kick and matches the ordinary initial kick", () => {
     const trace = replay(waspFission);
     const { mass, capacity } = buildStats(waspFission.loadout);
     const { impulse, energyPerIgnition, recoveryTicks } = PARTS.fusion;
@@ -50,7 +50,7 @@ describe("paid ignition in the Motion instrument", () => {
         (3 * (REFERENCE_SUPPLY - LIFE_SUPPORT_DRAIN) * DT) / 4,
     );
     expect(replay(waspIon).marks?.speed).toEqual([]);
-    expect(calculate(waspFission, "turn")[1].vx).toBeLessThan(
+    expect(calculate(waspFission, "turn")[1].vx).toBeCloseTo(
       trace.samples[1].vx,
     );
   });

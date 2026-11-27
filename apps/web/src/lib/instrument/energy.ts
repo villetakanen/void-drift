@@ -6,13 +6,14 @@ import {
   buildStats,
   LIFE_SUPPORT_DRAIN,
   PARTS,
+  PaidIgnitionPartSchema,
+  PartSchema,
 } from "@void-drift/mode-a";
 import { z } from "astro/zod";
 import { type BurnId, DT, inputAt } from "./burns";
 import type { Sample } from "./calculate";
 import type { ExperimentProperties, InstrumentVehicle } from "./config";
 import { gameSchema } from "./external-schema";
-import { LEGACY_PARTS } from "./legacy-fission";
 export const CollectionField = gameSchema(PositionedEnergyFieldSchema);
 /** Energy-only analysis: never feeds capacity or starvation back into motion. */
 export const EnergyAnalysis = z
@@ -41,7 +42,15 @@ export function energyTraces(
     ...ASSEMBLED_ION_DEFAULTS,
     ...properties.ion,
   });
-  const { coils: collectors, mass } = buildStats(vehicle.loadout, LEGACY_PARTS);
+  const parts = {
+    ...PARTS,
+    fusion: PaidIgnitionPartSchema.parse({
+      ...PARTS.fusion,
+      ...properties.fusion,
+    }),
+    plasma: PartSchema.parse({ ...PARTS.plasma, ...properties.plasma }),
+  };
+  const { coils: collectors, mass } = buildStats(vehicle.loadout, parts);
   const collection = samples.map((s) =>
     energy.fields.reduce(
       (sum, field) =>
@@ -60,7 +69,7 @@ export function energyTraces(
       ion,
       1,
       mass,
-      LEGACY_PARTS,
+      parts,
     );
     // Only Light ion and its stabilizers are rescaled; other families keep their costs.
     const withoutIon = buildDrain(
@@ -71,9 +80,10 @@ export function energyTraces(
       ion,
       0,
       mass,
-      LEGACY_PARTS,
+      parts,
     );
     return (
+      (s.ignitionEnergy ?? 0) / DT +
       energy.lifeSupport +
       withoutIon -
       LIFE_SUPPORT_DRAIN +

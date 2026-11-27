@@ -84,7 +84,11 @@ export interface StudyLight {
  * values the Motion instrument exposes. The game's definitions are never
  * changed; a flight runs on tuned copies.
  */
-export type PartTuning = Pick<ExperimentProperties, "fusion" | "plasma">;
+export type PartTuning = Pick<ExperimentProperties, "plasma"> & {
+  fusion?: Partial<
+    Record<"thrust" | "speedContribution" | "pulsePeriod" | "pulseOn", number>
+  >;
+};
 
 /** The game's parts with a flight's tuning applied; the game's own when untuned. */
 export function tunedParts(tuning: PartTuning = {}): FlightParts {

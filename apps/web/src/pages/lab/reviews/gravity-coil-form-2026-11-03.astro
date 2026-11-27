@@ -111,33 +111,37 @@ const rows = [
       comparison.
     </p>
     <p>
-      The 02.6 browser inspection covered the shared slider, keyboard steps,
-      maximum-size overlaps, above-hull comparison and reset. All twelve views
-      updated together. The four native canvases remained 120 × 140 CSS pixels
-      on desktop and at a 390-pixel viewport, with one drawing unit per pixel.
-      The fleet contains 1/3/4/5 Light ions and 2/1/2/3 coils on
-      Wasp/Scout/Fighter/Corvette respectively. These are rendering and control
-      checks; the subsequent human decision selected 100%.
+      The 3 November 2026 browser inspection of 02.6 covered the shared slider,
+      keyboard steps, maximum-size overlaps, above-hull comparison and reset.
+      All twelve views updated together. The four native canvases remained 120 ×
+      140 CSS pixels on desktop and at a 390-pixel viewport, with one drawing
+      unit per pixel. The fixture contained 1/3/4/5 Light ions and 2/1/2/3 coils
+      on Wasp/Scout/Fighter/Corvette respectively. These are rendering and
+      control checks; the subsequent human decision selected 100%.
     </p>
     <p>
       Those earlier checks concern the study page, not promoted artwork. Full
       regression and backend checks were not rerun for the ring-comparison
-      round. The new 02.6 fixture draws M on Canvas with production hulls,
-      engine artwork and mount transforms, including Scout, Corvette and 0.65
-      flight views. It does not promote M into the shared utility artwork.
-      Earlier steps 02.1–02.4 are collapsed; 02.5 and 02.6 remain visible.
-      Run-local logs and screenshots are under
+      round. On 3 November 2026 the live 02.6 fixture drew M on Canvas with
+      production hulls, engine artwork and mount transforms, including Scout,
+      Corvette and 0.65 flight views. The fixture did not promote M into the
+      shared utility artwork. At that review, steps 02.1–02.4 were collapsed;
+      02.5 and 02.6 remained visible. Run-local logs and screenshots are under
       <code>artifacts/gravity-coil-form/</code>; these ignored files are local
       evidence, not a durable backup.
     </p>
     <p>
       The implementation keeps all 86 M faces, their colours and paint order,
-      with a 0.5 default scale. The preserved study retains the Fighter mount
-      positions used for review; the production fleet follows the separate
-      subsequent mount handoff. The fitting is available locally in the builder
-      and flight, with no collection behavior. Run-specific implementation
-      checks are recorded alongside the earlier evidence; passing them does not
-      constitute publication or acceptance of future mechanics.
+      with a 0.5 default scale. The original review JPEGs show the Fighter’s
+      centreline mounts at (2, 0) and (−10, 0). The study stills retain only
+      their x values, with lateral y offsets of −11 and +11, so they do not
+      reproduce the original placement exactly. The current production fleet
+      uses (5, −11) and (5, 11) below the hull, superseding the interim 3
+      November handoff positions (37, 0) and (−1, 0). The fitting is available
+      locally in the builder and flight, with no collection behavior.
+      Run-specific implementation checks are recorded alongside the earlier
+      evidence; passing them does not constitute publication or acceptance of
+      future mechanics.
     </p>
     <p>
       Implementation checks passed: 132 unit tests, 33 browser tests, type

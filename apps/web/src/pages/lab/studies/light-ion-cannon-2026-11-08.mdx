@@ -1,0 +1,117 @@
+---
+layout: ../../../layouts/StudyLayout.astro
+title: "Light Ion Cannon: an instant line of force"
+status: accepted
+phase: scope
+question: "How should an instant ion ray look and feel, and what reach and firing rhythm make it a satisfying baseline weapon?"
+---
+
+## Outcome
+
+Accepted on 8 November 2026: a directional baseline weapon with an instant, straight blue ion ray, diminishing damage and a fitted cannon. The design and implementation scope were accepted, not production delivery. The study's 200-unit reach is historical; the current cannon specification is maintained separately in `docs/specs/game/light-ion-cannon/spec.md` and specifies 300 units. The playtest amendment below supersedes the earlier centreline trigger proposal.
+
+## 01 / One precise shot, a diminishing reach
+
+The shot should read as one decisive event, not a travelling projectile or a line dragged by the ship. Its transparent tip and lingering light suggest dissipation. The supplied long faceted barrel, cyan channel and pale side housing are the visual reference; proportions must work in the builder and at flight scale. Recoil was optional and initially absent.
+
+<figure>
+<img src="/studies/light-ion-cannon-2026-11-08/concept.png" alt="Supplied cannon concept with faceted barrel and cyan housing" />
+<figcaption>Supplied concept; the <a href="/studies/light-ion-cannon-2026-11-08/concept.svg">original SVG</a> includes ship comparisons and authored geometry. No world scale was selected in this reference.</figcaption>
+</figure>
+
+<section id="persistence">
+
+## 02.1 / Persistence: B retained
+
+All three proposals showed the complete 150-unit line at once. A removed it after an 80 ms flash; B stamped the whole ray into persistent FX; C kept the flash separate and deposited scattered deterministic light. At 100 ms A had disappeared, B remained continuous and C left blue specks. B was preferred because continuous dispersal fits the game's FX language, though its afterimage seemed potentially too bright. B and C used the shared 0.1-second FX half-life. This stationary fixture did not test flight, hits, damage, energy, recoil or mounting clearance.
+
+<figure><img src="/studies/light-ion-cannon-2026-11-08/after-100ms.png" alt="Comparison of three persistence proposals at 100 milliseconds" /><figcaption>Retained single-shot comparison at 100 ms, stationary camera and deterministic residue; original capture date not recorded.</figcaption></figure>
+
+</section>
+<section id="afterglow">
+
+## 02.2 / Afterglow: 65% selected
+
+B's continuous line was compared at original, 65% and 35% residual brightness. All shared the initial 80 ms strike; the dimmer versions transitioned over 40 ms, retaining the blue-to-transparent profile and shared decay. The 65% variant gave the preferred balance; 35% also remained visually viable. New strikes restored full gain to surviving light, a limitation of the scene-surface comparison. There were no moving particles, flight, collisions or random inputs.
+
+<figure><img src="/studies/light-ion-cannon-2026-11-08/afterglow-250ms.png" alt="Three continuous afterglows with decreasing brightness" /><figcaption>Retained single-shot comparison at 0.50 s, 250 ms after firing; capture date not recorded. All three remain continuous.</figcaption></figure>
+
+</section>
+<section id="reach">
+
+## 02.3 / Reach: 200 units selected
+
+At the same scale, 100, 150 and 200-unit rays shared the 65% afterglow, 80 ms strike and 40 ms transition. The 200-unit reach felt fair and local rather than excessive. This fixed-camera appearance comparison at 3 px/unit was not a combat trial; its transparent tip did not establish readable hit range. Longer rays contained more visible light at the same width and local brightness.
+
+<figure><img src="/studies/light-ion-cannon-2026-11-08/reach-30ms.png" alt="Three ray lengths at a common scale" /><figcaption>Retained stationary, deterministic single shot at 0.28 s, 30 ms after firing; capture date not recorded.</figcaption></figure>
+
+</section>
+<section id="cadence">
+
+## 02.4 / Cadence: three shots per second selected
+
+At 200 units, one, two and three shots per second were compared. Three remained visually effective and supported low individual shot damage. The common 1.5-second window contained two, three and five shots respectively. The silent stationary study could not establish aiming difficulty, impact satisfaction, resource cost or combat balance; repeated-light overlap was part of the comparison.
+
+<figure><img src="/studies/light-ion-cannon-2026-11-08/cadence-1290ms.png" alt="Three firing rates showing overlapping light" /><figcaption>Retained view at 1.29 s, 40 ms after the coincident 1.25 s strike; capture date not recorded. A still shows overlap, not rhythm. No motion recording is retained.</figcaption></figure>
+
+</section>
+<section id="flight">
+
+## 02.5 / An afterimage is not the active ray
+
+The all-FX flight trial was rejected: a world-fixed active line appeared disconnected from the moving ship. World-fixed persistence remained suitable for dispersal, but active light needed to follow the muzzle. The interactive example was removed; no motion recording of this comparison is retained.
+
+</section>
+<section id="lfx">
+
+## 02.6 / Hard light above, dispersal behind
+
+The LFX/FX split was accepted because the fresh topmost ray connected better to the moving ship. The full 200-unit active ray follows the current muzzle and heading on a canvas cleared every frame. Only blue dispersal is stamped into persistent world-space FX, at 65% emission with a softer core and the shared 0.1-second half-life. The five-tick flash is approximately 80 ms at 60 Hz. This replaced the earlier scene-wide 40 ms dimming transition; its appearance alongside hard light needed fresh review.
+
+The B3 trial used production Wasp movement from rest, four physics substeps per tick, no randomness and a following camera at 1 px/unit. Gravity, engine FX, hits, damage, recoil, wrapping and zoom jumps were excluded. A future hit must resolve once at firing, not sweep additional damage. Layer clearing and replay correctness were checked separately from visual judgment; this experiment alone did not deliver the production layer.
+
+<figure><img src="/studies/light-ion-cannon-2026-11-08/lfx-active-1300ms.png" alt="Active top-layer ray during the B3 turn" /><figcaption>Retained B3 active-turn view at 1.30 s; capture date not recorded. This still cannot demonstrate attachment during motion; no recording is retained.</figcaption></figure>
+
+</section>
+<section id="fitting">
+
+## 02.7 / Fitting
+
+The 16-unit flight length was selected, preserving the supplied proportions and housing-centred anchor. Existing weapon-compatible slots and their layering were accepted without redesign; this did not settle multiplicity or firing coordination. The composition used real Scout, Wasp, Fighter, Corvette and Fiddler mounts, with other equipment omitted. Preview showed hull occlusion and Plan showed slot representation. It was not a purchase or installation flow.
+
+At the earlier 24-unit size, Wasp exposed a long barrel while partly hiding its housing; Scout's default mount hid the cannon beneath the hull. Neither was an accepted fit. [Wasp](/studies/light-ion-cannon-2026-11-08/fitting-wasp-24.png) and [Scout](/studies/light-ion-cannon-2026-11-08/fitting-scout-24.png) are retained single-mount, fixed-camera Preview captures without randomness; capture dates were not recorded.
+
+<figure><img src="/studies/light-ion-cannon-2026-11-08/reconstruction-fitting.png" alt="Wasp with cannon in builder and flight views" /><figcaption>Reconstruction, 27 November 2026: current fitting fixture, default Wasp single mount, Preview, flight scale and three-times enlargement. Current code is not proof of the earlier observation.</figcaption></figure>
+
+</section>
+<section id="production">
+
+## Production / Playable cannon encounter
+
+A playtest amendment replaced centreline acquisition with a forward rectangle one flight-scale hull width across and 200 units long. Each funded cannon still casts its own straight muzzle ray and can miss. The production encounter used the genuine part, shared artwork and muzzle, production simulation and FX/LFX; gameplay and automated verification were separate from visual and balance acceptance. Its live motion and interaction are not preserved in this still-only record.
+
+</section>
+<section id="readiness">
+
+## 03 / Accepted weapon and remaining questions
+
+The accepted study scope specified a 16-unit fitting, 200-unit instant ray and three shots per second. Four equal 50-unit bands dealt 16, 12, 8 and 4 integer damage per hit; the builder displayed 12–48 damage/s per cannon. Each discharge cost 0.2p, or 0.6p/s sustained per cannon. Each ray stops at its first target and resolves damage once, with the existing laser-style impact plume. The active ray is topmost LFX; only dispersal persists on FX. Side-mounted cannons can miss the object that triggered the volley.
+
+The original centreline-triggered proposal was amended as described above. Existing salvage systems owned cooldown, power debit, ray/body intersection, obstruction and damage events; the laser's independent aiming differed from the proposed shared trigger and paid misses. The existing ten-power reserve was a policy to reconcile, not an additional agreed cannon cost. Combat balance remained provisional pending playable review.
+
+Integration needed exact band edges, eligible objects and occlusion using real collision geometry, deterministic allocation when power could not fund every ready cannon, and verification of actual contact impacts. The proposed default put internal boundaries in the lower-damage band and included the 200-unit endpoint. Consequential departures needed design review. A moving flash's termination against a moving target needed an inspectable hit trial without penetration or swept damage.
+
+</section>
+<section id="scope">
+
+## 04 / Implementation scope and destination
+
+The accepted scope called for a genuine validated part, shared procedural artwork and muzzle geometry, catalogue and persistence, simulation-owned instant volleys, topmost LFX and persistent dispersal, and Hangar delivery with a playable encounter. Each funded ready cannon would pay even on a miss; snapshotting the volley would prevent the first hit destroying the trigger from cancelling other shots. Rail recoil and laser tracking were excluded. The intended geometry preserved the housing-centred anchor and used the shared 0.65 hull-to-flight transform.
+
+The proposed trial covered side-cannon misses, close and distant hits, first-contact stopping, plume and moving or turning volleys. Checks were to cover boundaries, obstruction, cooldown, power, pause/reset, layer lifecycle, camera and wrap, multiple cannons and effects budget; passing automated checks would not establish visual fidelity or performance acceptance. Human review remained necessary for connection, rhythm, impact and balance. No mount redesign, multiplayer, new weapon families, gravity or friction changes, paid services or publication was included. No change to the design principles or new firing button was proposed.
+
+The cannon has since been integrated; the living contract is `docs/specs/game/light-ion-cannon/spec.md`. Its current 300-unit reach and 75-unit damage bands are not the study's 200-unit decision. Consult that spec for delivered behaviour rather than treating the study as the current contract.
+
+</section>
+
+Full pre-conversion study: `b6e638d3b033248bbb8a1e1594306b0c94f1f67a:apps/web/src/pages/lab/studies/light-ion-cannon-2026-11-08.astro`. Retired study apparatus: `apps/web/src/components/studies/IonCannonFlight.svelte` and `apps/web/src/components/studies/IonCannonTiming.svelte`. The shared fitting `apps/web/src/components/studies/IonCannonFitting.svelte` and encounter `apps/web/src/components/lab/IonCannonEncounter.svelte` are retained.

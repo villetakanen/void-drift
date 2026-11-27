@@ -250,7 +250,7 @@ Feature: Playground
 **Open decisions**
 
 - **Marker:** how an unsanctioned part is marked in the Hangar, explored in
-  the [part-rows study](../../../../apps/web/src/pages/lab/studies/part-rows-2026-11-11.astro).
+  the [part-rows study](../../../../apps/web/src/pages/lab/studies/part-rows-2026-11-11.mdx).
 
 The Hangar keeps unsanctioned parts after sanctioned parts. Unfitted parts
 with Playground Off fade to quarter strength; a forbidden fitted part instead

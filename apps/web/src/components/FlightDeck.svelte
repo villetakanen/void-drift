@@ -38,7 +38,6 @@ import { HabitableMaterials } from "../lib/assets/habitable-materials";
 import { planetAppearances } from "../lib/assets/planet-appearances";
 import { createPracticeVenus } from "../lib/assets/practice-venus";
 import { createOuterMercurialMaterial } from "../lib/assets/rock-planets/authored-materials";
-import { NO_SCORE_NOTICE } from "../lib/experimental";
 import { projectFlightContact } from "../lib/flight-contact-projection";
 import {
   type FlightContactCue,
@@ -913,7 +912,7 @@ onMount(() => {
               {#if experimentalRun}
                 <div class="score experimental-score">
                   <PreviewMarker />
-                  <small>{NO_SCORE_NOTICE}</small>
+                  <small>No score for this run.</small>
                 </div>
               {:else}
                 <div class="score">

@@ -1,0 +1,95 @@
+.mercury-study {
+  .reference-board {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-xl);
+    margin-block: var(--spacing-lg);
+  }
+  figure[data-study-authored] {
+    margin: 0;
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--spacing-md);
+  }
+  figure[data-study-authored] > h4 {
+    margin: 0;
+  }
+  .reference-context,
+  .reference-credit {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-caption);
+  }
+  .reference-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 256px;
+    background: var(--color-void);
+  }
+  .reference-image img[data-study-authored] {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  figcaption[data-study-authored] {
+    max-width: 48ch;
+  }
+  .colour-comparison {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-md);
+    margin-block: var(--spacing-lg);
+  }
+  .colour-comparison > article > p {
+    min-height: 4.5em;
+    color: var(--color-text-muted);
+  }
+  summary[data-study-authored] {
+    cursor: pointer;
+    font-weight: 700;
+    margin-block: var(--spacing-lg);
+  }
+  .art-directions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-lg);
+    margin-block: var(--spacing-xl);
+  }
+  .art-directions figure[data-study-authored] > p {
+    min-height: 5em;
+  }
+  .art-directions figcaption[data-study-authored] {
+    font-size: var(--font-size-caption);
+    color: var(--color-text-muted);
+  }
+  .flight-sprites {
+    display: flex;
+    align-items: end;
+    justify-content: space-evenly;
+    gap: var(--spacing-sm);
+    min-height: 130px;
+    padding-block: var(--spacing-lg);
+    background: var(--color-void);
+  }
+  .flight-sprites > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+  .flight-sprites > div > small {
+    color: var(--color-text-muted);
+  }
+  .planet-frame {
+    display: block;
+    position: relative;
+    width: var(--diameter);
+    height: var(--diameter);
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--color-void);
+  }
+  .planet-frame img[data-study-authored] {
+    position: absolute;
+    max-width: none;
+  }
+}

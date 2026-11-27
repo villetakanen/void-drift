@@ -7,6 +7,10 @@ as the starting point for release notes.
 
 ### Maybe
 
+- [Fission exhaust timing](reports/2026-11-27-gemini-carbon-fission-review.md#fission-exhaust-timing) — Try different blast timings while the ship turns.
+
+- [Steering at cruise](reports/2026-11-27-gemini-carbon-fission-review.md#steering-at-cruise) — Keep steering with angled engines when your ship reaches cruising speed.
+
 - [Article metadata](specs/game/field-guide/spec.md) — Make article authorship and verification easy to read through a shared design-system treatment.
 
 - [Ranked results survive rotation](specs/game/game-screen/rotate-findings.md) — Keep typed initials and save confirmation when the screen turns. (Known regression.)

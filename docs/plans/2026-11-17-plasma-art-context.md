@@ -83,11 +83,11 @@ banded treatment into its connector.
 
 ### Utilities and Potential Well: substance, fictional identity and useful gaps
 
-The closed [utilities study](../../apps/web/src/pages/lab/studies/utilities-2026-11-02.astro)
+The closed [utilities study](../../apps/web/src/pages/lab/studies/utilities-2026-11-02.mdx)
 had useful comparisons of exposed vessels, a helix, separate surfaces and major
 and minor working parts. Its later reduction of a fictional lattice to repeated
 hexagonal shapes did not establish convincing construction. The subsequent
-[failed utility-language study](../../apps/web/src/pages/lab/studies/ship-utility-language-2026-11-02.astro)
+[failed utility-language study](../../apps/web/src/pages/lab/studies/ship-utility-language-2026-11-02.mdx)
 explicitly contrasts that earlier substance with bars carrying bright edges.
 Neither failed study establishes an accepted universal construction rule.
 
@@ -114,7 +114,7 @@ mechanically complete assembly. Narrow ribbons, swept paths and quiet returns
 are retained for exploration after raised blocks and offset extrusions failed.
 Its 02.12 finding also says removing detail alone did not resolve belonging.
 
-The accepted [coil-form study 02.2–02.5](../../apps/web/src/pages/lab/studies/gravity-coil-form-2026-11-03.astro)
+The accepted [coil-form study 02.2–02.5](../../apps/web/src/pages/lab/studies/gravity-coil-form-2026-11-03.mdx)
 explains a crest between outside and aperture-facing slopes. A broad inward face
 can catch light on the drawing’s lower right because of its orientation; that is
 not automatically incorrect lighting. The selected construction eventually keeps
@@ -127,12 +127,12 @@ point-defence turret has an explicitly accepted round base.
 
 ### Cannon and point defence: supplied visual solutions, not generative recipes
 
-The [ion cannon study](../../apps/web/src/pages/lab/studies/light-ion-cannon-2026-11-08.astro)
+The [ion cannon study](../../apps/web/src/pages/lab/studies/light-ion-cannon-2026-11-08.mdx)
 begins with a near-final supplied drawing. It establishes fitting, size and shot
 behaviour around that form; it does not demonstrate that a barrel plus cyan
 blocks plus a crossbar is a sufficient recipe for designing any weapon.
 
-[Point defence](../../apps/web/src/pages/lab/studies/ion-point-defence-2026-11-08.astro)
+[Point defence](../../apps/web/src/pages/lab/studies/ion-point-defence-2026-11-08.mdx)
 also starts with a supplied adaptation of those parts. Its marked base makes
 turning visible while the base lighting stays with the ship. The retained parts
 have a specific reason for their arrangement and a particular event to express.

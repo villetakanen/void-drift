@@ -7,8 +7,8 @@ Explain why the retained Earth concepts do not visually belong beside Void Drift
 ## Read and inspect
 
 - `docs/vision.md`, `docs/design.md`, relevant current rendering owners, and the actual game/Lab at flight scale (Lab width at least 1280px).
-- `apps/web/src/pages/lab/studies/mercury-2026-11-12.astro` and `venus-2026-11-13.astro`, including their visual examples and recorded decisions. Distinguish accepted qualities from provisional edges and the agent's interpretation. Neither is a mandatory sequence or a recipe for Earth.
-- The stopped fresh study `apps/web/src/pages/lab/studies/inhabited-worlds-2026-11-15.astro`, its closure record `docs/loop-evidence/2026-11-15-inhabited-worlds.md`, and retained assets under `apps/web/public/studies/inhabited-worlds-2026-11-15/`.
+- `apps/web/src/pages/lab/studies/mercury-2026-11-12.mdx` and `venus-2026-11-13.mdx`, including their visual examples and recorded decisions. Distinguish accepted qualities from provisional edges and the agent's interpretation. Neither is a mandatory sequence or a recipe for Earth.
+- The stopped fresh study `apps/web/src/pages/lab/studies/inhabited-worlds-2026-11-15.mdx`, its closure record `docs/loop-evidence/2026-11-15-inhabited-worlds.md`, and retained assets under `apps/web/public/studies/inhabited-worlds-2026-11-15/`.
 - Use one retained 02.1 scene for a concrete comparison. Original images explain construction; the 1000×480 scene captures preserve flight-scale context. These closure captures are not historical recordings of designer review.
 
 Do not read or reuse `earth-2026-11-14` or its review, evidence, references, sketches or associated artifacts. Leave those intact. Do not reconstruct withdrawn proposals. The original clean-start exclusion remains in force.

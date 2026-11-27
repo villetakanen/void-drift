@@ -20,7 +20,7 @@ Baseline: `49336a6e5675da1b50b7179f3baaf28f6d3a7bb4`. These entries supplement t
 
 ## E-R05 — Shared systems with a bounded fixture
 
-[FlightDeck](../../../../apps/web/src/components/FlightDeck.svelte), imports and simulation declaration, lines 1–68, uses shared Core and Mode A systems. [IonCannonFlight](../../../../apps/web/src/components/studies/IonCannonFlight.svelte), lines 1–69, imports shared `FxSurface`, `drawBuild` and `applyBuildEngines`, then constructs a controlled local motion fixture. This verifies a concrete shared-definition relationship while showing why a study instrument is not equivalent to the full production runtime. No visual or runtime check was performed here.
+[FlightDeck](../../../../apps/web/src/components/FlightDeck.svelte), imports and simulation declaration, lines 1–68, uses shared Core and Mode A systems. [IonCannonFlight](https://github.com/villetakanen/void-drift/blob/b6e638d3b033248bbb8a1e1594306b0c94f1f67a/apps/web/src/components/studies/IonCannonFlight.svelte#L1-L69), lines 1–69, imports shared `FxSurface`, `drawBuild` and `applyBuildEngines`, then constructs a controlled local motion fixture. This verifies a concrete shared-definition relationship while showing why a study instrument is not equivalent to the full production runtime. No visual or runtime check was performed here.
 
 ## E-R06 — Study method and technical validity have separate outcomes
 
