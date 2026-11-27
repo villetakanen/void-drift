@@ -1,5 +1,5 @@
 import { BUILD_FLIGHT_SCALE, type BuildMount } from "@void-drift/mode-a";
-import { z } from "astro/zod";
+import { z } from "zod";
 
 export const FormIdSchema = z.enum(["Rail shroud"]);
 export const InspectionSchema = z

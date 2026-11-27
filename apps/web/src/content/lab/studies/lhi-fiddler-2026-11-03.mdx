@@ -1,0 +1,124 @@
+---
+title: "Ship 05 / LHI Fiddler Heavy Assault Corvette"
+question: "How can a heavy twin-blade corvette carry an abundant loadout and still look unmistakably related to Wasp?"
+phase: "scope"
+status: "accepted"
+---
+
+**Accepted · 3 November 2026.** The Fiddler’s form was accepted and game integration requested. The date comes from Git history: `df4582a2` changed the registry to accepted and recorded the delivered integration.
+
+## Question
+
+How can a heavy twin-blade corvette carry an abundant loadout and still look unmistakably related to Wasp?
+
+## Accepted direction
+
+Fiddler is a heavy assault corvette advancing behind two long, equipment-bearing blades. Its open catamaran shape must remain visible in flight. Wasp’s nose, bent sides, swept roots and black window establish the family resemblance; the larger hull provides the capacity. “Assault” described the intended character, not an implemented firing system.
+
+The accepted hull is **+35%** relative to the connected draft, with **187 hull mass**. Its black window keeps Wasp’s exact shape at **100% Wasp size, 19.5 × 6 units**. The familiar-sized opening made the larger body look substantial. The window round retained the central starting position; exact window placement was still provisional then.
+
+![Accepted Fiddler plan with the centre slot selected](/studies/lhi-fiddler-2026-11-03/accepted-plan.png)
+
+*Accepted nine-slot arrangement, drawn by the study’s production renderer. Captured 23 November 2026 using then-current code; a reconstruction.*
+
+![Fiddler with the starting equipment fitted](/studies/lhi-fiddler-2026-11-03/accepted-fitted.png)
+
+*Fitted view: four Light ions, two Potential Wells in the lower pincer S slots, and one Gravity coil below the centre + slot. The forward + slots are empty. Captured 23 November 2026 using then-current code; a reconstruction. This still does not establish flight clearance.*
+
+### Main engines and fittings
+
+**Both** proposed engine pairs were chosen. The blade-root pair mounts below the wings, preserving their visible surfaces; the other pair sits at the rear. All four exhaust straight aft. Coordinates below are across and fore–aft in study units; spacing is centre-to-centre.
+
+| Decided feature | Position and rule |
+| --- | --- |
+| Blade-root engines E1/E2 | Spacing **47**, fore–aft **+1**; centres **(−23.5, +1)** and **(+23.5, +1)**. |
+| Rear engines E3/E4 | Spacing **16**, fore–aft **+39**; centres **(−8, +39)** and **(+8, +39)**. |
+| Forward pincer + pair | Spacing **31**, x **±15.5**, fore–aft **−52**; weapon or support, below the hull. |
+| Aft pincer S pair | Spacing **31**, x **±15.5**, fore–aft **−29**; support only, below the hull. |
+| Centre + slot | Weapon or support, below the hull at **x 0 / fore–aft +20**. **+20** was the implementation starting point for this final slot. |
+
+The four engine positions accept **engines only**. Each pair must use matching engine types; the two pairs may differ. Pincer positions are mirrored but their fittings are independent. Neither pincer pair accepts engines, and S slots exclude weapons.
+
+This gives **nine slots**: two linked engine pairs, two independent forward + slots, two independent S slots and the centre + slot. The earlier eight-equipment capacity sketch, with twelve physical fitting positions after adding four engines, was superseded by these five equipment/weapon slots.
+
+### Turning and forward drive
+
+LHI’s intended handling is quite fast, with strong forward drive and decisive turning but little ability to combine them: turn to choose a direction, then accelerate again. Turning the hull does not immediately turn its existing travel.
+
+All four built-in turning thrusters are always enabled. They fire for turning or automatic spin braking, rather than burning continuously or occupying optional fitting slots. The decided front pair has **spacing 48, fore–aft −43, slit tilt 8.5°**; the rear pair has **spacing 29, fore–aft +33, slit tilt −16.5°**. These corrected values replace the miscopied **27** front spacing and **+19.5°** rear tilt.
+
+Both controls fire all four main engines; one control turns through the stabilizers. Stabilizers can brake residual spin during a main burn. **Linked engines defaults off.** When enabled, turning or automatic spin braking also fires the two mains on the corresponding side, adding forward speed and exhaust without additional turning torque. Engine separation is a packaging choice, not differential steering.
+
+## Ruled out and learned
+
+![Original Fiddler feeling draft](/studies/lhi-fiddler-2026-11-03/feeling-draft.png)
+
+*Original supplied reference, preserved unchanged: open twin blades, swept shoulders and a familiar cockpit. Size and exact proportions were open.*
+
+The first three layouts—central keel, offset port bridge and broad stern yoke—were rejected. The recommendation of **B, the port bridge**, was superseded: two bars, a gap and a black canopy retained the listed features but lost the intended forms. The tentative ten-mount arrangement was not accepted.
+
+![Rejected first three bridge and hull layouts](/studies/lhi-fiddler-2026-11-03/rejected-layouts.png)
+
+*02.1, retained to show the lost family character. Captured 23 November 2026 using then-current code; a reconstruction.*
+
+**Ship family and role are separate.** LHI, Daehan, Aegis and the then-unnamed military-inspired family were distinct lineages. Wasp and Fiddler belonged to LHI. Daehan Scout No.7, Aegis XF-1 Interceptor and the Mark II Escort Frigate supplied other family references. The military-inspired Corvette was a mass and scale comparison, not an LHI construction reference.
+
+<span id="surface-language-lesson"></span>
+
+### Surface language before volume
+
+Copying Wasp’s front polygons and cockpit outline did not preserve the solid forms they described. The volume comparisons could not establish where the corvette’s major hull volume belongs: the planes failed to distinguish raised body, thin wing, bevel and continuous deck. Neither direction was accepted. Extra length, swept surfaces and empty space around a slender centre did not yet make the ship feel large.
+
+![Unaccepted blade-volume and broad-shoulder proposals](/studies/lhi-fiddler-2026-11-03/unresolved-volume.png)
+
+*02.3: deeper pincers versus broader shoulders around the copied command body. Captured 23 November 2026 using then-current code; a reconstruction. The repeated parts and equal fitting count did not resolve the unclear surface construction.*
+
+<span id="blade-section"></span>
+
+The useful starting construction continued Wasp’s nose ridge and sloping sides along each blade. A continuous flat upper deck was not required. With the same face angles and ship-relative light from left and above, corresponding faces should retain their light-and-dark relationship; a new shade needs a changed angle or a separate object. The angled explanations used **illustrative height**, not a recovered Wasp measurement.
+
+The nose-only extension was incomplete. The reference also included the bend into the longer side and its complex inner contour beside the cockpit. Both inner and outer edges mattered.
+
+![Wasp’s original nose and long side isolated with the inner contour intact](/studies/lhi-fiddler-2026-11-03/nose-bend-side.png)
+
+*02.5, copied nose and side with the cockpit opening and fuselage behind them cut away. Captured 23 November 2026 using then-current code; a reconstruction.*
+
+The return wall in 02.6 lost the recognizable form and was rejected. The triangular root preserved the family resemblance; the mirrored pair was worth developing. Removing the wall exposed the copied edge while retaining the broader rear attachments. Root dimensions and spacing remained provisional at that stage.
+
+![Rejected return wall on the copied Wasp side](/studies/lhi-fiddler-2026-11-03/rejected-wall.png)
+
+*02.6, Wall state. Captured 23 November 2026 using then-current code; a reconstruction.*
+
+![Mirrored blade faces without and with triangular roots](/studies/lhi-fiddler-2026-11-03/exposed-roots.png)
+
+*02.7, the wall removed; size, spacing and lighting held equal to isolate the roots. Captured 23 November 2026 using then-current code; a reconstruction.*
+
+![Connected Fiddler sketch](/studies/lhi-fiddler-2026-11-03/connected-draft.png)
+
+*Original connected sketch, preserved unchanged. The copied bends, swept roots and cockpit body made the family resemblance clearer. The prominent cockpit and narrow tail still suggested agility; corvette size needed comparison with familiar-sized parts.*
+
+![Two Fiddler sketches around Wasp at a common cockpit size](/studies/lhi-fiddler-2026-11-03/family-lineup.png)
+
+*Original supplied comparison, preserved unchanged. The copied cockpit was the common size reference.*
+
+At draft size, trial coils overhung the blades and crowded their shoulder connections; rear engines crowded the central equipment. The +35% hull separated the parts better, although coil overhang left mounting-surface width unresolved. This was a visual size comparison, not a mass calculation. Keeping Wasp’s window at its familiar size then made the ship’s size clear.
+
+## What remained uncertain
+
+The form was accepted and an integrated trial authorized. Handling, endurance, operating clearance and final balance still needed human flight review. Four stabilizer slits alone did not establish turning authority, and moving engines could not remedy a thrust shortage. Early two-heavy-ion and later four-heavy-ion budgets were force estimates, not flight results; actual acceleration depended on speed and available power.
+
+The study’s main-menu fit was recorded as **273 assembled mass and 270 energy capacity**. Initial stabilizer force and energy use followed Wasp, while rotational inertia came from the larger hull’s bounds. Weapon fittings were static at that iteration, and early Fiddler runs were unranked.
+
+The shared Motion instrument supplied unlimited energy and omitted planetary gravity, so its comparison could not establish survival endurance or real energy and collision behaviour. No original motion recording or trace is retained here. The new stills reconstruct form and fitting only. The broader proposal to author arbitrary provisional chassis, stabilizer geometry and independent force tuning inside instrument documents remained unimplemented; production integration made it unnecessary for this accepted Fiddler.
+
+<span id="integration"></span>
+
+## Integration
+
+The integration added one shared hull, window, mounts and corrected stabilizers to the Hangar, renderer, energy system, simulation and flight controls. It added the fifth chassis, five hull fittings, the second required mirrored engine pair and support-only compatibility while preserving old saved builds. A crossed right-wing face that left a triangular gap was repaired. No global gravity or friction change was needed.
+
+The integration report recorded **149 passing unit tests, including seven Fiddler integration tests**, plus passing types, lint, contracts and production build. Browser review covered fitting compatibility, the centre slot, return from flight, straight thrust and linked/unlinked turning. The instrument showed equal turning acceleration with linking off and on, with different forward acceleration. These are the earlier report’s findings, not new flight verification. Automated browser and Firebase suites were not run in that iteration; flight review remained pending. The page described local working code, not a published release.
+
+[Fit and fly Fiddler in the Hangar](/hangar?chassis=fiddler).
+
+The full study before conversion is in commit `ee2cc698`, at `apps/web/src/pages/lab/studies/lhi-fiddler-2026-11-03.astro`. Its retired components, drawing modules, placement schemas and fixtures are under `apps/web/src/components/studies/fiddler/` in that commit.

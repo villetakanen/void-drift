@@ -1,0 +1,117 @@
+---
+title: "Plasma engines: commitment and recovery"
+question: "What acceleration or speed advantage would make plasma’s delayed response worth choosing over ion?"
+phase: "exploration"
+status: "stopped"
+---
+
+<h2 id="closure">Outcome / Stopped, unconcluded and broken</h2>
+
+Closed on 1 November 2026 on request. The six-build comparison was useful, and the delay comparison yielded a bounded observation. After 02.2, repeated presentation changes and new tools did not produce useful design decisions. Passing technical checks did not change that assessment. No final behaviour reached readiness assessment, and no production tuning or integration plan was approved.
+
+<h2 id="purpose">01 / Committing to a burn, recovering from a mistake</h2>
+
+Could stronger acceleration, higher top speed, or both make delayed thrust worth choosing over immediate ion response? Reaching a shared ceiling sooner helps a short manoeuvre; exceeding ion’s ceiling changes sustained travel and the difficulty of approaches. In the study baseline, Plasma needed 0.6 seconds of held input. Release or loss of power reset the charge, so a tap could spend energy without correcting course. With Plasma on the sides, travel momentum carried through the charge, and main Plasma thrust did not correct spin while charging. Stabilizers, where enabled, still responded immediately. The comparison covered launch, sustained flight, turning and recovery; artwork and exhaust were left for later.
+
+## 02 / Evidence and findings
+
+The stills are reconstructions from the surviving page on **22 November 2026**, in Chromium at **1440 × 1000 CSS px, device scale 1**, after the canvases drew. The benches showed complete runs or static graphs, not animated playback. These captures are not the original review evidence. In 02.1 and 02.2, the surviving bench still plots the historical engine-family ceiling diagnostic, but the later production impulse code it calls uses the fitted ship’s powered cruise ceiling. The dashed traces therefore do not describe the reconstructed impulse limits. The original trajectories and the earlier unassisted versions were not recovered; no fixture was repaired to recreate them.
+
+### 02.1 / Six configurations, one flight sequence
+
+This comparison was retained for its delay and thrust contrast, not as final balance. Three side pairs (Light ion, Heavy ion, Plasma) showed immediate versus delayed steering. Three four-engine builds (all Light, Light sides with Plasma aft, all Plasma) exposed whether immediate steering made delayed aft power useful and what changed when every engine had to charge.
+
+All were Fighters with fitted mass and stabilizers enabled in the corrected fixtures. They started at rest at the same origin, facing right. The fourteen one-second inputs were **LR, LR, coast, L, coast, LR, coast, R, coast, R, coast, LR, LR, LR**. Aft engines fired only on LR. Releasing an engine reset its charge; an uninterrupted side engine kept its own timer. The bench used assembled-engine forces, mount geometry, mass, charge timers and free-fall rotation at 60 ticks/s with four substeps, unlimited power, and no gravity, drag, wrapping or randomness.
+
+The historical Plasma baseline was **0.6 s, 38,000 force per engine, mass 24 and a 700 units/s family ceiling**; ion used the production settings of the time. Solid graphs show speed, traversed path length and signed angular speed (clockwise positive). The dashed graph diagnostic is the highest available family ceiling, not a combined limit: ion and Plasma impulses are applied separately. Zero on that trace does not mean zero travel speed. Coasting preserves travel momentum; stabilizers oppose uncommanded spin.
+
+<figure>
+  <img src="/studies/plasma-behaviour-2026-11-01/021-six-configurations.png" alt="Complete paths and graphs comparing the three side-only and three four-engine Fighter builds" width="1056" height="1341" loading="lazy" />
+  <figcaption>Reconstruction · six builds, 0.60 s Plasma delay. The view fits the complete run; compare turns and release as well as distance.</figcaption>
+</figure>
+
+<h3 id="delay">02.2 / How much anticipation does plasma ask for?</h3>
+
+**The study’s closure retained 0.10 s as a candidate for a future playable trial. Around 0.34 s and above, further delay made little visible difference to handling under the tested acceleration, speed and input conditions.** Neither number is final tuning or a universal threshold. The bench swept 0.10–0.99 s in 0.01 s steps, changing only delay on the same six builds. It refitted path framing and graph scales for each setting. Adding missing stabilizers corrected both fixtures; earlier unassisted paths did not establish stabilized handling.
+
+The useful intervals were the left turn at 3–4 s, right turns at 7–8 and 9–10 s, the following coasts, and the sustained burn at 11–14 s. Compare Plasma sides with immediate Light sides and Plasma aft. Near 0.99 s, little of an isolated one-second command remains for the main Plasma engine, but stabilizers still respond immediately. These replays cannot establish how quickly a player learns anticipation. Release immediately cuts thrust and resets charge; retention and decay were not tested.
+
+<figure>
+  <img src="/studies/plasma-behaviour-2026-11-01/022-delay-010.png" alt="Six stabilized Fighter runs at 0.10 seconds of Plasma charge delay" width="1056" height="1478" loading="lazy" />
+  <figcaption>Reconstruction · 0.10 s, the short delay retained as a trial candidate.</figcaption>
+</figure>
+
+<details>
+<summary>More delay states: 0.34 s, 0.60 s and 0.99 s</summary>
+
+<figure>
+  <img src="/studies/plasma-behaviour-2026-11-01/022-delay-034.png" alt="Six stabilized Fighter runs at 0.34 seconds of Plasma charge delay" width="1056" height="1478" loading="lazy" />
+  <figcaption>Reconstruction · 0.34 s, near the point of diminishing visible handling differences in the original review.</figcaption>
+</figure>
+
+<figure>
+  <img src="/studies/plasma-behaviour-2026-11-01/022-delay-060.png" alt="Six stabilized Fighter runs at 0.60 seconds of Plasma charge delay" width="1056" height="1478" loading="lazy" />
+  <figcaption>Reconstruction · 0.60 s, the delay control’s default and the study baseline.</figcaption>
+</figure>
+
+<figure>
+  <img src="/studies/plasma-behaviour-2026-11-01/022-delay-099.png" alt="Six stabilized Fighter runs at 0.99 seconds of Plasma charge delay" width="1056" height="1478" loading="lazy" />
+  <figcaption>Reconstruction · 0.99 s, the upper endpoint.</figcaption>
+</figure>
+
+</details>
+
+<h3 id="escape">02.3 / Plasma as an aft escape engine</h3>
+
+**Intermediate study decision:** diminishing speed returns and maximum speed belong to a generic chassis model rather than Plasma tuning. The provisional rule used the ion curve for combined ready force: **340 units/s at one Light-equivalent, 40% maximum extra allowance, falloff 0.8**, approaching **476 units/s**. This was local to the later experiments, not a validated mixed-engine rule or a change to earlier fixtures.
+
+Four fitted Fighters used two Light-ion sides and one aft engine: Light, Heavy, 38,000-force Plasma (about 1.50× Light), or adjustable Plasma (1–10× Light, default 2×). The two Plasma engines kept their fitted mass and used 0.10 s charge after release, not the old family ceiling or 0.6 s delay. The same fourteen-second sequence started from rest and zero spin; paths used one fitted scale and one-second markers, with fixed graph scales across force settings. Stabilizers assisted turns and braked spin, and the bench reused production angular motion, charge timing and thrust taper. The run compared acceleration, speed and traversed length, not separation from a pursuer. Unlimited power and no gravity, drag, wrapping or randomness meant it could not establish escape success or energy balance. The path presentation made combined propulsion hard to read.
+
+<figure>
+  <img src="/studies/plasma-behaviour-2026-11-01/023-aft-2x.png" alt="Four paths with one-second markers and propulsion graphs for the single-aft-engine comparison" width="1056" height="1585" loading="lazy" />
+  <figcaption>Reconstruction · 0.10 s Plasma delay; adjustable aft force at the exploratory 2× Light default, not accepted balance.</figcaption>
+</figure>
+
+<details>
+<summary>Upper aft-force endpoint: 10× Light</summary>
+
+<figure>
+  <img src="/studies/plasma-behaviour-2026-11-01/023-aft-10x.png" alt="Four aft-engine comparison paths and graphs with the adjustable Plasma engine at 10 times Light force" width="1056" height="1585" loading="lazy" />
+  <figcaption>Reconstruction · same comparison at 10× Light, the adjustable endpoint; the other three builds are unchanged.</figcaption>
+</figure>
+
+</details>
+
+<h3 id="force-composition">02.4 / From engine force to ship acceleration</h3>
+
+The next bench isolated the provisional rule; it did not settle a new combination rule. One Light, two Light, Light plus Heavy, and Light plus Plasma were aligned through the centre of a 95-mass Fighter body, with no other engines. One Light gave 25,300 force units, Heavy 1.75× Light, and charged Plasma an exploratory 2× Light. The fixed comparison used mass 115; the fitted comparison counted every engine’s mass even while it was inactive. With no turning, gravity, drag or power limits, stabilizers had nothing to correct.
+
+Acceleration from rest was combined ready force divided by mass, then the production speed taper reduced forward acceleration at speed. In the fixture the ceiling depended on ready force, not mass; more force raised the ceiling with diminishing returns. Above it, forward thrust added no speed but did not brake existing momentum. Identical axes compare acceleration against speed, not time or distance. The charged-state switch stood in for timing so waiting could be compared independently of the weight penalty.
+
+<details>
+<summary>Force graphs: fixed, fitted and waiting</summary>
+
+<figure>
+  <img src="/studies/plasma-behaviour-2026-11-01/024-fixed-charged.png" alt="Four acceleration-versus-speed graphs at equal mass with Plasma charged" width="1056" height="2645" loading="lazy" />
+  <figcaption>Reconstruction · fixed mass 115, Plasma charged at 2× Light, speed probe at 300 units/s.</figcaption>
+</figure>
+
+<figure>
+  <img src="/studies/plasma-behaviour-2026-11-01/024-fitted-charged.png" alt="The same four acceleration-versus-speed graphs using the fitted mass of each build" width="1056" height="2645" loading="lazy" />
+  <figcaption>Reconstruction · fitted masses, Plasma charged at 2× Light, same 300 units/s probe.</figcaption>
+</figure>
+
+<figure>
+  <img src="/studies/plasma-behaviour-2026-11-01/024-fitted-waiting.png" alt="Fitted-mass comparison with the Plasma engine contributing mass but no thrust while charging" width="1056" height="2645" loading="lazy" />
+  <figcaption>Reconstruction · fitted masses, Plasma uncharged, same 300 units/s probe.</figcaption>
+</figure>
+
+</details>
+
+## Handoff / Candidates, not approval
+
+- **Review integration scope separately.** Carry the provisional chassis ownership decision into a future propulsion specification; mixed-force semantics and intended production behaviour still need a decision. Take 0.10 s into a playable trial, not directly into the game. Keep Plasma aft with ion sides as an escape-engine candidate; final force, delay, energy cost and charge decay remain open. Stabilizers were a fixture correction, not a feature proposal. Neither 2× Plasma nor the later force examples were accepted.
+- **Design the flight bench separately.** Start with the successful earlier presentations. Establish predictable, understandable, comparable paths, input sequences, graphs, scales and controls before exploring engines again.
+- **Investigate the failed sequence separately.** Review how the requests, corrections and outcomes led to presentation changes displacing design discussion. The failure was considered useful evidence for developing the design factory; causes and proposed lessons remain pending.
+
+*Pre-conversion source: `9fd97337`, `apps/web/src/pages/lab/studies/plasma-behaviour-2026-11-01.astro`. Its retired apparatus in `apps/web/src/components/studies/` was `MovementBench.svelte`, `PlasmaEscape.svelte`, `ForceComposition.svelte`, `StabilizerGeometry.svelte`, `plasma-bench.ts`, `plasma-escape.ts` and `force-composition.ts`.*

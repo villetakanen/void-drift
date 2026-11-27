@@ -214,6 +214,7 @@ onMount(() => {
 <div
   class="field-backdrop"
   class:standalone
+  class:decorative
   aria-hidden={decorative ? "true" : undefined}
 >
   <!-- Decorative passes paint World and LFX. -->
@@ -241,6 +242,14 @@ onMount(() => {
 }
 .field-backdrop.standalone {
   position: fixed;
+}
+/* Match the title's centred 16:9 framing without confining the sky or scrim. */
+.field-backdrop.decorative :global(.flight-layers) {
+  width: 100%;
+  height: 100%;
+}
+.field-backdrop.decorative :global(canvas[data-layer]) {
+  object-fit: contain;
 }
 .field-backdrop > :global(.dialog-scrim) {
   z-index: 3;

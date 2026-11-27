@@ -1,6 +1,6 @@
 import { type GameObject, Vec2 } from "@void-drift/core";
 import { engineImpulse, STEP } from "@void-drift/mode-a";
-import { z } from "astro/zod";
+import { z } from "zod";
 import {
   DEFAULT_FLIGHT,
   DRONE_ENGINE_LIMIT,

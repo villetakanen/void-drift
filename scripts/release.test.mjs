@@ -13,6 +13,7 @@ import {
 import { tmpdir } from "node:os";
 import { delimiter, dirname, join } from "node:path";
 import { test } from "node:test";
+import { generatedWrapperMap } from "../apps/web/src/lib/generated-wrapper-map.mjs";
 import { checkRelease, prepareRelease, publishRelease } from "./release.mjs";
 
 const sentryEnv = {
@@ -363,4 +364,32 @@ test("publication failure is recorded separately from successful preparation", a
     JSON.parse(readFileSync(join(directory, attempt, "report.json"))).status,
     "failed",
   );
+});
+
+const id = "95f9c248-97c5-480b-9062-6aad4ff9abc6";
+const code = `(function(){try{var e=typeof globalThis<\`u\`?globalThis:typeof window<\`u\`?window:typeof global<\`u\`?global:typeof self<\`u\`?self:{},t=new e.Error().stack;t&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[t]=\`${id}\`,e._sentryDebugIdIdentifier=\`sentry-dbid-${id}\`)}catch{}})();import"./real.js";`;
+const chunk = {
+  type: "chunk",
+  fileName: "_astro/wrapper.js",
+  map: null,
+  modules: { source: { renderedLength: 0 } },
+  code,
+};
+
+test("only Sentry-stamped import-only generated wrappers get an empty map", () => {
+  assert.deepEqual(generatedWrapperMap(chunk), {
+    version: 3,
+    sources: [],
+    names: [],
+    mappings: "",
+    debug_id: id,
+  });
+  for (const change of [
+    { code: `${code}danger()` },
+    { code: code.replace("./real.js", './real.js";alert(1);//') },
+    { modules: { source: { renderedLength: 1 } } },
+    { map: {} },
+    { code: code.replace(`sentry-dbid-${id}`, "sentry-dbid-other") },
+  ])
+    assert.equal(generatedWrapperMap({ ...chunk, ...change }), null);
 });

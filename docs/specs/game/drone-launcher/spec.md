@@ -35,7 +35,7 @@ The drone can sustain a turn. Its angular acceleration, braking torque and maxim
 
 At detonation the drive cuts out. A white flash lights the full 180 u radius immediately, catching the sides of nearby hulls that face the blast. The flash is softer on the second simulation tick and then ends. Only radiation and contact with the expanding particle wave deal blast damage.
 
-The blast sends green forked tracks across FX history, with pale tips on LFX. When the wave reaches a hull, sparks fly back towards the blast. Both effects use the [selected spark treatment shown in the carrier view](../../../../apps/web/src/pages/lab/studies/drone-launcher-2026-11-25.mdx#powered-intercept).
+The blast sends green forked tracks across FX history, with pale tips on LFX. When the wave reaches a hull, sparks fly back towards the blast. Both effects use the [selected spark treatment shown in the carrier view](../../../../apps/web/src/content/lab/studies/drone-launcher-2026-11-25.mdx#powered-intercept).
 
 ## Scenarios
 

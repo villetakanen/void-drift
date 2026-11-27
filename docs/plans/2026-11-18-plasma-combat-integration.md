@@ -18,7 +18,7 @@ The study and code inspection establish candidate mechanics and likely costs. Me
 
 ## What the evidence actually establishes
 
-The [operation study](../../apps/web/src/pages/lab/studies/plasma-rifle-operation-2026-11-18.mdx) is accepted as a design proposal. Its last operating proposal is a 130 u, 30° full-angle muzzle sector; 0.7 s charge; a firing/venting outcome followed by 2.1 s recovery; mass-dependent kick and vent force; first-contact eruption; and two moving fume envelopes. Earlier exploration values such as 0.5 s charge and 70 damage are not the final proposed defaults. Final bands are 75 through 10 u, 50 through 26 u and 25 through 42 u, with 3 damage per entry into the combined fumes. Visual radius and damage radius are explicitly different.
+The [operation study](../../apps/web/src/content/lab/studies/plasma-rifle-operation-2026-11-18.mdx) is accepted as a design proposal. Its last operating proposal is a 130 u, 30° full-angle muzzle sector; 0.7 s charge; a firing/venting outcome followed by 2.1 s recovery; mass-dependent kick and vent force; first-contact eruption; and two moving fume envelopes. Earlier exploration values such as 0.5 s charge and 70 damage are not the final proposed defaults. Final bands are 75 through 10 u, 50 through 26 u and 25 through 42 u, with 3 damage per entry into the combined fumes. Visual radius and damage radius are explicitly different.
 
 The study demonstrates wreck acquisition, mount views, recoil and competition with ion fire. It does not establish a production implementation of live-ship material collision, every energy exit, or multi-rifle performance. Its scope table is useful design context, not the project's implementation order.
 

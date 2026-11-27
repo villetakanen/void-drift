@@ -1,0 +1,1006 @@
+---
+title: "Venus-like planets"
+status: open
+phase: scope
+question: "What cloud, light and motion treatment gives a Venus-like planet a dense, enveloped character beside Mercury, while keeping its body readable at flight scale?"
+---
+
+import "./_venus-study.css";
+import { massWellPull, massWellReach } from "@void-drift/core";
+import { GRAVITY_TUNING } from "@void-drift/mode-a";
+import VenusContext from "../../../components/studies/venus/VenusContext.svelte";
+import VenusEnvelope from "../../../components/studies/venus/VenusEnvelope.svelte";
+
+export const venusRadius = 27 * (1 + (12104 / 4879 - 1) / 3);
+// Preserve the original comparison; subsequent Practice retuning is recorded below.
+export const mercuryMass = 1450;
+export const mercurySurfacePull = massWellPull(
+  27,
+  mercuryMass,
+  GRAVITY_TUNING.falloff,
+);
+export const gravityCandidates = [
+  {
+    name: "One-third of the surface-gravity difference",
+    factor: 1 + (8.87 / 3.7 - 1) / 3,
+  },
+  { name: "Full surface-gravity ratio", factor: 8.87 / 3.7 },
+].map((candidate) => {
+  const pull = mercurySurfacePull * candidate.factor;
+  const mass = pull / massWellPull(venusRadius, 1, GRAVITY_TUNING.falloff);
+  return {
+    ...candidate,
+    pull,
+    mass,
+    reach: massWellReach(mass, GRAVITY_TUNING.cutoff, GRAVITY_TUNING.falloff),
+  };
+});
+
+<div className="venus-study">
+<section>
+  <h2 id="01">01 / A world concealed by cloud</h2>
+  <p>
+    Practice now gives Mercury a turning mineral surface and Sun-facing light.
+    A Venus-like neighbour offers a different material character: the proposed
+    starting point is a world concealed by cloud, with a sense of weight
+    beneath its envelope. It should belong beside Mercury without borrowing
+    its exposed rock texture. The intended change is one reusable Venus-like
+    planet drawing demonstrated in the Lab; placing a named Venus into
+    Practice is a later decision.
+  </p>
+  <p>
+    The tension is between a dense, softly layered atmosphere and a clear,
+    substantial body at flight scale. Too little structure could leave a blank
+    disc; too much contrast or glow could make it read as luminous energy.
+    These are visual hypotheses to test. Colour, cloud organisation, edge
+    softness, Sun-facing shading and visible cloud motion remain open, judged
+    together on one body. A convincing close-up must also survive the smaller
+    view beside a ship.
+  </p>
+  <p>
+    Hold the established art direction fixed: compose a world through
+    economical forms, convincing material and deliberate light. Use the
+    current Practice G7 Sun and implemented Mercury as comparison references,
+    without reopening Mercury’s design. Record body radii, lighting and camera
+    scale with each example; fixture values do not settle Venus’s size, mass
+    or placement. Existing orbital motion, gravity and contact provide
+    context. Atmospheric drag, damage, new flight rules and a general planet
+    taxonomy are adjacent questions outside this visual cycle.
+  </p>
+  <p>
+    <strong>Question test · 13 November 2026:</strong>
+    One subject — Pass. Grounded — Pass. Consequence — Pass. Independent
+    review found no corrections needed.
+    <a href="/lab/reviews/venus-2026-11-13">Full question test</a>.
+  </p>
+</section>
+<section>
+  <h2 id="02">02 / Finding a terrestrial atmosphere</h2>
+  <details>
+    <summary data-study-authored id="02-1">
+      02.1 / Opaque cloud texture reads as a gas giant
+    </summary>
+    <p>
+      All three initial treatments read as gas giants in design review.
+      Varying veils, bands and billows on an opaque gas surface did not
+      establish the intended Venus-like character. Reusing the rock projection
+      and lighting was useful; the resulting material language did not
+      distinguish this world. This is a finding about these examples, not a
+      claim that every opaque atmosphere must read as a gas giant. No variant
+      was selected.
+    </p>
+    <figure data-study-authored>
+      <img data-study-authored
+        class="evidence"
+        src="/studies/venus-2026-11-13/02-1-cloud-comparison.png"
+        width="1056"
+        height="511"
+        alt="The three original cloud sketches, with broad veils, swept bands and broken billows, each beside Mercury."
+      />
+      <figcaption data-study-authored>
+        Original 02.1 capture, 13 November 2026, at a 1280px viewport. Venus
+        r30u / Mercury r27u; enlarged 3.2 px/u, small view 0.7 px/u; fixed
+        upper-left light (−400, −160), zero Venus spin, deterministic maps.
+        Retained to show the shared gas-giant reading; the temporary renderer
+        is retired.
+      </figcaption>
+    </figure>
+  </details>
+  <details>
+    <summary data-study-authored id="02-2">02.2 / What the reference is actually showing</summary>
+    <p>
+      A photograph, a processed scientific image and a game drawing make
+      different choices about what to reveal. The next direction separates the
+      cloud-covered body from the visual shorthand of conspicuous bands and
+      swirls. It does not assume that showing exposed rock is necessary to
+      communicate a terrestrial world.
+    </p>
+    <div class="reference-board">
+      <figure data-study-authored>
+        <h4>MESSENGER / the quiet globe</h4>
+        <img data-study-authored
+          src="/studies/venus-2026-11-13/nasa-pia10124.jpg"
+          width="320"
+          height="320"
+          alt="MESSENGER view of Venus as a nearly uniform grey globe against black space."
+        />
+        <figcaption data-study-authored>
+          NASA / Johns Hopkins University Applied Physics Laboratory /
+          Carnegie Institution of Washington. 5 June 2007, PIA10124.
+          <a href="https://science.nasa.gov/photojournal/approaching-venus/">Source and imaging context</a>. Broad form dominates the visible image; the surface is hidden by
+          cloud. For this study: a quiet disc is a legitimate starting point,
+          although it still needs a distinct game character.
+        </figcaption>
+      </figure>
+      <figure data-study-authored>
+        <h4>Mariner 10 / processing reveals structure</h4>
+        <img data-study-authored
+          src="/studies/venus-2026-11-13/nasa-pia23791.jpg"
+          width="480"
+          height="234"
+          alt="Two processed Venus portraits: pale cloud cover on the left, more strongly contrasted cloud structures on the right."
+        />
+        <figcaption data-study-authored>
+          NASA/JPL-Caltech; processing by Kevin M. Gill. 1974 observations,
+          2020 processing, PIA23791.
+          <a
+            href="https://science.nasa.gov/resource/newly-processed-views-of-venus-from-mariner-10/">Source and method</a>. Both are false-colour orange/ultraviolet composites; the right
+          increases contrast. These are not two naked-eye appearances. Cloud
+          structure is real evidence, but its prominence and colour are
+          choices in our drawing.
+        </figcaption>
+      </figure>
+      <figure data-study-authored>
+        <h4>Frontier: Elite II / atmosphere at the edge</h4>
+        <img data-study-authored
+          src="/studies/mercury-2026-11-12/frontier.webp"
+          width="320"
+          height="200"
+          alt="Frontier Earth with broad green and blue regions, a pale atmospheric rim and a nearby ship."
+        />
+        <figcaption data-study-authored>
+          1993; David Braben / Frontier, GameTek / Konami; capture via
+          <a href="https://retrorama.fr/en/game/frontier-elite-ii">Retrorama</a>. The pale layered limb distinguishes atmosphere from the broad
+          surface regions. Borrow that separation of roles, not Earth's
+          visible continents or the period rendering style. This is an Earth
+          reference, not Venus.
+        </figcaption>
+      </figure>
+      <figure data-study-authored>
+        <h4>Escape Velocity / a compact world in flight</h4>
+        <img data-study-authored
+          src="/studies/mercury-2026-11-12/escape-velocity.webp"
+          width="320"
+          height="240"
+          alt="Escape Velocity flight scene with a small blue-green planet among ships and asteroids."
+        />
+        <figcaption data-study-authored>
+          1996; Matt Burch / Ambrosia Software; capture via
+          <a href="https://macemu.com/run/escape-velocity/">Macemu</a>. A
+          bounded globe, broad shading and colour carry the planet beside
+          ships. Borrow that hierarchy at flight scale; its blue-green
+          material is not a Venus palette. Heritage frames are the attributed,
+          reduced full-frame references already retained in the Mercury study.
+        </figcaption>
+      </figure>
+    </div>
+    <p>
+      NASA also reports that Mariner 10's visible-light photographs showed a
+      featureless planet while ultraviolet filters revealed cloud detail (<a href="https://www.nasa.gov/history/45-years-ago-mariner-10-off-to-venus-and-mercury/">mission history</a>). The design inference is to try less internal pattern and give the
+      atmospheric edge a separate job. The references do not prove that this
+      will solve the gas-giant reading at our scale.
+    </p>
+    <h4>A new proposal / a quiet ivory envelope</h4>
+    <div class="proposal">
+      <VenusEnvelope client:load />
+      <div>
+        <p>
+          This sketch replaces the patterned gas surface with a nearly
+          continuous pale envelope and a narrow illuminated rim. The body
+          keeps its shadow and bounded silhouette; there are no exposed
+          continents or craters. It draws on the quiet MESSENGER globe and
+          Frontier's separate limb cue.
+        </p>
+        <p>
+          Accepted direction: the quiet ivory body and a distinct illuminated
+          atmospheric edge. The restrained shape gives the world a coherent
+          character, while the separate edge communicates its envelope. This
+          settles the visual approach, not the exact brightness, cloud
+          structure or thickness of the atmosphere.
+        </p>
+        <p>
+          Same radius, scales, light direction and Mercury material as 02.1.
+          New ivory palette, low-contrast deterministic two-wave veil, zero
+          spin; lit arc from 0.92π to 1.64π, width 1.8% of drawn radius
+          (minimum 0.65px). The arc is an illustrative cue, not simulated
+          scattering. Static material sketch only: no motion, G7 field
+          composition or gameplay claim. Reference images remain reference
+          material, not textures.
+        </p>
+      </div>
+    </div>
+    <p>
+      The current example feels too quiet; brighter colour, more structure and
+      a larger atmospheric presence remain possibilities for refinement. These
+      observations do not select new values or authorize changing this
+      reference. The 30u Venus and 27u Mercury radii are comparison fixtures,
+      not real Solar System proportions or an accepted size relationship.
+      Cloud motion remains untested. The study remains open.
+    </p>
+  </details>
+  <details>
+    <summary data-study-authored id="02-3">02.3 / Structure within the quiet envelope</summary>
+    <p>
+      Keep the ivory body and separate lit edge. This comparison asks whether
+      broad, faint cloud regions give the envelope enough structure without
+      bringing back the belt-and-swirl character of 02.1. The left is the
+      unchanged 02.2 reference; the right adds oblique regions with a small
+      amount of finer variation. Neither introduces exposed terrain.
+    </p>
+    <div class="structure-comparison">
+      <figure data-study-authored>
+        <h4>A / Quiet reference · unchanged</h4>
+        <VenusEnvelope client:load />
+        <figcaption data-study-authored>
+          The accepted direction, with its original faint veil.
+        </figcaption>
+      </figure>
+      <figure data-study-authored>
+        <h4>B / Broad cloud regions</h4>
+        <VenusEnvelope
+          structure={true}
+          label="Broad faint cloud regions within the quiet ivory envelope, enlarged and beside Mercury"
+          client:load
+        />
+        <figcaption data-study-authored>
+          Structure is the only deliberate variable. Judge the small view as
+          well as the enlarged body.
+        </figcaption>
+      </figure>
+    </div>
+    <p>
+      Both use the same base palette, lighting, 30u body radius, atmospheric
+      arc and camera scales as 02.2. The additional deterministic pattern
+      varies all three material channels together by up to 14 values out of
+      255 before lighting; spin is zero and there is no randomness. This is
+      local tonal variation, not a brighter base colour. Mercury remains r27u;
+      the relative sizes are still fixtures, not Solar System proportions.
+    </p>
+    <p>
+      Selected: 02.3 B's added cloud structure. Carry its broad, faint regions
+      forward within the accepted quiet ivory body and separate atmospheric
+      edge. This selects the structure, not a new brightness, size or
+      atmospheric thickness. These static sketches do not establish motion or
+      production lighting.
+    </p>
+  </details>
+  <details>
+    <summary data-study-authored id="02-4">02.4 / How much atmosphere at the edge?</summary>
+    <p>
+      Both examples retain B's material exactly. The left keeps its narrow
+      atmospheric edge; the right gives the same illuminated arc more
+      thickness. The question is whether that extra presence helps the
+      atmosphere read at flight scale while the body keeps its quiet
+      character.
+    </p>
+    <div class="structure-comparison">
+      <figure data-study-authored>
+        <h4>A / Selected structure · original edge</h4>
+        <VenusEnvelope
+          structure={true}
+          label="Selected 02.3 B structure with original narrow atmosphere"
+          client:load
+        />
+        <figcaption data-study-authored>
+          02.3 B unchanged: edge width 1.8% of drawn radius, minimum 0.65px.
+        </figcaption>
+      </figure>
+      <figure data-study-authored>
+        <h4>B / A broader atmospheric edge</h4>
+        <VenusEnvelope
+          structure={true}
+          rimWidth={0.065}
+          label="Selected cloud structure with broader atmospheric edge"
+          client:load
+        />
+        <figcaption data-study-authored>
+          Same arc, colour and opacity; width 6.5% of drawn radius, minimum
+          0.65px.
+        </figcaption>
+      </figure>
+    </div>
+    <p>
+      Fixed: r30u body, r27u Mercury, 3.2 and 0.7 px/u views, zero spin,
+      deterministic 02.3 B material and upper-left light. Only arc width
+      changes: about 1.73px versus 6.24px enlarged, and 0.65px versus 1.37px
+      in the small view. The stroke remains centred on the limb, extending
+      equally inward and outward; it does not enlarge the physical body. This
+      is an illustrative thickness comparison, not a measured atmosphere or a
+      scattering model.
+    </p>
+    <p>
+      Retained finding: the wider atmosphere has better presence in the small,
+      zoomed-out view. Enlarged, its hard arc reads as overly simplistic
+      vector graphics. The flight-scale presence is preferred; the enlarged
+      treatment is not accepted. A later edge investigation must preserve that
+      presence while making the atmosphere convincing at both scales.
+    </p>
+  </details>
+  <details>
+    <summary data-study-authored id="02-5">02.5 / A brighter ivory body</summary>
+    <p>
+      The current material is pale ivory before shading, but the multiplied
+      light mask makes the visible body much darker. This comparison retains
+      the selected cloud structure and wider atmospheric edge, and tests a
+      lighter shading treatment. The right-hand body lets more of the
+      material's brightness through, including on the shadow side. The
+      question is whether it gains the pale, cloud-covered character without
+      losing its volume.
+    </p>
+    <div class="structure-comparison">
+      <figure data-study-authored>
+        <h4>A / Current shaded ivory</h4>
+        <VenusEnvelope
+          structure={true}
+          rimWidth={0.065}
+          label="Current ivory body with selected cloud structure and wider edge"
+          client:load
+        />
+        <figcaption data-study-authored>
+          Unchanged 02.4 B: full-strength multiplied shading.
+        </figcaption>
+      </figure>
+      <figure data-study-authored>
+        <h4>B / More light through the envelope</h4>
+        <VenusEnvelope
+          structure={true}
+          rimWidth={0.065}
+          lightStrength={0.55}
+          label="Brighter ivory body with the same structure and atmospheric edge"
+          client:load
+        />
+        <figcaption data-study-authored>
+          Same material; shading opacity reduced to 55%. The atmosphere and
+          Mercury are unchanged.
+        </figcaption>
+      </figure>
+    </div>
+    <p>
+      Fixed conditions remain r30u Venus, r27u Mercury, 3.2 and 0.7 px/u, zero
+      spin, deterministic 02.3 B texture and upper-left illumination. Only
+      Venus's multiply-mask opacity changes from 1 to 0.55. This lifts both
+      lit and dark regions and reduces shading contrast; it is not a change to
+      the material hue, cloud pattern or emitted light. This is a study-only
+      tonal proposal, not a physical scattering model or production LFX
+      setting.
+    </p>
+    <p>
+      The wider edge's enlarged-view limitation remains deliberately visible.
+      This round does not settle it. Judge brightness and the remaining sense
+      of mass together, including whether the cloud structure still reads in
+      the small view. Finding: the lifted shadows in B lose too much depth,
+      and depth is necessary to this planet’s character. Carry A’s stronger
+      shading forward. This rules out lifting the whole body this way, not
+      exploring richer colours.
+    </p>
+  </details>
+  <details>
+    <summary data-study-authored id="02-6">
+      02.6 / Ivory, amber and orange under the same light
+    </summary>
+    <p>
+      Strong light-to-shadow depth stays fixed. These three treatments colour
+      the same cloud material, exploring whether a richer warm palette adds
+      character without lifting the shadow. Ivory is the baseline; amber
+      brings a golden cloud colour; orange makes a more pronounced,
+      deliberately colourized world. These are game-art proposals, not
+      measured natural colours.
+    </p>
+    <p>
+      The Mariner 10 pair in 02.2 combines orange and ultraviolet measurements
+      into false colour; contrast enhancement changes how prominently its
+      cloud structures appear. That supports exploring colour as an authored
+      choice, not claiming Venus has one definitive orange appearance.
+      <a href="https://science.nasa.gov/photojournal/venus-from-mariner-10/">NASA’s image-method description</a>. The warm alternatives below are our interpretations, not sampled
+      reconstructions.
+    </p>
+    <div class="colour-comparison">
+      <figure data-study-authored>
+        <h4>A / Ivory reference</h4>
+        <VenusEnvelope
+          structure={true}
+          rimWidth={0.065}
+          label="Ivory Venus with strong shading"
+          client:load
+        />
+        <figcaption data-study-authored>
+          Base RGB 241, 229, 199. The established quiet material.
+        </figcaption>
+      </figure>
+      <figure data-study-authored>
+        <h4>B / Golden amber</h4>
+        <VenusEnvelope
+          structure={true}
+          rimWidth={0.065}
+          palette="amber"
+          label="Golden amber Venus with the same strong shading"
+          client:load
+        />
+        <figcaption data-study-authored>
+          Base RGB 246, 195, 113. A richer golden envelope.
+        </figcaption>
+      </figure>
+      <figure data-study-authored>
+        <h4>C / Warm orange</h4>
+        <VenusEnvelope
+          structure={true}
+          rimWidth={0.065}
+          palette="orange"
+          label="Warm orange Venus with the same strong shading"
+          client:load
+        />
+        <figcaption data-study-authored>
+          Base RGB 245, 157, 89. A more saturated colourization.
+        </figcaption>
+      </figure>
+    </div>
+    <p>
+      Only base material RGB changes. All three retain 02.3 B’s cloud pattern,
+      full-strength shading, the 6.5% atmospheric arc, r30u Venus and r27u
+      Mercury, zero spin, upper-left light and 3.2 / 0.7 px/u views. The pale
+      rim is unchanged to isolate body colour. These palettes are not matched
+      for perceived brightness; warmer saturation also changes that
+      perception. None emits light, and orange does not encode temperature or
+      damage.
+    </p>
+    <p>
+      Compare the sense of depth, cloud material and separation from Mercury.
+      The open choice is which colour family supports this planet’s character;
+      the family retains the range ivory → golden amber → warm orange, with a
+      stable colour chosen per planet. Golden amber (02.6 B) is selected for
+      the named Venus. Distribution and interpolation of randomized family
+      colours remain unspecified; this selection does not animate colour
+      during play. The hard atmospheric edge at enlarged scale remains
+      unresolved.
+    </p>
+  </details>
+  <details>
+    <summary data-study-authored id="02-7">02.7 / Return to the whole planet</summary>
+    <p>
+      The design question concerns the character and readability of one
+      cloud-covered world beside Mercury. An enlarged atmospheric edge alone
+      cannot settle it. Further edge variations are paused; the unresolved
+      close-up treatment does not invalidate the qualities already selected.
+    </p>
+    <h4>Carry forward</h4>
+    <ul>
+      <li data-study-authored>
+        A quiet cloud-covered body with the broad, faint structure selected in
+        02.3 B.
+      </li>
+      <li data-study-authored>
+        Strong light-to-shadow depth. Lifting the whole body in 02.5 removed
+        too much of its character.
+      </li>
+      <li data-study-authored>
+        The ivory–amber–orange colour family, stable per planet; golden amber
+        for Venus.
+      </li>
+      <li data-study-authored>
+        A distinct atmospheric presence at flight scale. The wider edge helped
+        there, without settling its enlarged form.
+      </li>
+    </ul>
+    <p>
+      The hard arc remains provisional. Blending light across the limb
+      produced a button-like reading; successive edge corrections did not
+      establish a usable replacement. Their drawings are removed rather than
+      carried forward as additional design requirements. No new envelope shape
+      is selected.
+    </p>
+    <h4>The next useful evidence</h4>
+    <p>
+      The existing examples show isolated, static globes under one light
+      direction. They have not established how Venus reads beside the actual
+      G7 Sun, Mercury and a ship, or through motion and camera changes. The
+      proposed next investigation is one composed flight-scale scene using the
+      selected body, with the current edge explicitly provisional. It should
+      answer whether the whole planet retains its cloud-covered character,
+      depth and readable boundary in its intended surroundings before any
+      further edge correction is justified.
+    </p>
+    <p>
+      The proposed scene’s fixture size and placement would support
+      comparison, not select a Practice orbit or mass. Cloud motion, family
+      size range and the final atmospheric treatment remain open. The study
+      stays in exploration; this is neither readiness nor implementation
+      scope.
+    </p>
+  </details>
+  <details>
+    <summary data-study-authored id="02-8">
+      02.8 / Venus among the Sun, Mercury and a ship
+    </summary>
+    <p>
+      One arrangement, two views. Venus keeps the selected amber material,
+      cloud structure and strong directional shading. The wider hard arc is
+      provisional and unchanged in form; it is oriented toward the Sun here.
+      Inspect the whole world's identity and boundary beside the fitted Wasp,
+      Mercury and the Sun's field markings before choosing another detail to
+      change.
+    </p>
+    <VenusContext zoom={0.7} client:load />
+    <VenusContext zoom={1.4} client:load />
+    <p>
+      Static fixture: Practice G7 Sun from seed 71; Mercury r27u at orbital
+      distance 258u and angle −0.6 radians; Venus r30u at offset (365, 50)u
+      from the Sun; starter Wasp at Venus offset (65, 30)u, heading −π/2.
+      Views use 0.7 and 1.4 px/u, with camera centres respectively (170, 0)u
+      and (285, 0)u from the Sun. Venus's material phase is zero; time is held
+      at zero. This arrangement chooses neither an orbit nor a physical size
+      relationship for Venus.
+    </p>
+    <p>
+      The scene uses shared Sun, field and fitted-ship drawing, the Practice
+      Mercury material, and production FlightLayers with separate World/LFX
+      canvases. Unlike the earlier single-canvas sketches, material and light
+      are composed through those layers; any appearance difference is evidence
+      to examine, not a new colour decision. Labels are study annotations.
+      This tests static composition only: no controls, flying, cloud motion,
+      simulation progression or performance claim. Visual inspection shows a
+      brighter amber body in this layer composition than in the isolated
+      multiply-mask sketches; the selected material values have not changed.
+      This is an integration difference to judge, not accepted new brightness.
+      Motion remains a later question.
+    </p>
+  </details>
+  <details>
+    <summary data-study-authored id="02-9">
+      02.9 / One-third of the relative size difference
+    </summary>
+    <p>
+      Deliberate extension of the visual inquiry: apply Venus-to-Mercury size
+      and mean orbital-distance ratios to the existing Practice Mercury,
+      reduce the size difference to one-third, and inspect the result with
+      shared world HUD. Venus keeps golden amber, the selected cloud
+      structure, strong lighting and the provisional wide edge.
+    </p>
+    <VenusContext zoom={0.4} relativeHud={true} client:load />
+    <VenusContext zoom={0.7} relativeHud={true} client:load />
+    <p>
+      Using NASA's diameters 12,104km / 4,879km and mean Sun distances 108.2 /
+      57.9 million km: the full size ratio gave Venus radius 66.98u. The
+      current proposal uses one-third of its difference from Mercury: 27 +
+      (66.98 − 27) / 3 =
+      <strong>40.33u</strong>, about 1.49 times Mercury’s radius. The
+      centre-to-centre orbit remains 258 × 108.2 / 57.9 =
+      <strong>482.13u</strong>, or 1.87 times Mercury’s orbital distance.
+      <a
+        href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/index.html?authuser=0">NASA planetary fact sheet</a>. Size and distance retain Practice's separate compressions; the Sun
+      remains its current 70u radius. This is not one uniformly scaled Solar
+      System.
+    </p>
+    <p>
+      Shared HUD primitives draw both orbits, outward name leaders and
+      Mercury's existing gravity boundary. Venus has no gravity ring because
+      its mass and gravity tuning are not selected; appearance and orbital
+      distance do not determine that gameplay value. The Sun retains its field
+      markings. Venus's nearest surface is about 441.81u from the Sun's
+      centre, outside Practice's roughly 324u charging reach.
+    </p>
+    <p>
+      Static Venus angle 0.14 radians; Mercury −0.6. The Wasp sits 35u beyond
+      Venus's radius horizontally and 30u below its centre. Overview camera:
+      Sun-centred, 0.4 px/u; closer camera: 190u right of the Sun, 0.7 px/u.
+      This preserves the earlier 02.8 fixture separately. Selected for Venus:
+      radius 40.33u and centre-to-centre orbit 482.13u, using the exact ratio
+      formulas above. This settles size and orbital distance, not orbital
+      speed, cloud rotation, mass or gravity reach. The atmosphere and
+      brighter layered appearance remain unresolved. The study stays in
+      exploration.
+    </p>
+  </details>
+  <details>
+    <summary data-study-authored id="02-10">02.10 / Cloud rotation under fixed light</summary>
+    <p>
+      Venus holds its selected 40.33u radius and 482.13u orbital distance.
+      Only the cloud map turns: light, atmospheric edge, ship, Mercury and
+      camera remain fixed. Compare a 30-second turn with a quieter 60-second
+      turn. Watch whether features travel around a sphere while the shadow
+      stays anchored to the Sun, and whether the pace suits this world's
+      character.
+    </p>
+    <h4>A / One turn in 30 seconds</h4>
+    <video data-study-authored
+      muted
+      controls
+      preload="metadata"
+      width="1000"
+      height="480"
+      src="/studies/venus-2026-11-13/turn-30.webm"
+      aria-label="Venus clouds turning once every 30 seconds"></video>
+    <h4>B / One turn in 60 seconds</h4>
+    <video data-study-authored
+      muted
+      controls
+      preload="metadata"
+      width="1000"
+      height="480"
+      src="/studies/venus-2026-11-13/turn-60.webm"
+      aria-label="Venus clouds turning once every 60 seconds"></video>
+
+    <p>
+      Recorded visual comparison, 20 frames per second, 60 seconds per clip.
+      Both recordings begin at cloud-clock 0.5 seconds; phase is clock × 2π
+      divided by the respective turn period. No random seed is used for the
+      cloud map. Same deterministic golden-amber 02.3 B map, shared spherical
+      projection, World/LFX composition and 02.9 close camera at 0.7 px/u.
+      Increasing longitude phase makes the visible features travel right to
+      left; this is a visual direction fixture, not an accepted astronomical
+      spin convention. Cloud turn is independent of orbit.
+      <strong>Selected: 02.10 B, one cloud-map turn every 60 seconds.</strong>
+      Retain the demonstrated right-to-left motion under fixed Sun-facing
+      light. This selects visible cloud rotation, not orbital speed or a
+      physical rotation period for the hidden solid surface.
+    </p>
+    <p>
+      This isolates rigid cloud-map rotation, not evolving weather. Mercury's
+      material and the Sun remain frozen; no flight simulation advances. The
+      Motion instrument currently provides ship-path measures and a 14-second
+      cursor, not a planet-material turn comparison. These recordings avoid
+      changing that instrument's contract. A configurable planet visual track
+      with a longer shared timeline would be a separate instrument extension
+      to discuss if interactive investigation becomes necessary.
+    </p>
+  </details>
+  <h3 id="02-11">02.11 / Orbital speed from the relative numbers</h3>
+  <p>
+    Anchor Venus's travel speed to Practice Mercury's 4u/s. NASA's rounded
+    mean orbital velocities are 35.0km/s for Venus and 47.4km/s for Mercury,
+    giving a ratio of about 0.7384. Apply that ratio to linear travel along
+    the orbit, then derive angular speed from the selected orbital radius.
+    <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/">NASA planetary fact sheet</a>.
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th data-study-authored>Treatment</th>
+        <th data-study-authored>Venus travel speed</th>
+        <th data-study-authored>Full orbit at 482.13u</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-study-authored>Full relative difference</td>
+        <td data-study-authored>2.95u/s</td>
+        <td data-study-authored>17.1 minutes</td>
+      </tr>
+      <tr>
+        <td data-study-authored>One-third of the difference</td>
+        <td data-study-authored>3.65u/s</td>
+        <td data-study-authored>13.8 minutes</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Full ratio: 4 × 35 / 47.4 = 2.9535865u/s. One-third alternative: 4 × [1 +
+    (35 / 47.4 − 1) / 3] = 3.6511955u/s. Orbit periods use circumference
+    divided by travel speed. Mercury's 258u orbit at 4u/s takes about 6.8
+    minutes. Venus's selected 60-second cloud turn is independent.
+  </p>
+  <p>
+    <strong
+      >Selected: full relative difference, approximately 2.95u/s.</strong>
+    The numerical comparison is sufficient for this decision: the full-ratio
+    pace is not too fast by the numbers, so compressing the difference is
+    unnecessary. Retain the exact ratio formula; angular speed is travel speed
+    divided by the selected 482.13u orbital radius, using its exact formula
+    from 02.9. This is a design decision based on speeds and periods, not a
+    claim of observed motion quality. No new animation was required or used to
+    reach it. HUD tracking and Sun-facing light through orbital movement
+    remain implementation checks.
+  </p>
+  <h3 id="02-12">02.12 / What should the larger world's gravity mean?</h3>
+  <p>
+    This round compares gravity references for the selected size and orbit. A
+    larger visible body does not imply a larger gravity field. The proposed
+    comparison holds the game's inverse-square law and cut-off fixed and
+    varies the pull at the body's surface relative to Mercury. This gives the
+    larger world a distinct pull without assuming its compressed visual size
+    implies a real planetary mass. It is an extension into encounter tuning;
+    the selected appearance and motion remain fixed.
+  </p>
+  <p>
+    NASA lists mean surface gravity as 8.87m/s² for Venus and 3.70m/s² for
+    Mercury: a ratio of about 2.40. As with size, we can retain the full
+    difference or one-third of it. Here those factors multiply Mercury's game
+    surface pull; they do not put SI acceleration directly into the game.
+    Sources:
+    <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/venusfact.html">Venus</a>
+    and
+    <a
+      href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/mercuryfact.html?level=1">Mercury</a>.
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th data-study-authored>Reference / proposal</th>
+        <th data-study-authored>Surface pull relative to Mercury</th>
+        <th data-study-authored>Game mass</th>
+        <th data-study-authored>Gravity reach from centre</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-study-authored>Practice Mercury · r27u</td>
+        <td data-study-authored>1.00×</td>
+        <td data-study-authored>{mercuryMass.toFixed(0)}</td>
+        <td data-study-authored>
+          {massWellReach(
+            mercuryMass,
+            GRAVITY_TUNING.cutoff,
+            GRAVITY_TUNING.falloff,
+          ).toFixed(1)}u
+        </td>
+      </tr>
+      {gravityCandidates.map((candidate) => (
+        <tr>
+          <td data-study-authored>{candidate.name} · Venus r40.33u</td>
+          <td data-study-authored>{candidate.factor.toFixed(2)}×</td>
+          <td data-study-authored>{candidate.mass.toFixed(0)}</td>
+          <td data-study-authored>{candidate.reach.toFixed(1)}u</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  <p>
+    For the current inverse-square law, mass is Mercury's mass × (Venus radius
+    / Mercury radius)² × the chosen surface-pull factor. The shared mass law
+    calculates reach from that mass and the unchanged 50u/s² cut-off. Radius
+    remains 40.33u and orbital distance 482.13u. Surface pull is a reference
+    calculation, not the pull at ship contact: a ship's centre stops one
+    collision radius farther out, where pull is lower.
+  </p>
+      <h4>
+        A / {gravityCandidates[0].name}
+      </h4>
+      <VenusContext
+        zoom={0.4}
+        relativeHud={true}
+        venusMass={gravityCandidates[0].mass}
+        client:load
+      />
+      <h4>
+        B / {gravityCandidates[1].name}
+      </h4>
+      <VenusContext
+        zoom={0.4}
+        relativeHud={true}
+        venusMass={gravityCandidates[1].mass}
+        client:load
+      />
+  <p>
+    These are the same Sun-centred 0.4 px/u scene with a proposed Venus
+    gravity boundary added. A shows a more restrained reach; B extends the
+    region in which Venus can contribute pull. Boundaries may overlap the Sun
+    and Mercury: the existing game adds those accelerations as vectors.
+    Crossing a line is a cut-off in that model, not a new atmospheric effect.
+    Practice tuning has not been changed. Mercury's current field is a
+    comparison baseline, not a newly endorsed final value. A smaller Mercury
+    field and a Venus field larger than Mercury's current one remain an
+    untested possibility; this round does not retune either planet.
+  </p>
+  <p>
+    Selected: A, one-third of the surface-gravity difference, for Practice.
+    Its resulting field works well in this composition. This accepts the
+    resulting tuning value, while retaining the reservation about coupling
+    surface size and gravity; it does not establish a general rule that larger
+    bodies need larger fields. Keep the exact mass calculation above for this
+    Venus stamp. Mercury remains unchanged.
+  </p>
+  <p>
+    The diagrams establish geometry, not slingshot quality or escape
+    difficulty. Those remain integration checks. No further gravity comparison
+    is needed to preserve this decision. The atmospheric edge at enlarged
+    scale and the brightness difference between isolated and composed
+    rendering remain provisional; neither calls for another correction loop
+    here.
+  </p>
+</section>
+<section>
+  <h2 id="03">03 / Ready for a Practice implementation</h2>
+  <p>
+    <strong>Delivery · 13 November 2026:</strong>
+    this reference was requested in Practice. The named amber Venus now
+    replaces Practice's middle gas planet, retaining Mercury and the outer
+    rock. The shared material, orbit, mass, cloud turn, directional light and
+    World HUD can be inspected in the
+    <a href="/lab/entities/planet/practice">production Practice planet preview</a>. The selections below remain the design reference; implementation checks
+    do not settle encounter feel or the provisional enlarged atmospheric arc.
+  </p>
+  <p>
+    The exploration supplies a coherent Venus stamp for an alpha trial: golden
+    amber, broad faint cloud structure from 02.3 B, strong shaded depth, the
+    provisional wider atmospheric arc, and the accepted size, orbit, cloud
+    turn, travel speed and gravity below. No further appearance variants are
+    needed before implementation. This is feasibility for delivery; the
+    composed diagrams do not establish encounter feel.
+  </p>
+  <p>
+    <strong>Practice retuning · 13 November 2026:</strong>
+    after integration, Mercury was requested at 3/5 of its previous mass: 870.
+    Reusing selected formula A gives Venus mass 2844.850581, stored
+    independently. The resulting reaches are 131.91u for Mercury and 238.53u
+    for Venus at the unchanged 50u/s² cut-off. Both pulls are 60% of their
+    initial values; size, orbit and motion are unchanged. The comparisons and
+    accepted table below retain the original 1450 baseline as the design
+    history.
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th data-study-authored>Property</th>
+        <th data-study-authored>Accepted reference</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-study-authored>Material</td>
+        <td data-study-authored>
+          02.3 B structure; 02.6 B golden amber, RGB (246, 195, 113); retain
+          depth
+        </td>
+      </tr>
+      <tr>
+        <td data-study-authored>Radius</td>
+        <td data-study-authored>27 × (1 + (12104 / 4879 − 1) / 3) ≈ 40.33u</td>
+      </tr>
+      <tr>
+        <td data-study-authored>Orbital distance</td>
+        <td data-study-authored>258 × 108.2 / 57.9 ≈ 482.13u, centre to centre</td>
+      </tr>
+      <tr>
+        <td data-study-authored>Cloud turn</td>
+        <td data-study-authored>
+          02.10 B: 60 seconds, demonstrated right-to-left; independent of
+          orbit and light
+        </td>
+      </tr>
+      <tr>
+        <td data-study-authored>Travel speed</td>
+        <td data-study-authored>
+          4 × 35 / 47.4 ≈ 2.954u/s; angular speed = travel speed / orbital
+          distance
+        </td>
+      </tr>
+      <tr>
+        <td data-study-authored>Gravity mass</td>
+        <td data-study-authored>
+          1450 × (accepted radius / 27)² × (1 + (8.87 / 3.70 − 1) / 3) ≈
+          {gravityCandidates[0].mass.toFixed(1)}
+        </td>
+      </tr>
+      <tr>
+        <td data-study-authored>Gravity reach</td>
+        <td data-study-authored>
+          {gravityCandidates[0].reach.toFixed(1)}u at inverse-square falloff
+          and cut-off 50u/s²
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    The mass formula documents this selection against Mercury's present 1450
+    baseline. Implementation should store the selected Venus mass
+    independently: later changes to Mercury or visible radius must not
+    silently retune Venus. This is an accepted Practice value, not a universal
+    surface-gravity rule.
+  </p>
+  <h3>Reuse the established rendering and simulation</h3>
+  <p>
+    The study already composes SphericalSurface, RockBodyPainter,
+    FlightLayers, the production Sun, fitted Wasp and shared world HUD.
+    Promote the deterministic cloud atlas and envelope drawing into a reusable
+    planet material; keep the body on World and directional lighting on LFX.
+    FlightDeck currently loads a Mercury-specific asset and flight-frame
+    dispatches Mercury-specific body, light and HUD passes. Extend that path
+    to a second named material rather than putting a study component into the
+    game.
+  </p>
+  <p>
+    Simulation already advances circular orbits, sums mass-well accelerations
+    and handles planet contact. Practice currently customizes the stock moon
+    as Mercury; Venus needs an explicit Practice identity and independently
+    configured mass. The stock planet factory is also used by other modes.
+    Decide the Practice roster mapping during implementation and check every
+    retained body's orbit separation, spawn clearance and gravity overlap. A
+    new Practice body must receive a mass before gravity tuning is applied. No
+    new gravity law, atmospheric collision rule or flight control is required.
+  </p>
+  <h3>Limits carried into delivery</h3>
+  <p>
+    The wide arc reads better at small scale but remains simplistic enlarged;
+    soft blending produced a button-like result. Preserve the provisional arc
+    for the first integration. The composed World/LFX scene is brighter than
+    the isolated multiply-mask example: use the accepted composed view as the
+    integration reference while retaining visible cloud depth. Do not reopen
+    these as an automatic sequence of corrections.
+  </p>
+  <p>
+    The ivory–amber–orange family is accepted, but its random distribution and
+    interpolation are unspecified. A fixed amber Venus can ship independently;
+    procedural family spawning is deferred. Orbit phase is a fixture
+    condition, not an accepted placement rule. Moving HUD alignment,
+    Sun-facing light, overlap of gravity fields and contact behavior require
+    implementation checks. The existing gravity contact-pull guardrail must be
+    evaluated for this body; any mismatch needs an explicit Practice-specific
+    contract decision, not a silent change to the selected mass or a weakened
+    global test.
+  </p>
+</section>
+<section>
+  <h2 id="04">04 / Deliver one named Venus, then the family</h2>
+  <p>
+    <strong>Design-principle changes: none proposed.</strong>
+    The existing natural-body art direction supports this material. Feature
+    contracts need updating; the planet spec's older flat-disc descriptions do
+    not describe the accepted Mercury and Venus presentation accurately.
+  </p>
+  <ol data-study-authored>
+    <li data-study-authored>
+      <strong>Reusable cloud material — medium.</strong>
+      Extract the atlas, projection, envelope and palette inputs from the
+      study into shared asset code. Preserve 02.3 B structure, 02.6 B colour,
+      02.10 B rotation and directional light. Demonstrate through the Lab
+      planet surface using the shared renderer. Check flight-scale and
+      enlarged rendering, World/LFX composition, cached generation and frame
+      cost. No per-frame atlas noise.
+    </li>
+    <li data-study-authored>
+      <strong
+        >Practice Venus definition — medium; independent of material
+        work.</strong>
+      Define the exact size, distance, speed, spin and fixed selected mass in
+      mode-a. Define or extend Zod contracts first if identity or
+      configuration shapes change. Apply only to Practice, preserving Mercury
+      and other modes. Update the planets and gravity-field feature specs.
+      Verify deterministic orbit updates, mode isolation, valid
+      roster/placement, summed gravity, cut-off and contact with the existing
+      simulation tests where appropriate.
+    </li>
+    <li data-study-authored>
+      <strong
+        >Practice rendering and HUD — medium; depends on both slices.</strong>
+      Wire the material through FlightDeck and flight-frame. Reuse world
+      labels, orbit paths and mass-derived gravity boundaries. Update the
+      render spec and relevant frame contracts. Check that body, light and HUD
+      follow the same moving entity, cloud rotation stays independent, pause
+      freezes game time consistently, and material loading has a safe
+      fallback. Inspect the accepted composition at 0.4 and 0.7 px/u and the
+      enlarged view; verify keyboard and landscape touch play remain connected
+      to the game loop.
+    </li>
+    <li data-study-authored>
+      <strong>Family rollout — deferred, separately sized.</strong>
+      Keep the ivory–gold–orange range as the accepted direction. Choose
+      deterministic sampling and eligible worlds only when procedural family
+      spawning is requested. This does not block named Venus in Practice.
+    </li>
+  </ol>
+  <p>
+    Slices 1 and 2 can be developed independently; slice 3 delivers the
+    composed Practice result. Required checks belong to their changed systems,
+    with automated correctness separate from visual fidelity and gameplay
+    judgment. This scope does not start implementation or claim that flyby and
+    escape behavior have been demonstrated.
+  </p>
+  <p>
+    The study is at scope review. The existing visual examples remain
+    available to compare the implementation against the selected material and
+    composition. Before final archival closure, retain useful static captures
+    alongside the existing rotation clips and retire temporary apparatus
+    without continuing consumers. The accepted decisions above stand
+    independently of those tools.
+  </p>
+</section>
+</div>

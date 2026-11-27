@@ -92,6 +92,7 @@ $effect(() => {
   bind:clientWidth={width}
   bind:clientHeight={height}
 >
+  <!-- svelte-ignore a11y_no_static_element_interactions (Multi-touch flight controls are pointer-only; keyboard flight input is handled separately.) -->
   <svg
     viewBox={`0 0 ${assembly.width} ${assembly.height}`}
     onpointerdown={down}

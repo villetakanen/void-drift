@@ -10,7 +10,7 @@ import {
   LIGHT_ION_BEAM,
   PARTS,
 } from "@void-drift/mode-a";
-import { z } from "astro/zod";
+import { z } from "zod";
 import {
   type CarrierPose,
   DEFAULT_LAUNCH,

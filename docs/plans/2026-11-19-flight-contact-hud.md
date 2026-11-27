@@ -1,6 +1,6 @@
 # Bring the contact HUD into flight
 
-The [accepted Offscreen contacts study](../../apps/web/src/pages/lab/studies/offscreen-information-2026-11-19.mdx) supplies the [02.6 visual settings](../../apps/web/public/studies/offscreen-information-2026-11-19/026-selected-configuration.json). Its motion capture exercised a rectangular visibility test. For play, use the circle on which the arrows sit.
+The [accepted Offscreen contacts study](../../apps/web/src/content/lab/studies/offscreen-information-2026-11-19.mdx) supplies the [02.6 visual settings](../../apps/web/public/studies/offscreen-information-2026-11-19/026-selected-configuration.json). Its motion capture exercised a rectangular visibility test. For play, use the circle on which the arrows sit.
 
 ## When a contact gets an arrow
 

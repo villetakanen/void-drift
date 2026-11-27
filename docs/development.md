@@ -10,7 +10,7 @@ with defined obligations on each side. Existing spec headings retain their forma
 
 ## Setup
 
-Use Node 22+, pnpm 10.33.0 and Java 21 (Firebase emulators).
+Use Node 22.23.4 or newer, pnpm 10.33.0 and Java 21 (Firebase emulators).
 
 ```sh
 pnpm install --frozen-lockfile
@@ -224,6 +224,15 @@ upload, and removes the map files before hashing the bundle for publication. An 
 failure prevents preparation and leaves diagnostics in `sentry-upload.log`. The report
 records the Sentry release and environment. The uploaded bundle is visible under the
 project's Source Maps settings. [Sentry source-map uploads](https://docs.sentry.io/platforms/javascript/sourcemaps/uploading/cli/).
+
+**Known blocker:** Sentry-configured preparation fails on the copied static study record
+`studies/drone-launcher-2026-11-25/02-6-sources/fable-5-2/sim.js`: it has no
+source map or Debug ID. This also occurs in the Astro 5 baseline. The upload gate
+still requires every script and its matching map. A release-compatible correction
+could generate a real map and Debug ID for the deployed copy while retaining the
+original static record, or process that script through a build pipeline that does so;
+either needs review and must preserve the strict upload. Disabling reporting or
+excluding the script from validation is not a fix.
 
 Each `artifacts/prepared-releases/<run>/` retains a report, build log and smoke captures.
 The report identifies revision, dirty state, source fingerprint, version, environment,

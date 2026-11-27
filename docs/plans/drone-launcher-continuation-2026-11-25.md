@@ -1,6 +1,6 @@
 # Bringing the Drone Launcher into flight
 
-Open planning document, started 2026-11-25 and revised 2026-11-26. This plan settles nothing. The [closed study](../../apps/web/src/pages/lab/studies/drone-launcher-2026-11-25.mdx#powered-intercept) records the carrier-view reference. The verified [Drone Launcher](../specs/game/drone-launcher/spec.md), [Targeting](../specs/game/targeting/spec.md), [Ion Point Defence](../specs/game/ion-point-defence/spec.md), [Parts](../specs/game/parts/spec.md#weapon-operation) and [Plasma rifle](../specs/game/plasma-rifle/spec.md#automatic-charge-cycle) specs govern adoption.
+Open planning document, started 2026-11-25 and revised 2026-11-26. This plan settles nothing. The [closed study](../../apps/web/src/content/lab/studies/drone-launcher-2026-11-25.mdx#powered-intercept) records the carrier-view reference. The verified [Drone Launcher](../specs/game/drone-launcher/spec.md), [Targeting](../specs/game/targeting/spec.md), [Ion Point Defence](../specs/game/ion-point-defence/spec.md), [Parts](../specs/game/parts/spec.md#weapon-operation) and [Plasma rifle](../specs/game/plasma-rifle/spec.md#automatic-charge-cycle) specs govern adoption.
 
 ## First playable encounter
 

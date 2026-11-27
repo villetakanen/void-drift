@@ -9,7 +9,7 @@ import {
   PaidIgnitionPartSchema,
   PartSchema,
 } from "@void-drift/mode-a";
-import { z } from "astro/zod";
+import { z } from "zod";
 import { type BurnId, DT, inputAt } from "./burns";
 import type { Sample } from "./calculate";
 import type { ExperimentProperties, InstrumentVehicle } from "./config";

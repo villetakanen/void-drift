@@ -1,14 +1,15 @@
 ---
+import { getCollection } from "astro:content";
 import { labGroups, labPages } from "../../data/lab-pages";
-import { studies } from "../../data/study-index";
 import LabLayout from "../../layouts/LabLayout.astro";
 
 const groups = labGroups.map((group) => ({
   ...group,
   pages: labPages.filter((page) => page.group === group.id),
 }));
-// The registry lists the newest studies first.
-const latestStudies = studies.slice(0, 4);
+const latestStudies = (await getCollection("studies"))
+  .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+  .slice(0, 4);
 const SOURCE_LABEL = {
   production: "Production",
   sketch: "Sketch",
@@ -49,9 +50,9 @@ const SOURCE_LABEL = {
           {group.id === "studies" &&
             latestStudies.map((study) => (
               <li>
-                <a href={`/lab/studies/${study.slug}`}>{study.title}</a>
-                <span class="source">{study.status}</span>
-                <p>{study.question}</p>
+                <a href={`/lab/studies/${study.id}`}>{study.data.title}</a>
+                <span class="source">{study.data.status}</span>
+                <p>{study.data.question}</p>
               </li>
             ))}
         </ul>

@@ -21,9 +21,9 @@ Work directly by default, following the relevant task skill. Load and follow [fi
   - development.md      # Dev principles
 - apps/web/src
   - pages/lab                     # The Lab: component and entity pages
-    - studies                     # Design studies, dated; archive/ holds retired ones
+    - studies                     # Studies routes; archive/ holds retired pages
     - reviews                     # Design reviews
-  - data/studies.ts               # Study registry
+  - content/lab/studies           # Indexed MDX studies and their metadata
   - components/studies            # Study components and benches
   - components/FlightDeck.svelte  # A game loop, keyboard and touch input wiring
 - packages

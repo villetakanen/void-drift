@@ -6,7 +6,7 @@ import {
   LoadoutSchema,
   PARTS,
 } from "@void-drift/mode-a";
-import { z } from "astro/zod";
+import { z } from "zod";
 import { BURN_IDS } from "./burns";
 import { EnergyAnalysis } from "./energy";
 

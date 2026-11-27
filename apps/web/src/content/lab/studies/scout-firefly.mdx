@@ -1,0 +1,50 @@
+---
+title: "Scout: an angry little firefly"
+question: "How can a compact, tightly fitted Scout read as an angry little spacecraft rather than a miniature paper-plane Fighter?"
+phase: "scope"
+status: "accepted"
+---
+
+**Accepted · 31 October 2026.** The Integrated trident hull and a compact four-mount arrangement were approved. The date comes from Git history: the first registry entry, in `a86640f9`, already records the study as integrated.
+
+## Question
+
+How can a compact, tightly fitted Scout read as an angry little spacecraft rather than a miniature paper-plane Fighter?
+
+## Accepted direction
+
+The Scout should feel tightly packed and fast, with a protruding light-bulb cockpit and fittings crowded around it. The accepted **02.5 / 06 Integrated trident** has flat facets, swept outer knives and a continuous pointed central keel. Its cockpit is black and round, with a collar. The ship keeps its required side-engine pair, one deck mount and one aft mount.
+
+![Integrated trident Scout with four mount footprints](/studies/scout-firefly/step-22.png)
+
+*The accepted 02.5 / 06 hull direction. Captured 18 November 2026 from the built study using then-current code; a reconstruction.*
+
+The approved 02.6 placement puts the side pair at **(±6, −10.5)** with angles **±49°**, clustered around the cockpit base. The side coordinates and angles came directly from the supplied screenshot. The deck mount H at approximately **(0, −1)** and aft mount A at approximately **(0, 11.5)** were reconstructed from it; those coordinates are starting values rather than exact measurements. Coordinates are across and aft in study units. Mount footprints are **8 × 10**; the cockpit at **(0, −21)** has radius **6**, with a **6.8** collar radius. In production coordinates, the side geometry is sideX **10.5**, arm **6** and angle **49°**.
+
+![Accepted forward engine placement on the Integrated trident](/studies/scout-firefly/step-23.png)
+
+*The accepted screenshot placement as shown by the study workbench. Captured 18 November 2026 from the built study using then-current code; a reconstruction. The [supplied screenshot](/study-references/scout-trident-placement.png) remains available.*
+
+<span id="six-compact-hulls"></span>
+
+## Ruled out
+
+The leading cockpit was chosen over the deck-leading alternative. The [rounded bodies](/lab/studies/archive/scout-firefly-rounded-bodies) were rejected while the protruding cockpit was retained.
+
+**04 / Split knives** was close in its sweep, proportions and feeling of speed, but its diamond tail read as a separate ornament. Six later wing and tail variants were judged worse, and a joined-neck comparison did not advance the study. The inquiry returned to whole-ship concepts, leading to the Integrated trident.
+
+![Split knives with a diamond tail](/studies/scout-firefly/step-06.png)
+
+*02.2 / 04 Split knives, the promising reference with the rejected diamond tail. Captured 18 November 2026 from the built study using then-current code; a reconstruction.*
+
+## What remained uncertain
+
+Visual approval did not establish fitted-part clearance or handling. The inner side mounts slightly overlap and approach the cockpit collar. The study identified possible rail-barrel conflicts, an aft nozzle over the keel, plume clearance and the fairness of a circular collision envelope as questions for review.
+
+<span id="integration"></span>
+
+## Where the work went
+
+The page records local integration of the Trident hull, cockpit, approved side pair and reconstructed H/A coordinates in the shared builder and flight systems. All three chassis became selectable and saved IDs and builds were preserved. The Scout gun used a mount-relative barrel treatment to clear the cockpit; the aft engine became a surface mount without a keel notch. Human review of fidelity, close-packed fittings, plume appearance and handling remained pending. The [builder and test flight](/hangar) show the integrated Scout.
+
+The full study before conversion is in commit `bcc2065a`, at `apps/web/src/pages/lab/studies/scout-firefly.astro`, with its deleted study files `apps/web/src/components/studies/ScoutAggressiveHulls.astro`, `ScoutJoinedStern.astro`, `ScoutPackingComparison.astro`, `ScoutSplitKnifeVariants.astro`, `ScoutTridentPlacement.svelte`, `ScoutWholeShipConcepts.astro` and `scout-trident-reference.ts` in the same directory.

@@ -1,6 +1,6 @@
 import type { FxPass } from "@void-drift/core";
 import { defaultLoadout, type Simulation, STEP } from "@void-drift/mode-a";
-import { z } from "astro/zod";
+import { z } from "zod";
 import {
   FlightRun,
   FlightSceneDocumentSchema,

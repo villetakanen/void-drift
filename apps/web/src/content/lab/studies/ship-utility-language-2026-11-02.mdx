@@ -1,0 +1,70 @@
+---
+title: "The visual language of ship utilities"
+phase: exploration
+status: stopped
+question: How do we build utilities that look good alongside Void Drift’s ships and engines, and feel like machinery from the same world?
+---
+
+**Stopped · 2 November 2026.** The study was closed as failed during exploration. No device, material treatment, family rule or mounting proposal was accepted. Readiness and delivery scope were not reached. The [closure record](https://github.com/villetakanen/void-drift/blob/fdc1772f/docs/loop-evidence/2026-11-02-ship-utility-language-failed-study.md) records the judgment that successive corrections took the work further from the intended visual identity, with a similar experience after 02.4 of the previous study. That is an interpretation, not an established cause or an adopted process lesson.
+
+## 01 / Machinery that belongs with the ship
+
+Ships and engines already used deliberate silhouettes, solid low-poly parts, flat lit planes and restrained contrast. A fitted ship should look like it carries a substantial, purposeful device made for the same world. Material, mass, construction and contrast came first; distinguishing functions and subtypes was deferred. Energy storage, solar charging, gravity charging and automatic repair remained the joint test set rather than designing around one storage device.
+
+The machinery was to be exposed and deliberately engineered. Storage holds energy in surfaces, lattices or fields, not a battery; it does not animate or disclose charge. Chassis storage remains invisible, and solar or gravity charging depends on ship type. Colour was unresolved, with orange excluded for storage. Bulky equipment could change a ship’s character. Production implementation and numerical balance were outside the study.
+
+## 02 / Exploration
+
+### 02.1 / Working machinery against the established hull
+
+The replacement compared one exposed construction family in two material treatments. Broad faceted solids, recessed working surfaces, substantial connectors and open gaps gave the devices volume. Geometry stayed fixed; colour described material, not charge.
+
+| Device | Construction |
+| --- | --- |
+| Storage / separated surfaces | Three working surfaces separated by insulation and joined to an exposed bus. |
+| Solar / collector leaves | Two thick collector leaves with exposed hinges, supported by a central distributor. |
+| Gravity / field winding | An open winding around a substantial core, with broad mounting shoes and visible clearance within the assembly. |
+| Repair / service head | A feed reservoir and faceted service head joined by a rigid supply line, with an articulated tool. |
+
+Each column shows the device alone at 7×, fitted to the Lance at 2.6×, and an unfitted/fitted pair at 0.65× flight scale. Both rows use the production Lance and its two Light ion engines with unchanged positions and engine definitions. In all four reconstructions (including the opening comparison below), the fitted views place the device at the Lance’s `hull-0` equipment mount: local **(5, −11)** in `b6e638d3`, with a nominal footprint of **11 × 9**. The historical study text gives **(2, 0)**; the reconstructed views do not use that coordinate. Both study comparisons draw the device over the hull; the production flight renderer draws equipment at this mount under the hull. The proposed **roughly 16–20-unit** bodies overhang the footprint; clearance was not validated. All views share a nose-up orientation and upper-left lighting. Enlargement scales the same polygons without adding detail.
+
+![Pale alloy treatment for storage, solar, gravity and repair, each enlarged, fitted, and compared with an unfitted Lance at flight scale.](/studies/ship-utility-language-2026-11-02/02-1-pale-alloy.png)
+
+*27 November 2026 reconstruction from `b6e638d3`: A / Pale alloy with dark working surfaces; small pairs at 0.65×. Not an original review capture.*
+
+![Graphite alloy treatment for the same four devices, with enlarged, fitted and small unfitted/fitted views.](/studies/ship-utility-language-2026-11-02/02-1-graphite-alloy.png)
+
+*27 November 2026 reconstruction from `b6e638d3`: B / Graphite alloy with muted yellow working surfaces, same geometry and scale as A. Not an original review capture.*
+
+The [previous Utilities study](/lab/studies/utilities-2026-11-02) supplied references for faceted volume, separate working parts and exposed connections, not accepted storage technology. Its 02.3 contrasted exposed cells and clamps with a surrounding cradle. Its 02.4 showed how vessels, a helix, separated discs and connected major and minor parts could suggest different constructions within one material treatment. These references were useful through 02.4 despite that study’s closure. The opening comparison below relied mostly on bars with bright edges. The replacement tested whether more substantial devices looked at home on the Lance and remained visible at flight size. Neither material treatment was accepted, and function recognition was not decided.
+
+<details>
+<summary>Superseded opening comparison and recovery notes</summary>
+
+The opening devices were judged hard to read, unrelated to the game’s aesthetic and unconvincing as machinery. Neither family offered a useful basis for refinement. The preceding study’s construction references sharpened the question without settling a design or reopening that study.
+
+<details>
+<summary>Initial comparison / Industrial machinery or scientific apparatus? — superseded</summary>
+
+Both families exposed working parts and used the same muted yellow-green palette. Industrial banks used sturdy bearers and repeated elements; scientific assemblies used separated elements and precise supports. Storage used repeated surfaces, solar spread collectors, gravity opposing masses or a segmented field assembly, and repair paired service arms.
+
+Each column uses the same production Lance, Light ion engines and hull-0 mount as 02.1. Some bodies, including solar collectors, overhang the mount. Each role was fitted separately, not as a four-device loadout. The top shows the fitted Lance at **0.65×**, the middle the same fitting at **2.5×** with upper-left light, and the bottom the isolated object and a variant probe at **4×**. Storage varies the number of repeated elements in both families, as does solar in the scientific row. The other pairs repeat unchanged, leaving those subtype distinctions untested.
+
+![Industrial banks for storage, solar, gravity and repair, with small and enlarged fitted Lance views and two isolated probes per device.](/studies/ship-utility-language-2026-11-02/opening-industrial-banks.png)
+
+*27 November 2026 reconstruction from `b6e638d3`: industrial banks in muted yellow-green, with 0.65× fitted Lances. Not an original review capture.*
+
+![Scientific assemblies for the same four functions, with small and enlarged fitted Lance views and two isolated probes per device.](/studies/ship-utility-language-2026-11-02/opening-scientific-assemblies.png)
+
+*27 November 2026 reconstruction from `b6e638d3`: scientific assemblies in the same palette and at the same scales. Not an original review capture.*
+
+The small views tested whether the role differences survived at flight size within one recognizable family; enlarged differences alone would not answer that. The static comparisons did not test animation, motion readability or whether the families could extend to sixty components.
+
+</details>
+</details>
+
+## 03–04 / Not reached
+
+One hull and static views could not establish fleet-wide compatibility or readability in motion. Historical local browser inspection showed that both comparisons rendered; a partial check passed contracts, lint, types and unit tests before closure, but skipped build, browser suite, rules and competition checks. That did not establish design quality. The original temporary screenshots are missing; the four stills above are reconstructions, not substitutes for the original review or for motion evidence.
+
+*Pre-conversion source: `b6e638d3:apps/web/src/pages/lab/studies/ship-utility-language-2026-11-02.astro`. The four stills were captured in Chromium at 1440 × 1000 from the surviving Canvas examples. The retired apparatus is in the same revision at `apps/web/src/components/studies/UtilityBelonging.svelte` and `apps/web/src/components/studies/UtilityLanguage.svelte`.*

@@ -1,6 +1,6 @@
 import { HabitableAppearanceSchema } from "@void-drift/core";
 import { HABITABLE_RADIUS, MERCURIAL_ROCK_RADIUS } from "@void-drift/mode-a";
-import { z } from "astro/zod";
+import { z } from "zod";
 
 export const MercurialInspectorPlanetSchema = z
   .object({

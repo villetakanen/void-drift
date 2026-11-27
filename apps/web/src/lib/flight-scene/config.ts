@@ -1,5 +1,5 @@
 import { type Loadout, LoadoutSchema } from "@void-drift/mode-a";
-import { z } from "astro/zod";
+import { z } from "zod";
 import { BURN_IDS, TOTAL_TICKS } from "../instrument/burns";
 import { gameSchema } from "../instrument/external-schema";
 

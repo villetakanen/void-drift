@@ -1,0 +1,19 @@
+{
+  "schema_version": 2,
+  "run_id": "e3460787-6e07-45eb-929c-6c990cbf567a",
+  "recorded_at": "2026-11-27T19:34:32Z",
+  "loop": "Drafting the ShipCAD epic scheme and companion documents in docs/epics/shipCAD/ through iterative Q&A.",
+  "worked": [
+    "Reading existing ship modules (fighter.ts, scout.ts, wasp.ts, cruiser.ts, fiddler-form.ts), docs/ship-drawing.md, cockpit-material.ts, part SVG masters, and mount-planner.ts upfront grounded the first draft and kept questions anchored to actual repository contracts.",
+    "Short iterative question rounds quickly converged on concrete boundaries: layered 2.5D objects with per-object Mirror X, pure algorithmic 3D-normal plus z-bias shading into 11 discrete steps, CAD-only LCH colormaps isolated in packages/ship-cad, fixed-scale Aegis/Daehan/LHI cockpits always on top with move(x, y) only, and a self-contained SVG plus markdown agent integration brief.",
+    "Using codemode to compute LCH anchors from existing ship, weapon, and equipment hex colours and verify sRGB gamut bounds produced concrete 11-step LCH tables directly in 02-lighting-and-colormaps.md."
+  ],
+  "issues": [
+    {
+      "area": "context",
+      "observation": "When the final user turn combined 'save them, close loop', I batched git status --short in the same codemode call that read .agents/skills/close-loop/SKILL.md before seeing the skill's explicit prohibition against running git status even before loading guidance.",
+      "effect": "One git status --short call ran before the close-loop skill text was in context; after reading the skill, final requested edits to docs/epics/shipCAD/ were saved and closeout used only permitted operations.",
+      "interpretation": "Suspected explanation: combining a file-saving instruction ('save them') with 'close loop' in one prompt tempted a parallel status check before reading the skill body, as the short skill summary in context does not mention the pre-read git status ban. Uncertain whether reading close-loop/SKILL.md in a standalone call first would fully eliminate ambiguity around 'save them' without asking."
+    }
+  ]
+}

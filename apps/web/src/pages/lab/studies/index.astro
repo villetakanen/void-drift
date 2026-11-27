@@ -1,18 +1,22 @@
 ---
-import { studies } from "../../../data/study-index";
+import { getCollection } from "astro:content";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const studies = (await getCollection("studies")).sort((a, b) =>
+  a.id < b.id ? -1 : a.id > b.id ? 1 : 0,
+);
 ---
 
 <StudyLayout>
   {studies.map((study) => (
     <article>
       <p>
-        {study.phase} · {study.status}
+        {study.data.phase} · {study.data.status}
       </p>
       <h2>
-        <a href={`/lab/studies/${study.slug}`}>{study.title} →</a>
+        <a href={`/lab/studies/${study.id}`}>{study.data.title} →</a>
       </h2>
-      <p>{study.question}</p>
+      <p>{study.data.question}</p>
     </article>
   ))}
   <p>

@@ -6,7 +6,7 @@ top-down, fighter-jet- and tank-inspired space weapons.
 
 ## Evidence and finding
 
-[Round 02.11](../../apps/web/src/pages/lab/studies/plasma-projector-fitting-2026-11-17.mdx)
+[Round 02.11](../../apps/web/src/content/lab/studies/plasma-projector-fitting-2026-11-17.mdx)
 placed a long exposed insert and a protective cheek on a flat gun body. The
 [retained SVG](../../apps/web/public/studies/plasma-projector-fitting-2026-11-17/031-open-throat.svg)
 and its capture show the proposal that prompted the observation: it read as a

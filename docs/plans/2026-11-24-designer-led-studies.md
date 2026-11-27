@@ -145,7 +145,7 @@ first live-game experiment exposed why flight was unhelpful for this task;
 the next iteration supplied a stationary backdrop and held control states.
 The designer considers this a strong early sign that the new direction works.
 This is their assessment of this trial, not a measured comparison or a general
-conclusion about every study. The [study record](../../apps/web/src/pages/lab/studies/flight-deck-weapons-2026-11-24.mdx)
+conclusion about every study. The [study record](../../apps/web/src/content/lab/studies/flight-deck-weapons-2026-11-24.mdx)
 retains the experiments and their captures.
 
 ## Agreed rewrite, 24 November 2026

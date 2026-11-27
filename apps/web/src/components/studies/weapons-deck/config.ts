@@ -1,4 +1,4 @@
-import { z } from "astro/zod";
+import { z } from "zod";
 import { GAME_GUTTER_PX } from "../../../lib/game-screen";
 import { BURN_WIDTH_RATIO } from "../../controls/thrust-pads";
 

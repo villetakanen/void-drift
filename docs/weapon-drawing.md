@@ -64,7 +64,7 @@ visible portion on the ship, enlarged and at flight scale.
 A material-family reference can guide colour and light. It does not supply the
 construction of another category of equipment. In particular, recomposing plasma
 engine shells, bands and nozzles did not establish a plasma weapon form in the
-[fitting study, round 02.1](../apps/web/src/pages/lab/studies/plasma-projector-fitting-2026-11-17.mdx).
+[fitting study, round 02.1](../apps/web/src/content/lab/studies/plasma-projector-fitting-2026-11-17.mdx).
 That round is retained as evidence of the missing distinction. Its dimensions,
 outlets and proposed preference are not adopted weapon guidance.
 

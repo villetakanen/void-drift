@@ -1,0 +1,44 @@
+---
+title: "Three ship silhouettes"
+question: "How can part placement and engine angles give three ships recognizable silhouettes in the builder and in flight?"
+phase: "scope"
+status: "stopped"
+---
+
+**Exploration stopped · 30 October 2026.** The study produced an agreed Fighter design, but no usable Scout design and no accepted Heavy Corvette design. The three-ship question remained open.
+
+## Question
+
+How can part placement and engine angles give three ships recognizable silhouettes in the builder and in flight?
+
+The study aimed for outlines distinguishable without labels or color, with color supporting identity. It considered both visual composition and the flight consequences of engine placement.
+
+## Fighter direction
+
+The low-poly **Lance · clipped tips** hull was selected: a pointed Fighter with flat facets, a black forward cockpit, large stacked hull slots, a central aft pair and rotated side-engine slots partly outside the chassis. Lance and Cutlass had been the promising forms; Trident and Dart were outside the intended direction.
+
+![Agreed Fighter composition with compact mounts](/studies/ship-silhouettes/step-37.png)
+
+*The agreed 02.9 Fighter composition, before the later engine-angle correction. Captured 18 November 2026 using current study and production code; a reconstruction.*
+
+The forward cockpit became one solid black shape. Soft canopy treatments were rejected because gradients and blurred glow did not fit the crisp colors and heavy accents. The crisp-accent remake was also rejected. A colored recess was closest to the classic space-game references but still felt smudgy and broken. Neon identity color remained unresolved. The [rejected soft canopy sheet](/lab/studies/archive/fighter-canopy-soft) is preserved separately.
+
+![Forward inset cockpit comparison](/studies/ship-silhouettes/step-33.png)
+
+*The 02.5 forward cockpit reference, whose small dark spot remained useful although its detailed canopy was not accepted. Captured 18 November 2026 using current study and production code; a reconstruction.*
+
+## Scout and Corvette
+
+The roadster and fast-boat Scout sheets were rejected as too complex and lacking character. A compact Wasp with forward side engines, one hull slot and one aft engine was the strongest arrangement so far, but its hexagonal window and tapered hull looked like a coffin. It used a trial hull length of 80% of the Fighter and provisional 32° side-engine angles. The later six-spacecraft comparison produced no selected design. Heavy Corvette identity also remained unresolved.
+
+![Compact Wasp Scout beside the Fighter](/studies/ship-silhouettes/step-38.png)
+
+*The unselected Wasp arrangement and its same-scale Fighter comparison. Captured 18 November 2026 using current study and production code; a reconstruction.*
+
+## Where the work went
+
+The Fighter was implemented locally in the shared builder and custom flight, retaining saved builds. The initial 02.9 integration used 66.8° side-engine mounts, a 0.65 drawing scale and a conservative 31.2-unit circular collision envelope. Its lateral overestimate and flight feel needed review.
+
+After flight review on 30 October, the engines were found too widely rotated and the original 26° angle was restored; the side pair moved inward from ±18 to ±15 units. Fittings, exhaust and flight calculations shared the corrected angle. Following feedback that turning was still too slow, a 2.5× angular-response adjustment gave default fission turning of about 96.6°/s, clockwise with the left engine and counterclockwise with the right. Handling remained open for review. The [builder and test flight](/hangar) show the implemented Fighter.
+
+The full study before conversion is in commit `966cce5b`, at `apps/web/src/pages/lab/studies/ship-silhouettes.astro`. Its deleted components were `apps/web/src/components/studies/FighterCanopyLight.astro`, `FighterCockpitDepth.astro`, `FighterCockpits.astro`, `FighterForms.astro`, `FighterLowPoly.astro`, `FighterSlots.astro`, `FighterWingVariants.astro`, `ScoutSpacecraft.astro`, `ScoutWasp.astro` and `ShipSilhouetteComparison.astro` in the same directory.

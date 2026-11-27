@@ -837,7 +837,6 @@ onMount(() => {
     <section
       bind:this={stage}
       class="flight-stage"
-      class:landing={Boolean(landing)}
       class:adaptive
       style:width={adaptive ? `${screen.width}px` : undefined}
       style:height={adaptive ? `${screen.height}px` : undefined}
@@ -1106,9 +1105,5 @@ onMount(() => {
 }
 .title-active [data-deck] {
   display: none;
-}
-
-.flight-stage.landing > .flight-stage-layer :global(canvas) {
-  object-fit: fill;
 }
 </style>

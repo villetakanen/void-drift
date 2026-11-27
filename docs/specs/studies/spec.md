@@ -1,114 +1,134 @@
 ---
-
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-26T15:17:26Z"
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-27T18:59:40Z"
 verified: []
 ---
 
 # Studies
 
-## Blueprint
+## Context
 
-### Context
-
-Studies provides design investigations and their published records at stable URLs. A reader can return to the same
-page during exploration and after closure to see the findings and their evidence.
+Authors maintain a design investigation and its publication metadata together.
+Readers can find the study during exploration and after closure to see its
+findings and evidence.
 
 Studies at `/lab/studies`, [Lab](../lab/spec.md) at `/lab`, and the
 [Design system](../factory/design-system/spec.md) at `/lab/ds` are peers.
-The path is a convention, independent of ownership. Studies owns investigations
-and their records. It can embed Lab instruments and consume Design system
-components; those tools retain their own contracts and implementations.
+URL nesting and shared navigation do not determine ownership.
+
+## Blueprint
+
+One build-time Astro MDX content collection publishes the indexed studies
+and their metadata from the same source.
 
 ### Architecture
 
-#### Routes and metadata
+Indexed studies live outside `src/pages`. Astro's built-in `glob` loader
+uses default filename-derived IDs. The collection's declared `astro/zod`
+schema validates non-empty title and question, phase (`problem`,
+`exploration`, `readiness` or `scope`), and status (`open`, `blocked`,
+`accepted`, `ruled-out` or `stopped`).
 
-The [study index](../../../apps/web/src/pages/lab/studies/index.astro) links
-each registered study to `/lab/studies/<slug>` and shows its title, question,
-phase and status. The [registry](../../../apps/web/src/data/studies.ts)
-validates those fields with Zod. The page filename matches the registered slug.
-Migrated studies own their title, question, phase and status in MDX
-frontmatter. The layout validates that metadata with the same Zod schema.
-The [study index data](../../../apps/web/src/data/study-index.ts) reads it for
-the Studies and Lab indexes. Frontmatter-owned studies have no
-duplicate registry entry. Legacy studies retain their registry metadata. This
-migration does not introduce a content collection.
-Changing phase, status or source format preserves the URL.
+One `/lab/studies/[id].astro` route uses `getStaticPaths()` to publish the
+entries by ID and `render(entry)` to render their MDX inside `StudyLayout`.
+Changing phase or status does not require renaming the file or changing its ID.
 
-#### Page source and presentation
+The detail page, Studies index and Lab highlights use the same collection
+entry for identity and metadata, with no second authored copy. The Studies
+index lists all entries with title, question, phase and status. Lab shows
+title, question and status for the entries it lists. Both listings use
+Astro's `getCollection()` without relying on query order. Lab may limit its
+count without promising a named selection or adding curation metadata.
 
-Study pages live in `apps/web/src/pages/lab/studies/`. Open and blocked pages
-can use MDX or Astro and can embed interactive examples. Experimental styles
-are scoped to the example, and simulated or substituted conditions are labeled.
+The study layout composes the shared [page header](../factory/design-system/page-header/spec.md)
+with Design studies identity, the available study title and peer-site
+navigation. The site name links back to the index on study pages. The article
+retains its H1, phase, status and question. Prose has a bounded reading width;
+figures and examples can use the wider page. Pages support keyboard navigation
+at viewport widths of 1280 CSS pixels and up.
 
-[StudyLayout](../../../apps/web/src/layouts/StudyLayout.astro) supplies the
-study header and navigation to the index and peer development sites. Prose has a bounded
-reading width. Figures and examples can use the wider page. The page supports
-keyboard navigation and a minimum viewport width of 1280 pixels.
-
-The shared [page header](../factory/design-system/page-header/spec.md) supplies
-Design studies identity, the available study title and peer-site navigation.
-The layout retains the article H1, status and question beneath it.
-
-#### Closed pages
-
-A study with status `accepted`, `ruled-out` or `stopped` is published as
-static MDX with versioned media. The MDX renders the findings, their reasons
-and any remaining uncertainty as HTML at build time. Images, recorded clips
-and image sequences can illustrate the evidence. Captions give the conditions
-needed to interpret it.
-
-A reader can follow the record with JavaScript disabled. Its evidence remains
-available without mounting a client component, running a simulation or regenerating
-the example from current game code. Static layout components and native browser
-controls for recordings are compatible with this format. When a blocked study
-appears in the index, its existing page remains available at the same URL.
+Studies owns the investigation and its record. Open and blocked MDX studies
+can embed Astro components and hydrated Svelte examples, including Lab
+instruments and Design system components. Those tools and components retain
+their own contracts and implementations. Experimental styles stay scoped to
+the example; simulated or substituted conditions are labeled with it.
 
 ### Constraints
 
-- Routes remain stable across study phases, statuses and source formats.
-- Experimental substitutions are identified with their examples.
-- Study decisions govern the study. Project adoption settles intent and scope
-  in the owning feature spec before changing shared implementation.
+- The conversion retains the indexed studies, their metadata, findings,
+  captions, media and working examples. Historical study URLs, fragments,
+  listing order and Lab selections are not migration requirements. Addresses
+  may change but need not. Affected in-repo links are updated to reach their
+  intended content; historical addresses do not need overrides or redirects.
+- Unlisted archives, standalone reviews, utility artwork and other standalone
+  pages stay outside the collection. Sharing the study layout does not make
+  a page a collection entry. Standalone pages are not deleted or redesigned
+  for this conversion, and the layout does not infer study metadata from
+  their URLs.
+- Closed studies (`accepted`, `ruled-out` or `stopped`) publish as static MDX
+  with versioned media. Their findings, reasons and remaining uncertainty
+  render as HTML at build time. Images, recorded clips and image sequences
+  can show the evidence, with captions that identify the conditions needed
+  to interpret it. Readers can use the record without JavaScript, mounting a
+  client component, running a simulation or regenerating evidence from
+  current game code. Static layout components and native browser controls
+  for recordings are compatible with that requirement.
+- Study decisions govern the study. Project adoption settles intent and
+  scope in the owning feature spec before changing shared implementation.
 
-## Contract
-
-### Definition of Done
-
-- Registered studies have stable pages with their question, phase and status.
-- Open studies can embed tools; closed records remain readable without JavaScript.
-- Embedded instruments and shared components retain their original owners.
-
-### Regression guardrails
-
-- URL nesting and shared navigation preserve peer ownership.
-- Closed evidence remains independent of changes to live game rendering.
-
-### Scenarios
+## Scenarios
 
 ```gherkin
-Scenario: Read frontmatter-owned study metadata
-  Given a study owns its metadata in MDX frontmatter
-  When its title, question, phase or status changes
-  Then its page and index entries use that same metadata
-  And legacy studies continue to use their registry entries
+Feature: Studies
 
-Scenario: Embed an instrument
-  Given a study uses a Lab instrument to investigate a question
-  When the study configures the instrument
-  Then the Lab contract governs the instrument
-  And Studies owns the investigation and its record
+  Scenario: Edit a published study's metadata in one place
+    Given a study is published from the collection
+    When its title, question, phase or status changes in MDX frontmatter and the site is rebuilt
+    Then its detail page and Studies index show the updated metadata
+    And if the Lab lists it, that listing shows the same title, question and status
 
-Scenario: Close a study
-  Given a study becomes accepted, ruled-out or stopped
-  When its page is opened without JavaScript
-  Then its findings and versioned evidence remain available at the same URL
+  Scenario: Reject invalid metadata
+    Given an entry has missing or invalid metadata
+    When the site is built
+    Then the collection schema reports the problem rather than publishing invalid metadata
 
-Scenario: Adopt a proposal
-  Given a study selects a proposal
-  When the project adopts it
-  Then the owning feature spec records the intended change and its scope
-  And study selection alone does not change shared behaviour
+  Scenario: Find the indexed studies after conversion
+    Given a study was indexed before the collection conversion
+    When a reader follows its entry in the Studies index
+    Then the study opens with its metadata, findings, captions and media
+
+  Scenario: Use an interactive study
+    Given an open study contains a hydrated comparison
+    When a reader opens the study from the index with JavaScript enabled and uses the comparison
+    Then the comparison responds to its controls
+    And the study header links to the Studies index and the peer development sites
+
+  Scenario: Embed an instrument
+    Given an open or blocked study uses a Lab instrument to investigate a question
+    When the study configures the instrument
+    Then the Lab contract governs the instrument
+    And Studies owns the investigation and its record
+
+  Scenario: Read a blocked study
+    Given an indexed study becomes blocked without renaming its source file
+    When a reader follows its index link
+    Then the same entry opens at its filename-derived address with blocked status
+
+  Scenario: Close a study
+    Given a study becomes accepted, ruled-out or stopped
+    When a reader opens its record without JavaScript
+    Then its findings, reasons, remaining uncertainty and versioned evidence are available
+    And reading the evidence does not depend on live game rendering
+
+  Scenario: Browse the listings after conversion
+    Given reviews, archives and utility artwork remain standalone pages
+    When a reader browses the Studies index and Lab highlights
+    Then none of those standalone pages appears as a collection entry
+
+  Scenario: Adopt a proposal
+    Given a study selects a proposal
+    When the project adopts it
+    Then the owning feature spec records the intended change and its scope
+    And study selection alone does not change shared behaviour
 ```

@@ -29,7 +29,7 @@ art. Neither its chamber nor any of its eight assemblies is accepted.
 
 ### Wasp: a continuing surface needs more than matching colour
 
-[Wasp 02.1–02.6](../../apps/web/src/pages/lab/studies/lhi-wasp.mdx)
+[Wasp 02.1–02.6](../../apps/web/src/content/lab/studies/lhi-wasp.mdx)
 starts from a supplied silhouette, slots and stabilizer positions. The selected
 Gull-wing 08 carries a particular nose, forward cockpit and three-ribbon wing
 structure. Rear development separates a slender chassis from outboard wings;
@@ -46,7 +46,7 @@ construction.
 
 ### Fiddler: copying polygons can lose the form they describe
 
-[Fiddler 02.3–02.7](../../apps/web/src/pages/lab/studies/lhi-fiddler-2026-11-03.mdx)
+[Fiddler 02.3–02.7](../../apps/web/src/content/lab/studies/lhi-fiddler-2026-11-03.mdx)
 contains a close precedent for the current problem. Its early volume comparisons
 could not be judged because surfaces did not explain raised body, thin wing,
 bevel or continuous deck. Copying Wasp’s bow and canopy outlines was insufficient.
@@ -66,7 +66,7 @@ model.
 
 ### Engines: a functional image first, then selective reduction
 
-[Engine identities 02.2–02.9](../../apps/web/src/pages/lab/studies/engine-identities.mdx)
+[Engine identities 02.2–02.9](../../apps/web/src/content/lab/studies/engine-identities.mdx)
 first establishes shared light, charcoal material and actual hull layering.
 Ion’s straight output informs its axial needle. Fusion’s pulse character is
 expressed by separate feed machinery and reaction chamber, with an open gap and
@@ -83,20 +83,20 @@ banded treatment into its connector.
 
 ### Utilities and Potential Well: substance, fictional identity and useful gaps
 
-The closed [utilities study](../../apps/web/src/pages/lab/studies/utilities-2026-11-02.mdx)
+The closed [utilities study](../../apps/web/src/content/lab/studies/utilities-2026-11-02.mdx)
 had useful comparisons of exposed vessels, a helix, separate surfaces and major
 and minor working parts. Its later reduction of a fictional lattice to repeated
 hexagonal shapes did not establish convincing construction. The subsequent
-[failed utility-language study](../../apps/web/src/pages/lab/studies/ship-utility-language-2026-11-02.mdx)
+[failed utility-language study](../../apps/web/src/content/lab/studies/ship-utility-language-2026-11-02.mdx)
 explicitly contrasts that earlier substance with bars carrying bright edges.
 Neither failed study establishes an accepted universal construction rule.
 
-[Utility machinery](../../apps/web/src/pages/lab/studies/utility-machinery-2026-11-02.mdx)
+[Utility machinery](../../apps/web/src/content/lab/studies/utility-machinery-2026-11-02.mdx)
 separates family character from the eventual clear structural accent. The family
 permits different silhouettes. Its resting drawings are a bounded acceptance,
 not evidence that the same bridge belongs on every kind of machinery.
 
-[Potential Well 02.1–02.8](../../apps/web/src/pages/lab/studies/resource-capacity-2026-11-02.mdx)
+[Potential Well 02.1–02.8](../../apps/web/src/content/lab/studies/resource-capacity-2026-11-02.mdx)
 settles an evocative fictional identity—multiple containment units holding
 potential—while deliberately leaving the science unexplained. Layered rims and
 bevelled rails are rejected as artificially extruded. Broad slopes around dark
@@ -107,14 +107,14 @@ few meaningful relationships, without a scientific cutaway or exhaustive hardwar
 
 ### Coil: graphic connection is enough; face direction still matters
 
-The stopped [coil study 02.6–02.7](../../apps/web/src/pages/lab/studies/gravity-coil-2026-11-03.mdx)
+The stopped [coil study 02.6–02.7](../../apps/web/src/content/lab/studies/gravity-coil-2026-11-03.mdx)
 explicitly says the equipment must look convincing rather than physically
 realistic. Connections should read as deliberate paths; they need not explain a
 mechanically complete assembly. Narrow ribbons, swept paths and quiet returns
 are retained for exploration after raised blocks and offset extrusions failed.
 Its 02.12 finding also says removing detail alone did not resolve belonging.
 
-The accepted [coil-form study 02.2–02.5](../../apps/web/src/pages/lab/studies/gravity-coil-form-2026-11-03.mdx)
+The accepted [coil-form study 02.2–02.5](../../apps/web/src/content/lab/studies/gravity-coil-form-2026-11-03.mdx)
 explains a crest between outside and aperture-facing slopes. A broad inward face
 can catch light on the drawing’s lower right because of its orientation; that is
 not automatically incorrect lighting. The selected construction eventually keeps
@@ -127,12 +127,12 @@ point-defence turret has an explicitly accepted round base.
 
 ### Cannon and point defence: supplied visual solutions, not generative recipes
 
-The [ion cannon study](../../apps/web/src/pages/lab/studies/light-ion-cannon-2026-11-08.mdx)
+The [ion cannon study](../../apps/web/src/content/lab/studies/light-ion-cannon-2026-11-08.mdx)
 begins with a near-final supplied drawing. It establishes fitting, size and shot
 behaviour around that form; it does not demonstrate that a barrel plus cyan
 blocks plus a crossbar is a sufficient recipe for designing any weapon.
 
-[Point defence](../../apps/web/src/pages/lab/studies/ion-point-defence-2026-11-08.mdx)
+[Point defence](../../apps/web/src/content/lab/studies/ion-point-defence-2026-11-08.mdx)
 also starts with a supplied adaptation of those parts. Its marked base makes
 turning visible while the base lighting stays with the ship. The retained parts
 have a specific reason for their arrangement and a particular event to express.

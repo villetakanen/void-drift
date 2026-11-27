@@ -9,7 +9,7 @@ import {
   starterLoadout,
   YELLOW_FAMILY_RADIUS,
 } from "@void-drift/mode-a";
-import { z } from "astro/zod";
+import { z } from "zod";
 import {
   type FlightExperiment,
   FlightSceneDocumentSchema,

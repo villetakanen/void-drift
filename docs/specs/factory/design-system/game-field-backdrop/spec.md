@@ -1,9 +1,9 @@
 ---
 
 generated:
-  by: "openai/gpt-6.1-terra"
-  at: "2026-11-24T14:37:17+02:00"
-verified: [{ by: "codex/gpt-6", at: "2026-11-19T20:34:26+02:00" }, { by: "codex/gpt-6", at: "2026-11-19T21:04:09+02:00" }]
+  by: "openai/gpt-6.2-sol"
+  at: "2026-11-27T19:57:06Z"
+verified: []
 
 ---
 
@@ -42,9 +42,11 @@ backdrop; the component does not take its system from an active game.
 - The backdrop presents the generated Sun and planets with their visible
   circular orbit paths over the prepared sky. It presents no ships, derelicts,
   flight effects, arena boundary or gameplay influence guides.
-- The star-system composition and scrim fill the viewport. The Sun sits in the
-  lower-right area and the system extends toward the upper-left. The Title
-  Screen's panel is the composition target; other pages use the same framing.
+- The sky and scrim fill the backdrop. The star system fits within a centred
+  16:9 frame without stretching; the Sun, planets and circular orbits keep their
+  proportions as the backdrop resizes. The Sun sits in the lower-right area and
+  the system extends toward the upper-left. The Title Screen's panel is the
+  composition target; other pages use the same framing.
 - The scrim is visual only. It does not make a screen modal or change focus and
   input behavior. With reduced motion, the decorative system remains still.
 

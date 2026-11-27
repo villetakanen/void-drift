@@ -22,7 +22,7 @@ The same chain made the shot move at a fixed world velocity without carrying the
 
 The error was not simply that rendering looked wrong. An ungrounded interpretation had become simulation behavior, documentation and test expectations. Writing it into a spec did not make it a justified decision.
 
-Historical evidence: [integration plan](2026-11-18-plasma-combat-integration.md), `docs/specs/game/plasma-rifle/spec.md` (historical reference), [operation study](../../apps/web/src/pages/lab/studies/plasma-rifle-operation-2026-11-18.mdx). The plan and rifle contract are failed-attempt artifacts, not restart authority.
+Historical evidence: [integration plan](2026-11-18-plasma-combat-integration.md), `docs/specs/game/plasma-rifle/spec.md` (historical reference), [operation study](../../apps/web/src/content/lab/studies/plasma-rifle-operation-2026-11-18.mdx). The plan and rifle contract are failed-attempt artifacts, not restart authority.
 
 ## How the mistake became an expensive loop
 

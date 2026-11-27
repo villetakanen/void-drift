@@ -14,7 +14,7 @@ verified:
 ### Context
 
 A baseline automatic directional weapon implements the accepted
-[Light Ion Cannon study](../../../../apps/web/src/pages/lab/studies/light-ion-cannon-2026-11-08.mdx).
+[Light Ion Cannon study](../../../../apps/web/src/content/lab/studies/light-ion-cannon-2026-11-08.mdx).
 The accepted form, mounting and firing identity remain fixed during integration.
 
 ### Architecture

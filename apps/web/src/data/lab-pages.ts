@@ -1,4 +1,4 @@
-import { z } from "astro/zod";
+import { z } from "zod";
 
 // The Lab's page map: the nav rail and the /lab index render from it.
 // `source` says what a page shows: the game's own code, a study-local

@@ -1,0 +1,19 @@
+---
+import { getCollection, render } from "astro:content";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+export async function getStaticPaths() {
+  const studies = await getCollection("studies");
+  return studies.map((entry) => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<StudyLayout study={entry.data}>
+  <Content />
+</StudyLayout>

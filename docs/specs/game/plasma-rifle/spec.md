@@ -14,7 +14,7 @@ legacy_reviewer: "Ville Takanen (undated)"
 
 ### Context
 
-An approach that keeps an opponent in front of the rifle should give the pilot time to build a charge. An opponent slipping across the muzzle should produce a shorter opportunity. Each fitted rifle observes the encounter from its own fixed muzzle. The 0.7 s charge interval is the benchmark for judging these opportunities. [Operation study](../../../../apps/web/src/pages/lab/studies/plasma-rifle-operation-2026-11-18.mdx)
+An approach that keeps an opponent in front of the rifle should give the pilot time to build a charge. An opponent slipping across the muzzle should produce a shorter opportunity. Each fitted rifle observes the encounter from its own fixed muzzle. The 0.7 s charge interval is the benchmark for judging these opportunities. [Operation study](../../../../apps/web/src/content/lab/studies/plasma-rifle-operation-2026-11-18.mdx)
 
 ### Architecture
 

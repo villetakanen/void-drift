@@ -1,0 +1,53 @@
+---
+title: "In-game controllers: side-margin angled thrust flaps"
+phase: scope
+status: accepted
+question: How should the 60°-angled L/F and R/F side-margin touch flaps be sized and layered across phone, tablet, and desktop screens?
+---
+
+<h2 id="part-01">01 / Give each thumb room to turn and burn</h2>
+
+Touch needed the same direct commands as `A` / `←`, `D` / `→` and `W` / `↑` on keyboard. Put a turn pad above a forward-burn pad at each lower screen edge, outside the central fly area. Keep the 60° flap silhouette, with a seam that slopes 30° down from the bezel inward. The study asked how much space to reserve and how to make the pads read without covering the scene.
+
+<h2 id="part-02">02 / From stage sizing to glass panes</h2>
+
+<p id="part-02-1"><strong>02.1 / Raw viewports.</strong> Plotting the flaps directly on device rectangles exposed three separate concerns: where space is drawn, where the camera fits flight, and where controls sit.</p>
+
+<p id="part-02-2"><strong>02.2 / Scaled stage.</strong> Clamping the logical stage between 16:9 and 4:3 did not keep touch margins usable: a 180-unit gutter at 1080 logical height became 128 CSS px on a 1024 × 768 iPad and about 62 CSS px in the compact-phone example.</p>
+
+<p id="part-02-3"><strong>02.3 / Fixed CSS gutters.</strong> Reserve 180 CSS px on each side and a nominal 48 CSS px at the top and bottom. Keep space drawn behind the gutters and let the central camera box grow with the viewport (width minus 360 CSS px at the nominal side gutters).</p>
+
+![The 4:3 iPad model shows a 664 by 672 CSS-pixel fly area inside fixed gutters.](/studies/in-game-controllers/02-3-ipad-gutter.png)
+
+*02.3: the bench's 1024 × 768 iPad diagram with guides on and fixed CSS gutters. This is a sizing model rendered in the desktop Lab, not a device test.*
+
+<p id="part-02-4"><strong>02.4 / Nest the picture, not the touch area.</strong> The lower burn pane occupies 84% of the upper pane’s width (151 of 180 CSS px) and 54% of the stack height. The touch areas still span the full gutter width and meet along the seam, so a thumb can cross it without lifting.</p>
+
+<p id="part-02-5"><strong>02.5 / Cut back the chrome.</strong> Keep the arrow and caption, remove the border, and thin the glass so it does not obscure the stars. Only panes associated with the active command should light.</p>
+
+<h3 id="part-02-6">02.6 / Accepted: disjoint glass with independent feedback</h3>
+
+Overlapping blue and yellow panes mixed their tints. Draw them as two disjoint, borderless polygons instead. The lower burn pane stays denser than the upper turn pane in both states: **22% / 36%** blue at rest (`--color-elev-3`) and **9% / 16%** yellow when active (`--color-selected`). Set both white arrow-and-caption markings (`--color-text`) 72 CSS px from the outside edge; place the upper marking on the slanted corridor’s centerline.
+
+![Left stack close-up: white TURN and BURN markings share an inset on two separate borderless blue panes.](/studies/in-game-controllers/02-6-pane-closeup.png)
+
+*02.6: the bench’s CSS-pixel close-up at rest. The lower pane is slightly denser.*
+
+| Held state | 02.6 prototype stage |
+| --- | --- |
+| Rest | ![All four panes stay blue.](/studies/in-game-controllers/02-6-rest.png) |
+| Left turn | ![Only the upper left turn pane lights yellow.](/studies/in-game-controllers/02-6-turn-left.png) |
+| Forward burn | ![Both lower burn panes light; both turn panes stay blue.](/studies/in-game-controllers/02-6-forward.png) |
+| Forward + left | ![Both lower burn panes and the upper left turn pane light together.](/studies/in-game-controllers/02-6-forward-left.png) |
+
+*Same 1024 × 680 mock stage with the accepted pane settings. The bench held each state over an illustrative starfield; the stills show feedback, not flight physics.*
+
+<h2 id="part-03">03 / Where the design fit</h2>
+
+The study separated three jobs: screen geometry reserves the gutters independently of the rendered space; input combines keyboard and concurrent pointers while tracking the command for pad feedback; and the deck draws the glass separately from its full-width touch regions. Thumb slides change pads at the seam, and ending or interrupting a gesture clears the press.
+
+<h2 id="part-04">04 / Where the work went</h2>
+
+The Game Screen contract owns gutter and camera geometry. The controls contract owns input and feedback; [Thrust Pads in the Lab](/lab/controls) shows the current implementation. The captures preserve the accepted study, not every later input or layout decision.
+
+*Playwright reconstruction from the original benches at `1b760f86`, captured 26 November 2026 in a 1440 × 1000 browser viewport. That revision retains the full study and bench code.*

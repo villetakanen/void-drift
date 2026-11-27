@@ -1,5 +1,5 @@
 import { defaultLoadout } from "@void-drift/mode-a";
-import type { z } from "astro/zod";
+import type { z } from "zod";
 import type { FlightSceneDocumentSchema } from "./config";
 
 export const FISSION_REST_TICKS = 12;

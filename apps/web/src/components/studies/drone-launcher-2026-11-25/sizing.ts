@@ -1,4 +1,4 @@
-import { z } from "astro/zod";
+import { z } from "zod";
 import suppliedSizing from "../../../../public/studies/drone-launcher-2026-11-25/02-2-sizing.json";
 
 export const FittingSchema = z.enum([

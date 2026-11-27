@@ -1,4 +1,4 @@
-import { z } from "astro/zod";
+import { z } from "zod";
 
 type Issue = { path: (string | number)[]; message: string };
 // Wraps a game schema (separate Zod instance) so its own rules still apply.

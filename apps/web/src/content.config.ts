@@ -1,5 +1,6 @@
-import { defineCollection, z } from "astro:content";
+import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
+import { z } from "astro/zod";
 
 import { parseTimestamp } from "./lib/timestamp";
 
@@ -37,4 +38,14 @@ const fieldGuide = defineCollection({
   }),
 });
 
-export const collections = { fieldGuide };
+const studies = defineCollection({
+  loader: glob({ base: "./src/content/lab/studies", pattern: "*.mdx" }),
+  schema: z.object({
+    title: z.string().trim().min(1),
+    question: z.string().trim().min(1),
+    phase: z.enum(["problem", "exploration", "readiness", "scope"]),
+    status: z.enum(["open", "blocked", "accepted", "ruled-out", "stopped"]),
+  }),
+});
+
+export const collections = { fieldGuide, studies };

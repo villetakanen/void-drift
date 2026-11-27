@@ -1,5 +1,5 @@
 import { massWellReach } from "@void-drift/core";
-import { z } from "astro/zod";
+import { z } from "zod";
 import { BURN_IDS } from "../instrument/burns";
 import { EnergyAnalysis } from "../instrument/energy";
 

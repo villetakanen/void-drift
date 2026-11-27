@@ -1,6 +1,6 @@
 import { Vec2 } from "@void-drift/core";
 import { CHASSIS, engineImpulse } from "@void-drift/mode-a";
-import { z } from "astro/zod";
+import { z } from "zod";
 
 export const BenchSettings = z.object({
   acceleration: z.number().finite().min(1).max(2000),

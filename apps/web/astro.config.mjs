@@ -1,10 +1,12 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { unified } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
 import svelte from "@astrojs/svelte";
 import sentry from "@sentry/astro/integration";
 import { sentryVitePlugin } from "@sentry/bundler-plugins/vite";
 import { defineConfig } from "astro/config";
+import { generatedWrapperMap } from "./src/lib/generated-wrapper-map.mjs";
 import { sentryBrowserConfig } from "./src/lib/sentry-build-config.mjs";
 
 const rootPackage = JSON.parse(
@@ -34,6 +36,39 @@ const preserveWorkerSourceMaps = {
     },
   },
 };
+// Vite can re-emit a worker's original map into the main bundle after the
+// worker plugins run, overwriting the stamped worker map.
+const stampEmittedWorkerMaps = {
+  name: "void-drift-emitted-worker-maps",
+  generateBundle: {
+    order: "post",
+    handler(_options, bundle) {
+      for (const asset of Object.values(bundle)) {
+        const wrapperMap = generatedWrapperMap(asset);
+        if (wrapperMap) {
+          asset.code += `\n//# debugId=${wrapperMap.debug_id}\n`;
+          this.emitFile({
+            type: "asset",
+            fileName: `${asset.fileName}.map`,
+            source: JSON.stringify(wrapperMap),
+          });
+        }
+        if (
+          asset.type !== "asset" ||
+          !/\.worker[-.].*\.js$/.test(asset.fileName)
+        )
+          continue;
+        const code = String(asset.source);
+        const debugId = code.match(/^\/\/# debugId=([a-f0-9-]{36})$/m)?.[1];
+        const map = bundle[`${asset.fileName}.map`];
+        if (!debugId || map?.type !== "asset") continue;
+        const sourceMap = JSON.parse(String(map.source));
+        sourceMap.debug_id = debugId;
+        map.source = JSON.stringify(sourceMap);
+      }
+    },
+  },
+};
 const browserReporting = {
   name: "void-drift-browser-reporting",
   hooks: {
@@ -44,6 +79,7 @@ const browserReporting = {
       options.updateConfig({
         vite: {
           define: { __SENTRY_BROWSER_CONFIG__: JSON.stringify(config) },
+          plugins: [stampEmittedWorkerMaps],
           worker: {
             plugins: () => [
               sentryVitePlugin(sentryStampOnly),
@@ -65,6 +101,8 @@ const browserReporting = {
 export default defineConfig({
   site: "https://void-drift-alpha.web.app",
   devToolbar: { enabled: false },
+  // Preserve the existing MDX parser and rendered content during the upgrade.
+  markdown: { processor: unified() },
   envDir: "../../",
   integrations: [svelte(), mdx(), browserReporting],
   redirects: {

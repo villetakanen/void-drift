@@ -50,7 +50,7 @@ def bootstrap():
         raise RuntimeError("Node is missing from PATH")
     config = {
         "Label": LABEL,
-        "ProgramArguments": [node, str(WEB / "node_modules/astro/astro.js"), "dev"],
+        "ProgramArguments": [node, str(WEB / "node_modules/astro/bin/astro.mjs"), "dev"],
         "WorkingDirectory": str(WEB),
         "EnvironmentVariables": {"PATH": os.environ["PATH"], "VOID_DRIFT_SHARED_PREVIEW": "1"},
         "RunAtLoad": True,
@@ -96,6 +96,13 @@ def main(action):
             completed = float(marker.read_text()) if marker.exists() else 0
             shared_start = requested <= completed <= time.monotonic()
             starting = not owner or (action == "restart" and not shared_start)
+            plist = STATE / "preview.plist"
+            if info and plist.exists():
+                with plist.open("rb") as file:
+                    program = plistlib.load(file).get("ProgramArguments", [])
+                if len(program) < 2 or program[1] != str(WEB / "node_modules/astro/bin/astro.mjs"):
+                    subprocess.run(["launchctl", "bootout", JOB], check=True)
+                    info = ""
             if not info:
                 bootstrap()
             elif starting:

@@ -1,0 +1,240 @@
+---
+title: "Plasma rifle operation"
+question: "How should a fitted plasma rifle commit to a charge and resolve it when a target slips away or stays within reach?"
+phase: "scope"
+status: "accepted"
+---
+
+import StudySection from '../../../components/studies/plasma-projector-fitting-2026-11-17/StudySection.astro';
+
+<StudySection>
+
+**Accepted · 18 November 2026.** The charge makes two outcomes readable from the fitted ship. Losing the target vents the stored plasma and pushes the ship back. Holding it through release adds a concentrated stream, a contact eruption and a distinct kick. The accepted scope is a functional unsanctioned Playground fitting.
+
+## 01 / One approach, two outcomes
+
+An approaching Fighter has time to start loading its rifle. By the time the channel is bright, the target may have crossed the muzzle. Can the pilot read the commitment early enough to fly through either outcome? The Playground fitting supplies the World drawing, scale, mass and slot. The proposed result is one automatic rifle cycle a pilot can recognise from the mounted light, the target and the Fighter’s motion.
+
+**1. Charging.** Fly a target into and across the rifle’s field. What range and alignment start loading, how long does it take, and when is the shot committed? Compare idle, partly loaded and ready at flight scale. Place provisional light in the exposed channel using the charged drawing. When can the pilot first see the charge, and when does it feel ready? Measure the cost of preparation. Repeat with falling power and with a target returning mid-cycle.
+
+**2. Discharge after target loss.** Let the same target slip clear just before release. Where does the gathered plasma go? Try the earlier paired-vent proposal. Follow both outlets through cooling, check for weak incidental damage, and watch whether sustained backward thrust reads on an off-centre mount without turning the ship. Decide when the rifle can charge again.
+
+**3. Firing on target.** Keep the target in reach through release. Judge the central eruption, backward kick, continuing vent thrust and longer recovery against the discharge-only pass. Vary distance and obstruction to settle reach, falloff, damage to the first surface and newly exposed fragments. Can the pilot still see the escape route and recognise the next affordable shot?
+
+### Conditions for the first comparisons
+
+Use the [Flight scene inspector](/lab/flight-scene) with its fixed burns and scrub the same approach on either side of each transition. Keep a Fighter with a top-visible aft rifle and Service ion drives throughout. Keep a Light Ion Cannon in the opposite aft slot so its firing overlaps rifle preparation. In a matched coast pass, artificially suppress all propulsion thrust, including stabilizers, while retaining fitted mass, initial drift and weapon forces. That pass isolates the kick from the continuing vent push.
+
+Keep automatic fire, zero idle energy draw, the weapon energy floor and existing weapon order as game constraints. Compare full-shot affordability at acquisition and at release, including a competing cannon spending energy between them. Show energy before loading, at target loss or strike, and after recovery. Cross two eligible targets to expose which one the rifle follows. Before proposing a functional Playground part, settle the energy debits and cooldown on every exit, target selection among eligible contacts, and the relation between visible emission, contact damage and ship response. Readiness must then trace those decisions into simulation, rendering, part data and the Playground contract.
+
+### Earlier evidence
+
+The [engine identity study](/lab/studies/engine-identities#plasma-trial) established amber as the plasma accent and explored containment under pressure. The [engine behaviour comparison](/lab/studies/plasma-behaviour-2026-11-01) makes delay and recovery visible in a trajectory. The [plasma light study](/lab/studies/plasma-light-2026-11-11) shows a tightening hot core before release and distinguishes light attached to the emitter from fire left behind. The [ion engine study](/lab/studies/ion-engines-2026-10-31) and [Service ion study](/lab/studies/maintenance-drive-2026-11-17) supply the contrasting propulsion reference.
+
+The [first projector study](/lab/studies/plasma-projector-2026-11-11) proposed separate preparation and strike costs. The [parked effects study](/lab/studies/plasma-projector-2026-11-16) tried a release kick followed by continuous vent thrust. Both supply hypotheses for the two outcomes. The [fitting study](/lab/studies/plasma-projector-fitting-2026-11-17) supplies the physical rifle and charged-light prototype. This cycle owns the proposed operating sequence on that fitting, including how its light and motion communicate timing. Final visual identity belongs to the parked effects inquiry.
+
+<details>
+<summary>Question test · 18 November 2026</summary>
+
+| Metric | Result | Reason |
+| --- | --- | --- |
+| One subject | Pass | Both outcomes answer how one fitted rifle operates. Provisional light communicates timing, while the parked effects study retains final visual identity. |
+| Grounded | Pass | The fitting and fixed weapon rules match the parts contract. The matched flight passes, energy readings and crossing targets make the proposed operating choices observable. |
+| Consequence | Pass | The answer defines how the fitted Plasma rifle charges, fires or vents, and becomes available again in the proposed Playground version. |
+
+Corrected and rerun.
+
+</details>
+
+</StudySection>
+
+<StudySection>
+
+<details id="021--a-charge-under-ion-fire">
+<summary>02.1 / A charge under ion fire</summary>
+
+On the Fighter, the rifle’s structure gave the glow a direction even where it spilled past the channel. The under-carriage changes how much of that structure is visible. The two purge channels also leave room for a second cue during loading.
+
+</details>
+
+</StudySection>
+
+<StudySection>
+
+<details id="022--when-do-the-purge-channels-begin-to-glow">
+<summary>02.2 / When do the purge channels begin to glow?</summary>
+
+On the Wasp’s under-carriage, both charge shapes read as a glowing mass. The Fighter’s exposed rifle structure had supplied much of the direction attributed to the light. Purge timing remains open.
+
+<details>
+<summary>The two mounts at full charge</summary>
+
+![Fighter with the charged rifle above the hull](/studies/plasma-rifle-operation-2026-11-18/022-fighter.jpg)
+![Wasp with the charged rifle beneath the hull](/studies/plasma-rifle-operation-2026-11-18/022-wasp.jpg)
+
+B1 at 3.8 s on each mount. Centre only, Fill channel, two-second charge.
+
+</details>
+</details>
+</StudySection>
+
+<StudySection>
+
+<details id="023--a-line-towards-the-muzzle">
+<summary>02.3 / A line towards the muzzle</summary>
+
+Brightening the full line gave a better sense of the loaded rifle than growing it towards the muzzle. The Wasp’s hull hides the under-mounted charge. Where a channel opens onto empty space, the light looks too bright.
+
+<details>
+<summary>The preferred charge on both mounts</summary>
+
+![Fighter with the line at full charge](/studies/plasma-rifle-operation-2026-11-18/023-fighter.jpg)
+![Wasp with the line at full charge](/studies/plasma-rifle-operation-2026-11-18/023-wasp.jpg)
+
+B1 at 3.8 s, width 1.1×, brighten in place, phased purge, steady buildup, 0.7 s to full charge.
+
+</details>
+</details>
+</StudySection>
+
+<StudySection>
+
+<details id="024--light-across-an-open-channel">
+<summary>02.4 / Light across an open channel</summary>
+
+The preferred charge gathers into a bead at 0.9× width, retaining 70% of its light over empty space. The purge channels join halfway through the steady 0.5-second charge. A full charge fades in 0.3 seconds after target loss. The primary bead is now 25% longer than the original, with its centre 0.6 world units closer to the muzzle.
+
+<details>
+<summary>The outgoing bead at full charge</summary>
+
+![Fighter with the 02.4 bead](/studies/plasma-rifle-operation-2026-11-18/024-fighter.jpg)
+![Wasp with the 02.4 bead](/studies/plasma-rifle-operation-2026-11-18/024-wasp.jpg)
+
+B1 at 3.8 s on each mount.
+
+</details>
+</details>
+</StudySection>
+
+<StudySection>
+
+<details id="025--where-the-bead-sits-in-the-barrel">
+<summary>02.5 / Where the bead sits in the barrel</summary>
+
+The selected bead is 1.70× long, with its centre 1.7 world units aft of the original position. Width is 0.9×, light over empty space is 70%, and the side channels join halfway through the steady charge. The rifle loads in 0.5 s and fades to empty in 0.3 s.
+
+<details>
+<summary>The selected charge on both mounts</summary>
+
+![Fighter at full charge](/studies/plasma-rifle-operation-2026-11-18/025-fighter.jpg)
+![Wasp at full charge](/studies/plasma-rifle-operation-2026-11-18/025-wasp.jpg)
+
+B1 at 3.8 s.
+
+</details>
+</details>
+</StudySection>
+
+<StudySection>
+
+<details id="026--what-the-rifle-sheds">
+<summary>02.6 / What the rifle sheds</summary>
+
+When the target slips away, the rifle still has hot plasma to shed. Picture a whale blowing water: two fast sprays open from the side ports, briefly tracing the antlers of the earlier projector. Their travel should be visible. As the rifle empties, the escaping material pushes the ship backwards for as long as the ports are venting.
+
+**Settled for this study.** The two ports vent fumes. Each spray inherits the ship’s velocity and adds 300 u/s along its outlet direction. Venting accelerates the ship backwards at 125 u/s². The selected Wasp setup charges in 0.7 s and empties from full in 0.3 s. Exhaust damage remains open.
+
+<details>
+<summary>Wasp before, during and after venting</summary>
+
+![Charged before target loss](/studies/plasma-rifle-operation-2026-11-18/026-252.jpg)
+![Paired fumes during recoil](/studies/plasma-rifle-operation-2026-11-18/026-264.jpg)
+![Fumes drifting after the charge empties](/studies/plasma-rifle-operation-2026-11-18/026-282.jpg)
+
+B1 at 4.2, 4.4 and 4.7 s.
+
+</details>
+</details>
+</StudySection>
+
+<StudySection>
+
+<details id="027--where-the-stream-opens">
+<summary>02.7 / Where the stream opens</summary>
+
+A target stays within reach long enough to fire. A narrow stream leaves the centre channel and travels a short distance before it opens. The fireball came closest, but its scattered points felt light beside the ion cannon. A roughly 70-point strike would carry over four close-range ion hits (16 each). Can a single hot core and a rolling orange edge give that weight to the instant the stream opens? A stock 85-hull wreck now takes fire from both weapons. The stream erupts on its first physical contact for 70 damage. Radius, heat and turbulence shape the fireball while the hit stays fixed. The Wasp’s weaving pass shows the other outcome: the wreck slips out of the rifle’s zone while the ion cannon keeps firing.
+
+The selected Wasp fireball has a 58 u radius, 2× turbulence and 1.2× heat.
+
+<details>
+<summary>The contact hit at 0.90 s</summary>
+
+![Wasp plasma fireball breaking the wreck after three ion shots](/studies/plasma-rifle-operation-2026-11-18/027-hit-wasp.jpg)
+
+B1. Ion fire left 45 hull before the 70-point plasma hit.
+
+</details>
+</details>
+</StudySection>
+
+<StudySection>
+
+## 02.8 / The kick at release
+
+**Settled for this study.** The release impulse is 0.7 seconds at 70% of one plasma engine’s full thrust. The vents apply a common force calibrated to 125 u/s² on the fitted Wasp. Both responses scale with fitted mass.
+
+<details>
+<summary>Wasp recoil comparison before the decision</summary>
+
+![Wasp after release and impact](/studies/plasma-rifle-operation-2026-11-18/028-recoil-wasp.jpg)
+
+B1 at 0.90 s, using the nearest former slider step of 0.50 engine-seconds. The selected impulse is 0.49 engine-seconds.
+
+</details>
+</StudySection>
+
+<StudySection>
+
+## 02.9 / What the rifle sees and what it harms
+
+Can the pilot bring one wreck into firing position while a second only catches the blast or brushes the fumes? A cyan sector opens from the muzzle. Its angle sets how precisely the pilot must aim; its radius sets the furthest eligible wreck centre. At 30°, the weaving Wasp loses its target before the charge completes. Each body takes one primary hit, using its nearest material to the impact point. The three amber rings deal 75 through 10 u, 50 through 26 u, and 25 through 42 u. Each entry into the combined violet fume area deals 3 points; staying inside or crossing between overlapping sprays adds no hit. The light can extend beyond the damage zones.
+
+**Targeting.** Ships and derelicts can trigger a charge. Debris can take a stream hit, blast damage or fume damage while the rifle is firing at another target. The trial exercised acquisition with wrecks.
+
+**Energy.** Charging and firing each draw at one plasma engine’s rate for 0.7 s. At the current 5 power/s, a full cycle costs 7 power. Losing the target before release costs only the elapsed charging time. Release requires 13.5 power and spends 3.5 immediately. After 0.7 s of firing, or once a lost charge finishes venting, the rifle cools for 2.1 s. A target still in the cone starts the next charge.
+
+![Wasp charging beside the ion cannon at 0.65 seconds](/studies/plasma-rifle-operation-2026-11-18/029-charge.jpg)
+
+Wasp, B1 at 0.65 s. The wreck is inside the 30° sector. The rifle is 93% charged with 95.5 ship power remaining.
+
+![Contact eruption and damage zones after the first Wasp shot](/studies/plasma-rifle-operation-2026-11-18/029-contact.jpg)
+
+The same pass at 0.90 s. The 75-point strike removes the wreck’s remaining 37 hull. The readout records 50 hull lost to splash and 3 to fumes.
+
+</StudySection>
+
+<StudySection>
+
+## 03 / Ready for a Playground trial
+
+The operating model is settled. A pilot who holds a ship or derelict in the muzzle sector through a full charge gets a concentrated stream and a contact eruption. A pilot who loses the target pays for the charge already gathered and feels the vents push the ship back. Both exits commit the rifle to recovery.
+
+The Wasp and Fighter trials establish the two mount views, mass-dependent recoil and competition with a live ion cannon. Wrecks and fragments exercise contact, breakup and incidental damage. The repeat-cycle test held one wreck in the cone through two releases. Gauntlet already supplies live ship targets and hull-damage callbacks to the weapon scheduler. Its quarter-tick combat steps make it the check that charging, recoil and contact damage stay independent of update frequency. The 130 u reach, 30° full angle and 6 u fume radius are the starting Playground tuning.
+
+**Integration boundary.** The fitted part already owns its artwork, mount geometry, mass and Playground eligibility. The study advanced the rifle after the game tick and painted through inspector callbacks. In play each fitted rifle needs its own state in weapon order, access to the ship’s actual power and velocity, and a flight renderer that can read muzzle, vent and impact events. The two moving spray envelopes bound collision work independently of the number of visible particles. Frame cost with several rifles firing remains unmeasured.
+
+</StudySection>
+
+<StudySection>
+
+## 04 / Scope for the functional fitting
+
+| Slice | Depends on | Delivery and check |
+| --- | --- | --- |
+| 1 · Part contract · Small | Agreed operation | Review the simulation and render ownership. Update the Parts, Playground and Hangar specs where they describe an inert fitting or mass-only card. Define rifle parameters and per-mount state in the shared weapon schemas. Preserve existing builds, slot compatibility and unsanctioned launch rules. |
+| 2 · Automatic cycle · Medium | 1 | Run acquisition and power spending in the existing weapon scheduler, in defence and slot order. Check target loss, waiting at full charge below 13.5 power, partial and full venting, and repeat release on a surviving target after recovery. Fit two rifles to check independent timers and competition for the last affordable shot. |
+| 3 · Contact and ship response · Largest | 2 | Use encounter ship and derelict geometry for acquisition. Cast the moving stream to first contact and apply the three damage bands once per body using nearest hull material. Apply 3 damage per entry into either spray, counting overlap once. Check an intervening fragment, breakup, shooter exclusion and a moving opponent. Verify inherited velocity, release kick and sustained vent force on both chassis. |
+| 4 · Flight presentation · Medium | 2–3 | Feed the shared flight passes from simulation state. Use the settled bead and phased side lights, paired drifting fumes and contact fireball. Check Wasp hull occlusion and Fighter top lighting beside ion fire. Compare frame cost with multiple active mounts and off-camera effects. |
+| 5 · Playground delivery · Small | 1–4 | Launch through the Hangar with a saved rifle fitting. Exercise derelict and ship encounters and an empty Practice flight. Check Playground Off launch protection and Playground On scoring, update the weapon’s Lab reference, and replace the decorative-only regression with functional fitting coverage. |
+
+</StudySection>

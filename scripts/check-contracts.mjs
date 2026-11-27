@@ -144,20 +144,33 @@ console.log("theme-color matches --color-void.");
 
 // The Lab has no game modes: nothing in it imports the flight shell, the
 // Hangar, the title screen or score submission.
-const labFiles = execFileSync(
-  "git",
-  [
-    "ls-files",
-    "-z",
-    "--",
-    "apps/web/src/pages/lab",
-    "apps/web/src/components/lab",
-    "apps/web/src/components/studies",
-  ],
-  { encoding: "utf8" },
-)
-  .split("\0")
-  .filter((file) => file && existsSync(file));
+const labFiles = [
+  ...execFileSync(
+    "git",
+    [
+      "ls-files",
+      "-z",
+      "--",
+      "apps/web/src/pages/lab",
+      "apps/web/src/components/lab",
+      "apps/web/src/components/studies",
+    ],
+    { encoding: "utf8" },
+  ).split("\0"),
+  ...execFileSync(
+    "git",
+    [
+      "ls-files",
+      "-z",
+      "--others",
+      "--cached",
+      "--exclude-standard",
+      "--",
+      "apps/web/src/content/lab/studies",
+    ],
+    { encoding: "utf8" },
+  ).split("\0"),
+].filter((file) => file && existsSync(file));
 const gameModeImport =
   /^import\b[^;]*\b(?:FlightDeck|ShipBuilder|TitleScreen|GameWrapper|submitHighScore)\b[^;]*;/m;
 const labGameModes = labFiles.filter((file) =>

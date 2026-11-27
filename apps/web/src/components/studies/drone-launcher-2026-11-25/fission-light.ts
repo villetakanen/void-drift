@@ -1,5 +1,5 @@
 import type { FxPass } from "@void-drift/core";
-import { z } from "astro/zod";
+import { z } from "zod";
 
 // Drone launcher 02.7: fission light, painted from what it has to say.
 //

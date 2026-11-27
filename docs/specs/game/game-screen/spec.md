@@ -48,7 +48,7 @@ never the run.
 
 #### References
 
-- [In-game controllers study](../../../../apps/web/src/pages/lab/studies/in-game-controllers.mdx)
+- [In-game controllers study](../../../../apps/web/src/content/lab/studies/in-game-controllers.mdx)
   supplies the CSS-pixel gutter model and the thrust-pad design that the
   controls contract places in the side gutters.
 - [ASDLC Living Specs](https://asdlc.io/practices/living-specs/) and
