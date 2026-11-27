@@ -8,12 +8,8 @@ let _props: { "client:load"?: boolean } = $props();
 // mass, descriptions, compatibility and drawings are production. Fixture:
 // each list has its own mount and fitting, kept only on this page.
 import "@void-drift/core/styles/buttons.css";
-import {
-  PARTS,
-  type PartId,
-  type SlotType,
-  slotAccepts,
-} from "@void-drift/mode-a";
+import { type PartId, type SlotType, slotAccepts } from "@void-drift/mode-a";
+import { LEGACY_PARTS as PARTS } from "../../lib/instrument/legacy-fission";
 import PartDrawing from "./PartDrawing.svelte";
 
 type Case = {

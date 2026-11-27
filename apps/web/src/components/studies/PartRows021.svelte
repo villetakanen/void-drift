@@ -7,12 +7,8 @@ let _props: { "client:load"?: boolean } = $props();
 // Fixture: each list has its own mount and fitting, kept only on this page;
 // nothing here reads or writes the Hangar's ship.
 import "@void-drift/core/styles/buttons.css";
-import {
-  PARTS,
-  type PartId,
-  type SlotType,
-  slotAccepts,
-} from "@void-drift/mode-a";
+import { type PartId, type SlotType, slotAccepts } from "@void-drift/mode-a";
+import { LEGACY_PARTS as PARTS } from "../../lib/instrument/legacy-fission";
 import PartDrawing from "./PartDrawing.svelte";
 
 type Case = {

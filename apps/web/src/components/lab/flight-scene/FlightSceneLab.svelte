@@ -17,6 +17,7 @@ import {
 } from "../../../lib/flight-scene";
 import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import Switch from "../../inputs/Switch.svelte";
+import FissionFlightComparison from "./FissionFlightComparison.svelte";
 import FlightSceneInstrument from "./FlightSceneInstrument.svelte";
 
 // The Lab's reference use of the Flight scene instrument. The instrument has
@@ -109,86 +110,90 @@ const EXAMPLE_FITTING: FlightExperiment = {
 const id = $props.id();
 </script>
 
-{#key sceneKind}
-  <FlightSceneInstrument
-    config={activeDoc}
-    targets={sceneKind === "Wrecks" ? targets : "none"}
-    {layers}
-    {starAppearance}
-    start={stagedStart}
-    light={lit ? EXAMPLE_LIGHT : undefined}
-    experiment={fitting ? EXAMPLE_FITTING : undefined}
-  >
-    {#snippet pane()}
-      <p>Scene</p>
-      <SegmentedControl
-        label="Scene"
-        options={["Practice", "Wrecks", "Planet"]}
-        bind:value={sceneKind}
-      />
-      {#if sceneKind === "Planet"}
-        <p>Approach · changing start preserves the selected burn and time</p>
+{#if sceneKind === "Fission"}
+  <FissionFlightComparison onBack={() => (sceneKind = "Practice")} />
+{:else}
+  {#key sceneKind}
+    <FlightSceneInstrument
+      config={activeDoc}
+      targets={sceneKind === "Wrecks" ? targets : "none"}
+      {layers}
+      {starAppearance}
+      start={stagedStart}
+      light={lit ? EXAMPLE_LIGHT : undefined}
+      experiment={fitting ? EXAMPLE_FITTING : undefined}
+    >
+      {#snippet pane()}
+        <p>Scene</p>
         <SegmentedControl
-          label="Planet approach"
-          options={["Reference", "Deeper"]}
-          bind:value={planetApproach}
+          label="Scene"
+          options={["Practice", "Wrecks", "Planet", "Fission"]}
+          bind:value={sceneKind}
+        />
+        {#if sceneKind === "Planet"}
+          <p>Approach · changing start preserves the selected burn and time</p>
+          <SegmentedControl
+            label="Planet approach"
+            options={["Reference", "Deeper"]}
+            bind:value={planetApproach}
+          />
+          <p>
+            Current Practice Venus staged beside a Wasp. Fixed burns and
+            timeline; production body drawing.
+          </p>
+        {/if}
+        <p>Star colour · presentation only</p>
+        <SegmentedControl
+          label="Star colour"
+          options={["Stock", "Warm", "Cool"]}
+          bind:value={starColour}
         />
         <p>
-          Current Practice Venus staged beside a Wasp. Fixed burns and timeline;
-          production body drawing.
+          Warm/Cool use the standard star body and glow; gravity, collection,
+          damage, radius and replay are unchanged.
         </p>
-      {/if}
-      <p>Star colour · presentation only</p>
-      <SegmentedControl
-        label="Star colour"
-        options={["Stock", "Warm", "Cool"]}
-        bind:value={starColour}
-      />
-      <p>
-        Warm/Cool use the standard star body and glow; gravity, collection,
-        damage, radius and replay are unchanged.
-      </p>
-      {#if sceneKind === "Wrecks"}
-        <p>Targets</p>
-        <SegmentedControl
-          stretch
-          label="Targets"
-          options={modes.map((mode) => LABELS[mode])}
-          bind:value={
-            () => LABELS[targets],
-            (v) => {
+        {#if sceneKind === "Wrecks"}
+          <p>Targets</p>
+          <SegmentedControl
+            stretch
+            label="Targets"
+            options={modes.map((mode) => LABELS[mode])}
+            bind:value={
+              () => LABELS[targets],
+              (v) => {
   targets = modes.find((mode) => LABELS[mode] === v) ?? targets;
 }
-          }
-        />
-      {/if}
-      <p>Layers</p>
-      <div class="rows">
-        <label for={`${id}-world`}>World</label>
-        <Switch id={`${id}-world`} bind:checked={layers.world} />
-        <label for={`${id}-fx`}>FX</label>
-        <Switch id={`${id}-fx`} bind:checked={layers.fx} />
-        <label for={`${id}-lfx`}>LFX</label>
-        <Switch id={`${id}-lfx`} bind:checked={layers.lfx} />
-      </div>
-      <p>Study light</p>
-      <div class="rows">
-        <label for={`${id}-light`}>{EXAMPLE_LIGHT.label}</label>
-        <Switch id={`${id}-light`} bind:checked={lit} />
-      </div>
-      <p>Study fitting</p>
-      <div class="rows">
-        <label for={`${id}-fitting`}>Example fitting marker</label>
-        <Switch id={`${id}-fitting`} bind:checked={fitting} />
-      </div>
-      <p>
-        Replaces hull-0 artwork inside the shared ship drawing, preserving its
-        mount transform and hull occlusion. Flight and weapon behavior stay
-        unchanged.
-      </p>
-    {/snippet}
-  </FlightSceneInstrument>
-{/key}
+            }
+          />
+        {/if}
+        <p>Layers</p>
+        <div class="rows">
+          <label for={`${id}-world`}>World</label>
+          <Switch id={`${id}-world`} bind:checked={layers.world} />
+          <label for={`${id}-fx`}>FX</label>
+          <Switch id={`${id}-fx`} bind:checked={layers.fx} />
+          <label for={`${id}-lfx`}>LFX</label>
+          <Switch id={`${id}-lfx`} bind:checked={layers.lfx} />
+        </div>
+        <p>Study light</p>
+        <div class="rows">
+          <label for={`${id}-light`}>{EXAMPLE_LIGHT.label}</label>
+          <Switch id={`${id}-light`} bind:checked={lit} />
+        </div>
+        <p>Study fitting</p>
+        <div class="rows">
+          <label for={`${id}-fitting`}>Example fitting marker</label>
+          <Switch id={`${id}-fitting`} bind:checked={fitting} />
+        </div>
+        <p>
+          Replaces hull-0 artwork inside the shared ship drawing, preserving its
+          mount transform and hull occlusion. Flight and weapon behavior stay
+          unchanged.
+        </p>
+      {/snippet}
+    </FlightSceneInstrument>
+  {/key}
+{/if}
 
 <style>
 .rows {

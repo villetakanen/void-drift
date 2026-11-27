@@ -55,11 +55,11 @@ export class FxPass {
     ctx.shadowOffsetX = ctx.shadowOffsetY = 0;
     ctx.filter = "none";
   }
-  visible(x: number, y: number, radius: number) {
+  visible(x: number, y: number, halfWidth: number, halfHeight = halfWidth) {
     const px = this.a * x + this.c * y + this.e;
     const py = this.b * x + this.d * y + this.f;
-    const rx = radius * (Math.abs(this.a) + Math.abs(this.c));
-    const ry = radius * (Math.abs(this.b) + Math.abs(this.d));
+    const rx = halfWidth * Math.abs(this.a) + halfHeight * Math.abs(this.c);
+    const ry = halfWidth * Math.abs(this.b) + halfHeight * Math.abs(this.d);
     return (
       px + rx >= 0 &&
       py + ry >= 0 &&

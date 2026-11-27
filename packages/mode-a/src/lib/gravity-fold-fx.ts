@@ -1,6 +1,7 @@
 import {
   densestAirSample,
   drawHeatGlow,
+  FissionExhaust,
   FX_INK,
   FxPass,
   FxSparks,
@@ -91,6 +92,7 @@ export function drawGravityFold(
 export class FlightFx {
   readonly surface = new FxSurface();
   private readonly droneLight = new DroneLight();
+  private readonly fission = new FissionExhaust();
   private simulation?: Simulation;
   private readonly weaponSparks = new FxSparks();
   private weaponEvents = new WeakMap<Simulation, number>();
@@ -106,12 +108,22 @@ export class FlightFx {
   clear() {
     this.surface.clear();
     this.droneLight.clear();
+    this.fission.clear();
     this.weaponSparks.clear();
     this.weaponEvents = new WeakMap();
     this.weaponTime = 0;
     this.plasmaSeen = new WeakMap();
   }
+  /** Capture after each sim.step(), even when no frame is presented. */
+  captureFission(sim: Simulation) {
+    if (this.simulation !== sim) {
+      this.clear();
+      this.simulation = sim;
+    }
+    this.fission.capture(sim.ticks, sim.fissionIgnitions, sim.fissionContacts);
+  }
   drawShip(ctx: CanvasRenderingContext2D, sim: Simulation, fold = true) {
+    if (this.simulation === sim) this.fission.stamp(ctx, this.pass, sim.ticks);
     if (sim.settings.arrival && sim.settings.mode !== "practice") {
       const fade = Math.max(0, 1 - sim.ticks / 90);
       paintSpeedLine(
@@ -279,6 +291,8 @@ export class FlightFx {
   drawLfx(ctx: CanvasRenderingContext2D, sim: Simulation) {
     this.plasmaLivePass.begin(ctx, false);
     try {
+      if (this.simulation === sim)
+        this.fission.live(ctx, this.plasmaLivePass, sim.ticks);
       this.droneLight.live(ctx, this.plasmaLivePass, sim, sim.ticks * STEP);
       if (sim.salvage) this.drawPlasmaLive(ctx, sim.salvage, sim.ticks * STEP);
       for (const actor of sim.opponents)
@@ -310,10 +324,7 @@ export class FlightFx {
     presentationTime = sim.ticks / 60,
     overlay?: (ctx: CanvasRenderingContext2D, pass: FxPass) => void,
   ) {
-    if (this.simulation !== sim) {
-      this.clear();
-      this.simulation = sim;
-    }
+    this.captureFission(sim);
     this.surface.draw(
       ctx,
       presentationTime,

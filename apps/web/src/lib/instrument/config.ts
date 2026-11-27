@@ -15,6 +15,7 @@ import { EnergyAnalysis } from "./energy";
 // properties are sparse overrides shared across the experiment.
 
 import { gameSchema } from "./external-schema";
+import { LEGACY_FISSION } from "./legacy-fission";
 
 // Supported production values shared by every vehicle in an experiment.
 const PartChange = z
@@ -52,8 +53,24 @@ export const InstrumentConfig = z
     properties: ExperimentProperties.default({}),
     vehicles: z.array(InstrumentVehicle).min(1).max(6),
     energy: EnergyAnalysis.optional(),
+    paidIgnition: z.literal(true).optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((config, ctx) => {
+    if (!config.paidIgnition) return;
+    if (config.energy)
+      ctx.addIssue({
+        code: "custom",
+        path: ["energy"],
+        message: "Ordinary energy analysis is separate from paid ignition.",
+      });
+    if (Object.keys(config.properties.fusion ?? {}).length)
+      ctx.addIssue({
+        code: "custom",
+        path: ["properties", "fusion"],
+        message: "Paid ignition uses the current Fission catalogue values.",
+      });
+  });
 export type InstrumentConfig = z.infer<typeof InstrumentConfig>;
 
 export type Family = "ion" | "fusion" | "plasma";
@@ -77,7 +94,11 @@ export const PARAMETERS: Record<Family, Parameter[]> = {
 };
 export function stockValue(family: Family, key: string): number {
   const source: Record<string, unknown> =
-    family === "ion" ? ASSEMBLED_ION_DEFAULTS : PARTS[family];
+    family === "ion"
+      ? ASSEMBLED_ION_DEFAULTS
+      : family === "fusion"
+        ? LEGACY_FISSION
+        : PARTS.plasma;
   const value = source[key];
   return typeof value === "number" ? value : Number.NaN;
 }

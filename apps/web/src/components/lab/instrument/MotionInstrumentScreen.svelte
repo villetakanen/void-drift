@@ -30,6 +30,7 @@ let {
   bodies = [],
   onmovewell,
   label,
+  note,
   issues = [],
   children,
 }: {
@@ -46,6 +47,8 @@ let {
   bodies?: FieldBody[];
   onmovewell?: (index: number, x: number, y: number) => void;
   label: string;
+  /** Fixed comparison conditions, when they differ from the ordinary plots. */
+  note?: string;
   /** Problems with the host's document; listed in place of the screen. */
   issues?: { path: (string | number)[]; message: string }[];
   /** Pane content. */
@@ -89,6 +92,11 @@ const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
       class="screen"
       style={`width:${SCREEN.w}px;height:${SCREEN.h}px;transform:translate(-50%,-50%) scale(${scale})`}
     >
+      {#if note}
+        <p class="slot note" style={`left:${PAD}px;top:${TOP - 28}px`}>
+          {note}
+        </p>
+      {/if}
       <div class="slot" style={`left:${PAD}px;top:${TOP}px`}>
         {#if scene}
           {@render scene(tick)}
@@ -188,6 +196,11 @@ const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
 .slot {
   position: absolute;
   box-sizing: border-box;
+}
+.note {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 16px;
 }
 .slider-label {
   position: absolute;

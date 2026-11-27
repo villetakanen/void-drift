@@ -1,5 +1,6 @@
 import type { FxPass } from "@void-drift/core";
 import {
+  type FlightParts,
   type Loadout,
   PARTS,
   PartSchema,
@@ -7,6 +8,7 @@ import {
   STEP,
 } from "@void-drift/mode-a";
 import type { ExperimentProperties } from "../instrument/config";
+import { LEGACY_FISSION } from "../instrument/legacy-fission";
 import { atmosphereSample } from "./planet";
 
 export type EngineId = Loadout["side"];
@@ -85,11 +87,13 @@ export interface StudyLight {
 export type PartTuning = Pick<ExperimentProperties, "fusion" | "plasma">;
 
 /** The game's parts with a flight's tuning applied; the game's own when untuned. */
-export function tunedParts(tuning: PartTuning = {}): typeof PARTS {
+export function tunedParts(tuning: PartTuning = {}): FlightParts {
   if (!tuning.fusion && !tuning.plasma) return PARTS;
   return {
     ...PARTS,
-    fusion: PartSchema.parse({ ...PARTS.fusion, ...tuning.fusion }),
+    fusion: tuning.fusion
+      ? PartSchema.parse({ ...LEGACY_FISSION, ...tuning.fusion })
+      : PARTS.fusion,
     plasma: PartSchema.parse({ ...PARTS.plasma, ...tuning.plasma }),
   };
 }
@@ -160,7 +164,9 @@ export function studyLightState(
       const emitter = sim.emitters[index];
       if (!emitter) return [];
       const held = sim.engineSeconds[key] ?? 0;
-      const { chargeSeconds } = sim.parts[part];
+      const definition = sim.parts[part];
+      const chargeSeconds =
+        definition.response === "delayed" ? definition.chargeSeconds : 0;
       return [
         {
           part,

@@ -5,7 +5,13 @@ import { chromium } from "@playwright/test";
 const baseURL = process.env.FX_BASE_URL ?? "http://127.0.0.1:4347";
 const duration = Number(process.env.FX_PROFILE_SECONDS ?? 60);
 const camera = process.env.FX_PROFILE_CAMERA ?? "fixed";
-const weapons = process.env.FX_PROFILE_WEAPONS === "1";
+const workload =
+  process.env.FX_PROFILE_WORKLOAD ??
+  (process.env.FX_PROFILE_WEAPONS === "1" ? "weapons" : "baseline");
+if (!["baseline", "mixed", "fission-heavy", "weapons"].includes(workload))
+  throw new Error(
+    "FX_PROFILE_WORKLOAD must be baseline, mixed, fission-heavy or weapons",
+  );
 if (!["fixed", "moving"].includes(camera))
   throw new Error("FX_PROFILE_CAMERA must be fixed or moving");
 if (!Number.isFinite(duration) || duration < 5 || duration > 300)
@@ -22,7 +28,7 @@ try {
   for (const mobile of [false, true]) {
     const context = await browser.newContext({
       viewport: mobile
-        ? { width: 844, height: 390 }
+        ? { width: 1280, height: 590 }
         : { width: 1280, height: 720 },
       hasTouch: mobile,
       isMobile: mobile,
@@ -30,11 +36,17 @@ try {
     const page = await context.newPage();
     const errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
-    await page.goto(
-      `${baseURL}/lab/fx?camera=${camera}&weapons=${weapons ? "1" : "0"}`,
-    );
+    await page.goto(`${baseURL}/lab/fx?camera=${camera}&workload=${workload}`);
     const scene = page.getByRole("region", { name: "Arcade FX instrument" });
-    await scene.getByRole("button", { name: "Pause", exact: true }).waitFor();
+    await scene.and(page.locator(`[data-workload="${workload}"]`)).waitFor();
+    await page.waitForFunction(
+      () =>
+        Number(
+          document
+            .querySelector("[data-samples]")
+            ?.getAttribute("data-samples"),
+        ) > 0,
+    );
     await page.waitForTimeout(5000);
     const session = await context.newCDPSession(page);
     await session.send("Tracing.start", {
@@ -81,6 +93,7 @@ try {
       timing[name] = {
         count: ms.length,
         totalMs: ms.reduce((a, b) => a + b, 0),
+        p50Ms: ms[Math.floor(ms.length * 0.5)] ?? null,
         p95Ms: ms[Math.floor(ms.length * 0.95)] ?? null,
         maxMs: ms.at(-1) ?? null,
       };
@@ -93,7 +106,7 @@ try {
     results.push({
       label,
       camera,
-      weapons,
+      workload,
       graphics,
       browser: browser.version(),
       host: `${process.platform}/${process.arch}`,

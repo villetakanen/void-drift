@@ -7,6 +7,7 @@ import {
 } from "@void-drift/mode-a";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { FlightSceneDocumentSchema, type FlightView } from "./config";
+import { FISSION_REST_TICKS, FISSION_SCENES } from "./fission-fixture";
 import { FlightRun } from "./flight";
 import { FlightScene } from "./scene";
 import { STARTER_FLIGHT_SCENE } from "./starter";
@@ -18,6 +19,7 @@ vi.mock("@void-drift/mode-a", async (original) => ({
   drawFlightFrame: vi.fn(),
   FlightFx: class {
     clear = vi.fn();
+    captureFission = vi.fn();
   },
 }));
 
@@ -54,6 +56,45 @@ beforeEach(() => {
   vi.mocked(drawFlightFrame).mockImplementation((frame) => {
     emitted.push(snapshot(frame));
   });
+});
+
+it("captures tick-local Fission events before the shared FX pass and reconstructs that history on seek", () => {
+  const staged = FlightSceneDocumentSchema.parse(FISSION_SCENES[1].document);
+  const scene = new FlightScene(layers(), staged, 1728);
+  const history: unknown[] = [];
+  const append = (kind: string, sim: FlightFrame["sim"]) => {
+    history.push({
+      kind,
+      tick: sim.ticks,
+      ignitions: [...sim.fissionIgnitions],
+      contacts: [...sim.fissionContacts],
+    });
+  };
+  vi.mocked(drawFlightFrame).mockImplementation(({ sim }) =>
+    append("pass", sim),
+  );
+  scene.draw();
+  vi.mocked(frame().fx.captureFission).mockImplementation((sim) =>
+    append("capture", sim),
+  );
+  history.length = 0;
+  const end = FISSION_REST_TICKS + 16;
+  scene.seek("course", end, Infinity);
+  expect(history.map((item) => (item as { kind: string }).kind)).toEqual(
+    Array.from({ length: end }, () => ["capture", "pass"]).flat(),
+  );
+  expect(history[2 * FISSION_REST_TICKS]).toMatchObject({
+    kind: "capture",
+    ignitions: [{ mountKey: "aft-0" }, { mountKey: "aft-1" }],
+  });
+  const fresh = [...history];
+  scene.seek("course", 0, Infinity);
+  history.length = 0;
+  scene.seek("course", end, Infinity);
+  expect(history).toEqual(fresh);
+  history.length = 0;
+  scene.seek("course", end, Infinity);
+  expect(history).toEqual([fresh.at(-1)]);
 });
 
 describe("Flight scene camera replay", () => {

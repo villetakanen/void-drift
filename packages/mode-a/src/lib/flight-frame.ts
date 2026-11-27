@@ -423,7 +423,7 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
     layer: "lfx",
     space: "world",
     draws:
-      "Plasma charge light, ion weapon beams and atmospheric heat glow, live",
+      "Plasma charge, ion weapon beams, Fission exhaust and atmospheric heat, live",
     source: "packages/mode-a/src/lib/gravity-fold-fx.ts",
     draw: ({ sim, fx }, ctx) => fx.drawLfx(ctx, sim),
   },

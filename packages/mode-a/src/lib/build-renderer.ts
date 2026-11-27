@@ -39,6 +39,7 @@ import {
   type Loadout,
   PARTS,
   type PartId,
+  partIon,
   SLOT_TYPES,
   type SlotType,
 } from "./schemas/loadout";
@@ -606,7 +607,7 @@ export function drawNonEngineFitting(
       ctx.stroke();
     }
   } else if (mount.part) {
-    ctx.strokeStyle = PARTS[mount.part].ion ? "#9af7ff" : "#ffc56e";
+    ctx.strokeStyle = partIon(PARTS[mount.part]) ? "#9af7ff" : "#ffc56e";
     ctx.beginPath();
     ctx.moveTo(-mount.width / 2, -3);
     ctx.lineTo(-nozzleOffset(mount), -4);
@@ -721,24 +722,24 @@ export function drawSlot(
   ctx.restore();
 }
 
+/** Ship-local nozzle origin in flight units, shared by steady and paid exhaust. */
+export function buildNozzlePose(build: Loadout, mount: BuildMount) {
+  const offset = engineOffset(build, mount) - nozzleOffset(mount);
+  return {
+    x: (mount.x + offset * Math.cos(mount.angle)) * BUILD_FLIGHT_SCALE,
+    y: (mount.y + offset * Math.sin(mount.angle)) * BUILD_FLIGHT_SCALE,
+    angle: mount.angle,
+  };
+}
+
 /** Emission uses the same mount/nozzle geometry as the ship drawing. */
 export function buildPlumeEmitters(build: Loadout): PlumeEmitter[] {
   const emitters: PlumeEmitter[] = buildMounts(build)
     .filter((mount) => mount.part && PARTS[mount.part].category === "E")
     .map((mount) => ({
       style: mount.part === "plasma" ? "plasma" : "default",
-      beam: mount.part ? PARTS[mount.part].ion?.beam : undefined,
-      x:
-        (mount.x +
-          (engineOffset(build, mount) - nozzleOffset(mount)) *
-            Math.cos(mount.angle)) *
-        BUILD_FLIGHT_SCALE,
-      y:
-        (mount.y +
-          (engineOffset(build, mount) - nozzleOffset(mount)) *
-            Math.sin(mount.angle)) *
-        BUILD_FLIGHT_SCALE,
-      angle: mount.angle,
+      beam: mount.part ? partIon(PARTS[mount.part])?.beam : undefined,
+      ...buildNozzlePose(build, mount),
       output: 0,
     }));
   const lhi = lhiStabilizers(build.chassis);

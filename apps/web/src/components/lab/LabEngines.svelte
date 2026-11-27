@@ -72,7 +72,8 @@ onMount(() => {
     plume.save();
     plume.translate(nozzle, 0);
     plume.globalCompositeOperation = "lighter";
-    paintBeam(plume, 1, PARTS[id as keyof typeof PARTS].ion?.beam);
+    const part = PARTS[id];
+    if (part.response !== "paid-ignition") paintBeam(plume, 1, part.ion?.beam);
     plume.restore();
     drawPose(id, 3, plume);
     // The part on the starter ship at Hangar scale, at its mount point.

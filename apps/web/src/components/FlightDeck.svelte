@@ -472,6 +472,7 @@ function toggleWeapons() {
 function advance(state: FlightTickInput) {
   const before = simulation.wraps;
   simulation.step(state);
+  flightFx.captureFission(simulation);
   if (pendingWeaponsShift && !simulation.canToggleWeapons)
     pendingWeaponsShift = undefined;
   frameCamera(before !== simulation.wraps);

@@ -4,12 +4,8 @@
 // for three kinds of part. It says nothing about how the row looks or behaves.
 // Figures are computed from the game's own data. The icons are placeholders
 // drawn for this page; the game has none yet.
-import {
-  ION_CANNON,
-  PARTS,
-  type PartId,
-  POINT_DEFENCE,
-} from "@void-drift/mode-a";
+import { ION_CANNON, type PartId, POINT_DEFENCE } from "@void-drift/mode-a";
+import { LEGACY_PARTS as PARTS } from "../../lib/instrument/legacy-fission";
 import PartDrawing from "./PartDrawing.svelte";
 
 type Icon =

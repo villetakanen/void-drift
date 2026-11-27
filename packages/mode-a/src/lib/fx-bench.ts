@@ -1,13 +1,16 @@
 import {
+  FissionExhaust,
   FX_INK,
+  FxPass,
   FxSparks,
   initializePlanets,
   paintArc,
 } from "@void-drift/core";
 import { BUILD_FLIGHT_SCALE, drawBuild } from "./build-renderer";
 import { FlightFx } from "./gravity-fold-fx";
+import type { SalvageBody } from "./salvage";
 import { drawSalvage, drawSalvageApertures } from "./salvage-renderer";
-import { starterLoadout } from "./schemas/loadout";
+import { type Loadout, starterLoadout } from "./schemas/loadout";
 import { SALVAGE } from "./schemas/salvage";
 import {
   planetMass,
@@ -18,27 +21,65 @@ import {
   tunedMassWell,
 } from "./simulation";
 
+export const FX_WORKLOADS = {
+  baseline: "Baseline",
+  mixed: "Mixed engines",
+  "fission-heavy": "Fission-heavy",
+  weapons: "Weapons",
+} as const;
+export type FxWorkload = keyof typeof FX_WORKLOADS;
+
 /** Isolated diagnostic: real engines and collectors; extra entities are FX fixtures. */
 export class FxBench {
   readonly fx = new FlightFx();
   readonly sparks = new FxSparks();
+  // FlightFx owns a single simulation's Fission lifecycle. This fixture merges
+  // the six simulations' tick events into one painter and one scene allowance.
+  private readonly fission = new FissionExhaust();
+  private readonly livePass = new FxPass();
+  private readonly ignitions: Simulation["fissionIgnitions"][number][] = [];
+  private readonly contacts: Simulation["fissionContacts"][number][] = [];
+  private capacities: number[] = [];
   ships: Simulation[] = [];
   ticks = 0;
   overload = false;
   enabled = true;
-  weapons = false;
-  constructor() {
+  workload: FxWorkload;
+  get weapons() {
+    return this.workload === "weapons";
+  }
+  private get hasFission() {
+    return this.workload === "mixed" || this.workload === "fission-heavy";
+  }
+  get ignitionCount() {
+    return this.ignitions.length;
+  }
+  constructor(workload: FxWorkload = "baseline") {
+    this.workload = workload;
     this.reset();
   }
-  reset() {
+  reset(workload = this.workload) {
+    this.workload = workload;
     this.ticks = 0;
     this.fx.clear();
     this.sparks.clear();
+    this.fission.clear();
+    this.ignitions.length = this.contacts.length = 0;
     this.ships = Array.from({ length: 6 }, (_, i) => {
       const loadout = starterLoadout("fighter");
       loadout.hull.fill("gravity-coil");
+      // Keep the reference hulls and mount count: add Plasma to the stock Ion mix.
+      const aft: Loadout["aft"] = i % 2 ? ["ion", "plasma"] : ["ion", "ion"];
+      if (this.workload === "mixed") {
+        aft[0] = "fusion";
+        aft[1] = "plasma";
+      } else if (this.workload === "fission-heavy" && i < 4) {
+        loadout.side = "fusion";
+        aft.fill("fusion");
+      }
+      loadout.aft = aft;
       if (this.weapons) {
-        // Preserve collector and engines while twin cannons occupy existing universal slots.
+        // Twin cannons replace aft engines on four hulls; every hull keeps a collector.
         if (i < 4) loadout.aft.fill("light-ion-cannon");
         else loadout.hull[1] = "laser";
         // Point-defence turrets work beside the cannons on two of those ships.
@@ -72,59 +113,84 @@ export class FxBench {
       planet.pos.set(x + 100, y);
       sim.ship.pos.set(x, y);
       sim.ship.rotation = -Math.PI / 2;
-      if (this.weapons && sim.salvage) {
-        const targetX = x,
-          targetY = y - 130;
-        // Bench ids sit above those the simulation assigns to its own bodies.
-        sim.salvage.bodies.push({
-          id: 101,
-          group: 101,
-          kind: "wreck",
-          x: targetX,
-          y: targetY,
-          previousX: targetX,
-          previousY: targetY,
-          vx: 0,
-          vy: 0,
-          radius: SALVAGE.wreck.radius,
-          hull: SALVAGE.wreck.hull,
-          life: SALVAGE.wreck.life,
-          rotation: 0,
-        });
-        if (i === 1 || i === 3)
-          // A flank wreck inside turret reach, away from the planet and the cannons' line.
-          sim.salvage.bodies.push({
-            id: 102,
-            group: 102,
-            kind: "wreck",
-            x: x - 70,
-            y: y - 20,
-            previousX: x - 70,
-            previousY: y - 20,
-            vx: 0,
-            vy: 0,
-            radius: SALVAGE.wreck.radius,
-            hull: SALVAGE.wreck.hull,
-            life: SALVAGE.wreck.life,
-            rotation: 0,
-          });
-      }
       sim.start();
       return sim;
     });
+    this.capacities = this.ships.map((sim) => sim.state.resources.power);
+  }
+  private stageWeaponTargets(sim: Simulation, index: number) {
+    if (!sim.salvage) return;
+    const { bodies } = sim.salvage;
+    const { pos, vel, rotation } = sim.ship;
+    const cos = Math.cos(rotation),
+      sin = Math.sin(rotation);
+    const stage = (
+      id: number,
+      forward: number,
+      lateral: number,
+      active: boolean,
+    ) => {
+      const existing = bodies.findIndex((body) => body.id === id);
+      if (!active) {
+        if (existing >= 0) bodies.splice(existing, 1);
+        return;
+      }
+      const x = pos.x + forward * cos - lateral * sin;
+      const y = pos.y + forward * sin + lateral * cos;
+      let target: SalvageBody = bodies[existing];
+      if (!target) {
+        target = {
+          id,
+          group: id,
+          kind: "fragment",
+          x,
+          y,
+          previousX: x,
+          previousY: y,
+          vx: vel.x,
+          vy: vel.y,
+          radius: SALVAGE.fragment.radius,
+          hull: SALVAGE.fragment.hull,
+          rotation: 0,
+        };
+        bodies.push(target);
+      }
+      target.x = target.previousX = x;
+      target.y = target.previousY = y;
+      target.vx = vel.x;
+      target.vy = vel.y;
+    };
+    // Stage fragments rather than wrecks so repeated impacts cannot make an
+    // ever-growing debris workload. Alternate forward windows; keep turret lanes active.
+    const cannons = this.ticks % 60 < 30;
+    stage(10001, 130, 0, cannons === index < 4);
+    if (index === 1 || index === 3) stage(10002, 20, -70, true);
   }
   burst() {
     this.sparks.burst(960, 540, this.overload ? 100000 : 96, this.ticks + 2026);
   }
   step() {
     if (this.ticks >= 480) this.reset();
+    this.ignitions.length = this.contacts.length = 0;
     for (let i = 0; i < this.ships.length; i++) {
-      const phase = (this.ticks + i * 13) % 240;
-      this.ships[i].step({
+      const synchronized = this.workload === "fission-heavy" && i < 4;
+      const phase = (this.ticks + (synchronized ? 0 : i * 13)) % 240;
+      const sim = this.ships[i];
+      if (this.weapons) {
+        // Keep the rendering load alive; shots still use real funding and cooldowns.
+        sim.state.resources.power = this.capacities[i];
+        sim.state.resources.hull = 100;
+        this.stageWeaponTargets(sim, i);
+      }
+      sim.step({
         leftThruster: phase < 180,
         rightThruster: phase < 120,
         fire: false,
       });
+      if (this.enabled && this.hasFission) {
+        this.ignitions.push(...sim.fissionIgnitions);
+        this.contacts.push(...sim.fissionContacts);
+      }
       // Diagnostic-only lane wrap keeps all six moving ships in the viewport.
       const ship = this.ships[i].ship;
       const x = 400 + (i % 3) * 500,
@@ -140,6 +206,8 @@ export class FxBench {
         this.sparks.burst(240 + i * 125, 900, 2, this.ticks + i * 71);
     if (this.ticks % 60 === 0) this.burst();
     this.ticks++;
+    if (this.enabled && this.hasFission)
+      this.fission.capture(this.ticks, this.ignitions, this.contacts);
   }
   drawWorld(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = "#070710";
@@ -176,9 +244,11 @@ export class FxBench {
   drawFx(target: CanvasRenderingContext2D) {
     if (!this.enabled) {
       this.fx.clear();
+      this.fission.clear();
       return;
     }
     this.fx.surface.draw(target, this.ticks * STEP, (ctx, pass) => {
+      if (this.hasFission) this.fission.stamp(ctx, pass, this.ticks);
       for (const sim of this.ships) this.fx.drawShip(ctx, sim);
       this.fx.drawParticles(ctx);
       const time = this.ticks * STEP;
@@ -226,5 +296,12 @@ export class FxBench {
   drawLfx(target: CanvasRenderingContext2D) {
     if (!this.enabled) return;
     for (const sim of this.ships) this.fx.drawLfx(target, sim);
+    if (!this.hasFission) return;
+    this.livePass.begin(target, false);
+    try {
+      this.fission.live(target, this.livePass, this.ticks);
+    } finally {
+      this.livePass.end(target);
+    }
   }
 }

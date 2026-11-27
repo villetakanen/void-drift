@@ -9,6 +9,7 @@ import {
 } from "@void-drift/mode-a";
 import { type BurnId, DT, inputAt, TOTAL_TICKS } from "./burns";
 import type { ExperimentProperties, InstrumentVehicle } from "./config";
+import { LEGACY_FISSION } from "./legacy-fission";
 
 /** One calculated moment: position, velocity, and turn rate in °/s. */
 export type Sample = {
@@ -46,7 +47,7 @@ export function calculate(
   const { loadout } = vehicle;
   const parts = {
     ...PARTS,
-    fusion: PartSchema.parse({ ...PARTS.fusion, ...properties.fusion }),
+    fusion: PartSchema.parse({ ...LEGACY_FISSION, ...properties.fusion }),
     plasma: PartSchema.parse({ ...PARTS.plasma, ...properties.plasma }),
   };
   const ion = AssembledIonSettingsSchema.parse({

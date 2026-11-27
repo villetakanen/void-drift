@@ -25,6 +25,7 @@ export * from "./lib/effects/atmospheric-heat";
 // Svelte Components
 export { paintCountdown } from "./lib/effects/countdown";
 export * from "./lib/effects/engine-plume";
+export * from "./lib/effects/fission-exhaust";
 export * from "./lib/effects/fx-surface";
 export * from "./lib/effects/ion-beam";
 export * from "./lib/effects/particles";

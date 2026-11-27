@@ -61,6 +61,13 @@ export class FlightRun {
   tick = 0;
   sim: Simulation;
   experimentRun?: FlightExperimentRun;
+  private ignitions: Simulation["fissionIgnitions"] = [];
+  private contacts: Simulation["fissionContacts"] = [];
+
+  /** Latest paid group and latest contact step at or before the selected tick. */
+  get fission() {
+    return { ignitions: this.ignitions, contacts: this.contacts };
+  }
 
   constructor(
     readonly doc: FlightSceneDocument,
@@ -103,6 +110,8 @@ export class FlightRun {
   /** Flies the burn again from its start. */
   restart() {
     this.tick = 0;
+    this.ignitions = [];
+    this.contacts = [];
     this.sim = this.build();
     this.experimentRun = this.experiment?.create(this.sim);
   }
@@ -114,6 +123,7 @@ export class FlightRun {
     const sim = new Simulation({
       ...stockSettings(loadout.chassis),
       loadout,
+      experimental: "On", // Lab runs are unscored, including unsanctioned fittings.
       mode: doc.system || doc.planet ? "practice" : "derelicts",
     });
     if (doc.planet) {
@@ -215,6 +225,10 @@ export class FlightRun {
         this.tick >= (this.doc.encounter?.restTicks ?? 0) && input.right,
       fire: false,
     });
+    if (this.sim.fissionIgnitions.length)
+      this.ignitions = [...this.sim.fissionIgnitions];
+    if (this.sim.fissionContacts.length)
+      this.contacts = [...this.sim.fissionContacts];
     const air = this.doc.planet?.atmosphere;
     if (air && this.sim.state.status === "PLAYING") {
       const sample = atmosphereSample(

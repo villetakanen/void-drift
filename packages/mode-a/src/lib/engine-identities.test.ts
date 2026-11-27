@@ -10,6 +10,7 @@ import {
   defaultLoadout,
   LoadoutSchema,
   PARTS,
+  PartSchema,
 } from "./schemas/loadout";
 import { Simulation, stockSettings } from "./simulation";
 
@@ -32,14 +33,16 @@ const parts = {
     response: "delayed" as const,
     thrust: 50000,
   },
-  fusion: {
+  fusion: PartSchema.parse({
     ...PARTS.fusion,
+    limit: 550,
+    draw: 3,
     response: "pulse" as const,
     thrust: 45000,
     pulsePeriod: 0.45,
     pulseOn: 0.18,
     speedContribution: 17,
-  },
+  }),
 };
 const ion = {
   acceleration: 220,

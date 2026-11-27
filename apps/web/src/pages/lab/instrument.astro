@@ -1,12 +1,17 @@
 ---
 import ShipTuning from "../../components/lab/instrument/ShipTuning.svelte";
 import LabLayout from "../../layouts/LabLayout.astro";
+import { FISSION_COMPARISON } from "../../lib/instrument/fission-comparison";
 import { STARTER_DOCUMENT } from "../../lib/instrument/starter";
 ---
 
 <LabLayout title="Ship tuning" wide>
   <div class="fill">
-    <ShipTuning client:load config={STARTER_DOCUMENT} />
+    <ShipTuning
+      client:load
+      config={STARTER_DOCUMENT}
+      paidComparison={FISSION_COMPARISON}
+    />
   </div>
 </LabLayout>
 

@@ -22,10 +22,11 @@ import {
   updateShip,
   Vec2,
 } from "@void-drift/core";
-import { solarCharge } from "./build-flight";
+import { type FissionIgnitionEvent, solarCharge } from "./build-flight";
 import { buildCollisionRadius, buildPlumeEmitters } from "./build-renderer";
 import { SHIP_PROFILE_BY_ID } from "./config";
 import { DroneFlight } from "./drone-flight";
+import { type FissionContact, FissionFlight } from "./fission-contact";
 import { createStar } from "./game-loop";
 import {
   createPirate,
@@ -85,6 +86,7 @@ import type { GravityTuning } from "./schemas/gravity";
 import {
   buildStats,
   defaultLoadout,
+  type FlightParts,
   isScoredEligible,
   PARTS,
   starterLoadout,
@@ -314,7 +316,18 @@ export class Simulation {
    * The part definitions the engines run on: the game's own. A Lab instrument
    * may stage tuned copies here before a flight; play never does.
    */
-  parts: typeof PARTS = PARTS;
+  parts: FlightParts = PARTS;
+  private readonly fissionReadyAt: Record<string, number> = {};
+  private readonly tickIgnitions: FissionIgnitionEvent[] = [];
+  private readonly fissionFlight = new FissionFlight();
+  /** Resolved exhaust hits from the most recently simulated replay tick. */
+  get fissionContacts(): readonly FissionContact[] {
+    return this.fissionFlight.contacts;
+  }
+  /** All successful nozzles from the most recently simulated replay tick. */
+  get fissionIgnitions(): readonly FissionIgnitionEvent[] {
+    return this.tickIgnitions;
+  }
   private readonly buildEmitters;
   private readonly engineTimers: Record<string, number> = {};
   ticks = 0;
@@ -557,6 +570,8 @@ export class Simulation {
   }
   step(input: FlightTickInput) {
     if (this.state.status !== "PLAYING") return;
+    this.tickIgnitions.length = 0;
+    this.fissionFlight.beginTick();
     this.droneFlight.pruneEvents(this.ticks * STEP);
     const beforeX = this.ship.pos.x;
     const beforeY = this.ship.pos.y;
@@ -618,6 +633,16 @@ export class Simulation {
           this.settings.mode === "practice",
           this.parts,
           this.settings.mode !== "gauntlet",
+          undefined,
+          substep === 0
+            ? {
+                carrierId: PLAYER_BODY_ID,
+                tick: this.ticks,
+                readyAt: this.fissionReadyAt,
+                events: this.tickIgnitions,
+                reserveSeconds: (3 * STEP) / 4,
+              }
+            : undefined,
         );
         this.engineOutput = actorState.engineOutput;
         solarCollected += result.solarCollected;
@@ -697,6 +722,14 @@ export class Simulation {
             this.star,
             this.planets,
             this.settings.ion,
+            substep === 0
+              ? {
+                  carrierId: this.carrierId(pirate),
+                  tick: this.ticks,
+                  events: this.tickIgnitions,
+                  reserveSeconds: (3 * STEP) / 4,
+                }
+              : undefined,
           );
         }
         if (this.settings.loadout) {
@@ -1054,6 +1087,56 @@ export class Simulation {
           },
         );
       }
+      if (substep === 0)
+        for (const ignition of this.tickIgnitions)
+          this.fissionFlight.launch(ignition, STEP);
+      if (this.fissionFlight.active) {
+        // Use completed movement and current hull, independent of the weapons
+        // roster (which need not exist at all while Weapons is Off).
+        const targets = this.opponents.flatMap((actor, index) =>
+          actor.lifecycle === "destroyed"
+            ? []
+            : [
+                liveShipBody(
+                  this.carrierId(actor),
+                  actor.ship,
+                  actor.resources.hull - pirateCombatDamage[index],
+                  (amount) => playerDamagesPirate(index, amount),
+                  opponentPrevious[index],
+                ),
+              ],
+        );
+        if (this.opponents.length)
+          targets.push(
+            liveShipBody(
+              PLAYER_BODY_ID,
+              this.ship,
+              this.state.resources.hull - playerCombatDamage,
+              (amount) => {
+                playerCombatDamage += amount;
+              },
+              { x: previousX, y: previousY },
+            ),
+          );
+        if (this.salvage && this.settings.mode !== "gauntlet")
+          targets.push(...this.salvage.bodies);
+        this.fissionFlight.resolve(
+          visualEnd - STEP / 4,
+          visualEnd,
+          targets,
+          (body, { ignition, damage }) => {
+            if (body.kind === "ship") {
+              body.onDamage?.(damage);
+              body.hull = Math.max(0, body.hull - damage);
+            } else
+              this.salvage?.applyDamage(
+                body,
+                damage,
+                ignition.carrierId === PLAYER_BODY_ID,
+              );
+          },
+        );
+      }
       if (
         this.settings.mode !== "practice" &&
         Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540) <
@@ -1061,6 +1144,14 @@ export class Simulation {
       )
         break;
     }
+    // An exact-balance purchase can leave a rounding residue after the separate
+    // substep debits. Preserve normal empty-battery handling for that tick.
+    if (
+      substeps === 4 &&
+      this.state.resources.power <= Number.EPSILON &&
+      this.tickIgnitions.some((event) => event.carrierId === PLAYER_BODY_ID)
+    )
+      this.state.resources.power = 0;
     for (const pirate of this.opponents) {
       if (pirate.lifecycle === "destroyed") {
         pirate.plume.clear();

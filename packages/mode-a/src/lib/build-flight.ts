@@ -1,5 +1,6 @@
 import type { GameObject, InputState, Star } from "@void-drift/core";
 import { solarCollectionRate } from "@void-drift/core";
+import { buildMounts, buildNozzlePose } from "./build-renderer";
 import {
   ASSEMBLED_ION_DEFAULTS,
   type AssembledIonSettings,
@@ -10,6 +11,7 @@ import {
 import {
   buildStats,
   CHASSIS,
+  type FlightParts,
   LIFE_SUPPORT_DRAIN,
   type Loadout,
   PARTS,
@@ -47,7 +49,7 @@ export function engineImpulse(
 export type EngineTimers = Record<string, number>;
 /** Actual elapsed time, independent of fractional energy delivery. */
 export function engineDuty(
-  part: (typeof PARTS)[keyof typeof PARTS],
+  part: Exclude<FlightParts[keyof FlightParts], { response: "paid-ignition" }>,
   held: boolean,
   dt: number,
   timers: EngineTimers,
@@ -55,7 +57,7 @@ export function engineDuty(
 ) {
   const start = timers[key] ?? 0;
   if (!held) {
-    // Releasing cuts thrust immediately but cannot bypass fusion recovery.
+    // Historical pulses cut thrust on release but keep their recovery.
     timers[key] =
       part.response === "pulse" && start > 0 && start + dt < part.pulsePeriod
         ? start + dt
@@ -123,7 +125,7 @@ export function applyBuildEngines(
   powerFraction = 1,
   motion: AngularMotion = { velocity: 0 },
   settings: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
-  parts: typeof PARTS = PARTS,
+  parts: FlightParts = PARTS,
   stats = buildStats(build, parts),
 ) {
   const isWasp = build.chassis === "wasp";
@@ -135,7 +137,7 @@ export function applyBuildEngines(
     motion.velocity,
     dt,
     settings,
-    parts === PARTS ? stats.mass : undefined,
+    stats.mass,
   );
   const drive = fiddlerDrive(build, input, burn);
   const output = {
@@ -177,6 +179,7 @@ export function applyBuildEngines(
     commandDuty = 1,
   ) {
     const part = parts[id];
+    if (part.response === "paid-ignition") return;
     const duty =
       engineDuty(part, powered && held, dt, timers, key) * commandDuty;
     const strength = part.ion?.strength ?? 0;
@@ -336,6 +339,152 @@ export function applyBuildEngines(
   }
   return output;
 }
+export interface FissionIgnitionEvent {
+  readonly carrierId: number;
+  readonly tick: number;
+  readonly mountKey: string;
+  readonly x: number;
+  readonly y: number;
+  /** World exhaust direction in radians (opposite thrust). */
+  readonly exhaustAngle: number;
+}
+
+export interface FissionTick {
+  carrierId: number;
+  tick: number;
+  /** Actor-owned, separate from continuous engine timers. */
+  readyAt: Record<string, number>;
+  events: FissionIgnitionEvent[];
+  /** Remaining live substeps with this tick's held input, in seconds. */
+  reserveSeconds?: number;
+}
+
+/** Largest fraction of the unrotated kick that fits, without clamping coasting speed. */
+function kickFraction(
+  ship: GameObject,
+  dx: number,
+  dy: number,
+  ceiling: number,
+) {
+  const kickSq = dx * dx + dy * dy;
+  if (kickSq === 0) return 0;
+  const speed = ship.vel.mag();
+  const gap = ceiling - speed;
+  // A clipped kick can land a few ulps below the ceiling. Don't sell a second
+  // ignition for that rounding residue.
+  const room = gap > 4 * Number.EPSILON * speed ? gap * (ceiling + speed) : 0;
+  const dot = ship.vel.x * dx + ship.vel.y * dy;
+  if (kickSq + 2 * dot <= room) return 1;
+  if (room === 0 && dot >= 0) return 0;
+  const root = Math.sqrt(dot * dot + kickSq * room);
+  // Use the conjugate for forward thrust to avoid subtracting nearly equal values.
+  return dot >= 0 ? room / (root + dot) : (root - dot) / kickSq;
+}
+
+/** Buys one whole commanded group, after continuous loads and before integration. */
+export function buyFissionIgnition(
+  ship: GameObject,
+  build: Loadout,
+  input: InputState,
+  resources: { power: number },
+  motion: AngularMotion,
+  settings: AssembledIonSettings,
+  parts: FlightParts,
+  stats: ReturnType<typeof buildStats>,
+  frame: FissionTick,
+) {
+  const part = parts.fusion;
+  const left = input.leftThruster;
+  const right = input.rightThruster;
+  if (
+    part.response !== "paid-ignition" ||
+    (!left && !right) ||
+    (build.side !== "fusion" && !build.aft.includes("fusion"))
+  )
+    return;
+
+  const both = left && right;
+  const fiddler = build.chassis === "fiddler";
+  const linked = build.linkedEngines;
+  // Group by this pad request, not by installed pairs or individual readiness.
+  const commanded = buildMounts(build).filter((mount) => {
+    if (mount.part !== "fusion") return false;
+    if (build.chassis === "wasp") return both;
+    if (fiddler) return both || (linked && (mount.index === 0 ? left : right));
+    if (mount.group === "aft") return both || linked;
+    return mount.index === 0 ? left : right;
+  });
+  const cost = commanded.length * part.energyPerIgnition;
+  if (
+    commanded.length === 0 ||
+    resources.power < cost ||
+    commanded.some((mount) => frame.tick < (frame.readyAt[mount.key] ?? 0))
+  )
+    return;
+
+  let dx = 0;
+  let dy = 0;
+  let torque = 0;
+  const rotation = ship.rotation;
+  for (const mount of commanded) {
+    const direction = rotation + mount.angle;
+    dx += (Math.cos(direction) * part.impulse) / stats.mass;
+    dy += (Math.sin(direction) * part.impulse) / stats.mass;
+    if (mount.group === "side")
+      torque +=
+        part.impulse *
+        (mount.x * Math.sin(mount.angle) - mount.y * Math.cos(mount.angle));
+  }
+  const fraction = kickFraction(ship, dx, dy, stats.poweredCruiseCeiling);
+  if (fraction <= 0) return;
+
+  const maxTurn = (settings.maxTurn * Math.PI) / 180;
+  const inertia = stats.mass * stabilizerMount(build.chassis).inertiaPerMass;
+  const spin = Math.max(
+    -maxTurn,
+    Math.min(maxTurn, motion.velocity + (torque * fraction) / inertia),
+  );
+  const remaining = frame.reserveSeconds ?? 0;
+  if (remaining > 0) {
+    // A single pad commands fixed duty; both pads hold the drive and the
+    // stabilizer can only brake. A horizon-length duty prices that braking
+    // from the post-kick spin without a motion or collection forecast.
+    const reserve =
+      buildDrain(
+        build,
+        input,
+        spin,
+        remaining,
+        settings,
+        1,
+        stats.mass,
+        parts,
+      ) * remaining;
+    if (resources.power < cost + reserve) return;
+    // The live weapon reserve exceeds this fraction of a tick's load. Leave
+    // the energy in the battery; the remaining substeps debit it as usual.
+  }
+
+  resources.power -= cost;
+  ship.vel.x += dx * fraction;
+  ship.vel.y += dy * fraction;
+  motion.velocity = spin;
+  const cos = Math.cos(rotation);
+  const sin = Math.sin(rotation);
+  for (const mount of commanded) {
+    frame.readyAt[mount.key] = frame.tick + part.recoveryTicks;
+    const nozzle = buildNozzlePose(build, mount);
+    frame.events.push({
+      carrierId: frame.carrierId,
+      tick: frame.tick,
+      mountKey: mount.key,
+      x: ship.pos.x + nozzle.x * cos - nozzle.y * sin,
+      y: ship.pos.y + nozzle.x * sin + nozzle.y * cos,
+      exhaustAngle: rotation + nozzle.angle + Math.PI,
+    });
+  }
+}
+
 export function solarCharge(distance: number, star: Star, coils: number) {
   return solarCollectionRate(distance, star, coils);
 }
@@ -347,9 +496,14 @@ export function buildDrain(
   settings: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
   lightIonDrawScale = 1,
   mass?: number,
+  parts: FlightParts = PARTS,
 ) {
-  const draw = (id: keyof typeof PARTS) =>
-    PARTS[id].draw * (id === "ion" ? lightIonDrawScale : 1);
+  const draw = (id: keyof typeof PARTS) => {
+    const part = parts[id];
+    return part.response === "paid-ignition"
+      ? 0
+      : part.draw * (id === "ion" ? lightIonDrawScale : 1);
+  };
   const burn = stabilizerBurn(build, input, spin, dt, settings, mass);
   if (build.chassis === "fiddler") {
     const drive = fiddlerDrive(build, input, burn);

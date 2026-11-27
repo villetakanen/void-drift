@@ -227,6 +227,9 @@ export class FlightScene {
   get lost() {
     return this.run.lost;
   }
+  get fission() {
+    return this.run.fission;
+  }
   /** Hull at the currently selected time for a placed target. */
   targetHull(index: number) {
     return this.run.targetHull(index);
@@ -303,6 +306,8 @@ export class FlightScene {
   seek(burn: BurnId, target: number, history: number) {
     if (burn !== this.run.burn || target < this.run.tick) this.restart(burn);
     this.run.seek(target, (wrapped, remaining) => {
+      // A display frame can cover several steps, but these events are tick-local.
+      this.fx.captureFission(this.run.sim);
       this.frameCamera(wrapped);
       if (this.zoom(this.view) === null) this.camera.update(STEP);
       if (remaining < history && remaining > 0) this.light();

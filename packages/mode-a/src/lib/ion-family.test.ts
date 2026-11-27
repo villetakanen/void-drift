@@ -6,11 +6,12 @@ import {
   ionStrength,
   PARTS,
   type PartId,
+  partIon,
 } from "./schemas/loadout";
 
 const both = { leftThruster: true, rightThruster: true, fire: false };
-const ionEngines = (Object.keys(PARTS) as PartId[]).filter(
-  (id) => PARTS[id].ion,
+const ionEngines = (Object.keys(PARTS) as PartId[]).filter((id) =>
+  partIon(PARTS[id]),
 );
 
 describe("the ion engine family", () => {
@@ -18,7 +19,7 @@ describe("the ion engine family", () => {
     const sameMass = Object.fromEntries(
       Object.entries(PARTS).map(([id, part]) => [
         id,
-        part.ion ? { ...part, mass: PARTS.ion.mass } : part,
+        partIon(part) ? { ...part, mass: PARTS.ion.mass } : part,
       ]),
     ) as typeof PARTS;
     const speedAfterOneTick = (id: PartId) => {

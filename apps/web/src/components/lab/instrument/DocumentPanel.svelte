@@ -9,6 +9,7 @@ import {
   serialize,
   stockValue,
 } from "../../../lib/instrument";
+import { paidFittingStats } from "../../../lib/instrument/paid-ignition";
 
 // The pane's default content (lab-instrument study, 02.2–02.3): each vehicle's
 // values under investigation, then the configuration document to copy back or
@@ -68,11 +69,29 @@ function load() {
   }
 }
 </script>
-<EnergyPanel bind:energy={config.energy} />
+{#if config.paidIgnition}
+  <section aria-labelledby="paid-fittings">
+    <h4 id="paid-fittings">Fittings</h4>
+    <ul class="fittings">
+      {#each config.vehicles as vehicle}
+        {@const stats = paidFittingStats(vehicle, config.properties)}
+        <li>
+          {vehicle.label}: mass {stats.mass} · ceiling
+          {stats.poweredCruiseCeiling}
+          u/s
+        </li>
+      {/each}
+    </ul>
+  </section>
+{:else}
+  <EnergyPanel bind:energy={config.energy} />
+{/if}
 
 <section aria-labelledby="pane-values">
   <h4 id="pane-values">Values</h4>
-  {#each familiesIn(config.vehicles) as family}
+  {#each familiesIn(config.vehicles).filter(
+    (family) => !config.paidIgnition || family !== "fusion",
+  ) as family}
     <fieldset>
       <legend>
         {family === "fusion" ? "Fission" : family}
@@ -120,26 +139,28 @@ function load() {
     {copied ? "Copied" : "Copy JSON"}
   </button>
   <pre>{text}</pre>
-  <details>
-    <summary>Load a document</summary>
-    <textarea
-      bind:value={draft}
-      rows="6"
-      aria-label="Configuration document to load"
-      placeholder="Paste JSON from the agent"
-    ></textarea>
-    <button
-      type="button"
-      class="btn btn-ghost"
-      onclick={load}
-      disabled={!draft.trim()}
-    >
-      Load
-    </button>
-    {#if loadError}
-      <p class="error" role="alert">{loadError}</p>
-    {/if}
-  </details>
+  {#if !config.paidIgnition}
+    <details>
+      <summary>Load a document</summary>
+      <textarea
+        bind:value={draft}
+        rows="6"
+        aria-label="Configuration document to load"
+        placeholder="Paste JSON from the agent"
+      ></textarea>
+      <button
+        type="button"
+        class="btn btn-ghost"
+        onclick={load}
+        disabled={!draft.trim()}
+      >
+        Load
+      </button>
+      {#if loadError}
+        <p class="error" role="alert">{loadError}</p>
+      {/if}
+    </details>
+  {/if}
 </section>
 
 <style>
@@ -153,6 +174,10 @@ h4 {
   font-weight: normal;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+.fittings {
+  margin: 0;
+  padding-inline-start: var(--spacing-md);
 }
 fieldset {
   margin: 0 0 var(--spacing-md);

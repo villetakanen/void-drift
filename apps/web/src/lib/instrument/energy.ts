@@ -11,8 +11,8 @@ import { z } from "astro/zod";
 import { type BurnId, DT, inputAt } from "./burns";
 import type { Sample } from "./calculate";
 import type { ExperimentProperties, InstrumentVehicle } from "./config";
-
 import { gameSchema } from "./external-schema";
+import { LEGACY_PARTS } from "./legacy-fission";
 export const CollectionField = gameSchema(PositionedEnergyFieldSchema);
 /** Energy-only analysis: never feeds capacity or starvation back into motion. */
 export const EnergyAnalysis = z
@@ -41,7 +41,7 @@ export function energyTraces(
     ...ASSEMBLED_ION_DEFAULTS,
     ...properties.ion,
   });
-  const collectors = buildStats(vehicle.loadout).coils;
+  const { coils: collectors, mass } = buildStats(vehicle.loadout, LEGACY_PARTS);
   const collection = samples.map((s) =>
     energy.fields.reduce(
       (sum, field) =>
@@ -58,6 +58,9 @@ export function energyTraces(
       (s.spin * Math.PI) / 180,
       DT / 4,
       ion,
+      1,
+      mass,
+      LEGACY_PARTS,
     );
     // Only Light ion and its stabilizers are rescaled; other families keep their costs.
     const withoutIon = buildDrain(
@@ -67,6 +70,8 @@ export function energyTraces(
       DT / 4,
       ion,
       0,
+      mass,
+      LEGACY_PARTS,
     );
     return (
       energy.lifeSupport +

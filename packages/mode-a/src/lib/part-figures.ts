@@ -1,6 +1,6 @@
 import { DRONE_RADIATION_DAMAGE, DRONE_WAVE_DAMAGE } from "./drone-flight";
 import { GRAVITY_COLLECTION } from "./gravity-collection";
-import { PARTS, type PartId } from "./schemas/loadout";
+import { PARTS, type PaidIgnitionPart, type PartId } from "./schemas/loadout";
 import {
   DRONE_LAUNCHER,
   ION_CANNON,
@@ -31,25 +31,31 @@ const weapon = (damage: string, energy: number, reach: number): Figure[] => [
   { icon: "reach", value: String(reach), label: "reach in units" },
 ];
 
-export function partFigures(id: PartId): Figure[] {
-  const part = PARTS[id];
+export function partFigures(partOrId: PartId | PaidIgnitionPart): Figure[] {
+  const part = typeof partOrId === "string" ? PARTS[partOrId] : partOrId;
+  const { id } = part;
   const mass: Figure = {
     icon: "mass",
     value: String(part.mass),
     label: "mass",
   };
-  if (part.category === "E")
+  if (part.category === "E") {
+    const paid = part.response === "paid-ignition";
     return [
       mass,
       {
         icon: "thrust",
-        value: Math.round(part.thrust).toLocaleString("en"),
-        label: "thrust",
+        value: Math.round(paid ? part.impulse : part.thrust).toLocaleString(
+          "en",
+        ),
+        label: paid ? "impulse per ignition per nozzle" : "thrust",
       },
       {
         icon: "energy",
-        value: `${trim(part.draw)}/s`,
-        label: "energy per second",
+        value: paid
+          ? `${trim(part.energyPerIgnition)} E/ign`
+          : `${trim(part.draw)}/s`,
+        label: paid ? "energy per ignition per nozzle" : "energy per second",
       },
       {
         icon: "cruise",
@@ -57,6 +63,7 @@ export function partFigures(id: PartId): Figure[] {
         label: "units per second added to the cruise ceiling",
       },
     ];
+  }
   if (id === "drone-launcher")
     return [
       mass,

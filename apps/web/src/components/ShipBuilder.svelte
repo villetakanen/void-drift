@@ -67,6 +67,14 @@ const shipTabs = $derived(
 );
 const canLaunch = $derived(experimental === "On" || isScoredEligible(build));
 const stats = $derived(buildStats(build));
+const ignitionCosts = $derived(
+  stats.engineBreakdown.flatMap(({ id, count }) => {
+    const part = PARTS[id];
+    return part.response === "paid-ignition"
+      ? [{ id, name: part.name, count, energy: part.energyPerIgnition }]
+      : [];
+  }),
+);
 const mounts = $derived(buildMounts(build));
 let previewWidth = $state(600);
 let previewHeight = $state(540);
@@ -411,28 +419,40 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
                   <dd>{LIFE_SUPPORT_DRAIN} /s</dd>
                 </div>
                 <div>
-                  <dt>All engines + life support</dt>
-                  <dd>{stats.drain} /s</dd>
+                  <dt>
+                    {ignitionCosts.length
+                      ? "Continuous draw (excludes ignition)"
+                      : "All engines + life support"}
+                  </dt>
+                  <dd>{stats.drain} E/s</dd>
                 </div>
+                {#each ignitionCosts as { id, name, count, energy } (id)}
+                  <div>
+                    <dt>{name} ignition per nozzle ({count} fitted)</dt>
+                    <dd>{energy} E/ignition</dd>
+                  </div>
+                {/each}
                 <div>
                   <dt>Coasting endurance²</dt>
                   <dd>{stats.endurance.toFixed(1)} s</dd>
                 </div>
-                <div>
-                  <dt>Full thrust endurance²</dt>
-                  <dd>{stats.fullEndurance.toFixed(1)} s</dd>
-                </div>
-                <div>
-                  <dt>Peak forward acceleration³</dt>
-                  <dd>{stats.acceleration.toFixed(1)}</dd>
-                </div>
-                <div>
-                  <dt>Single-side angular acceleration</dt>
-                  <dd>
-                    {((Math.abs(stats.turnRate) * 180) / Math.PI).toFixed(1)}
-                    °/s²
-                  </dd>
-                </div>
+                {#if !ignitionCosts.length}
+                  <div>
+                    <dt>Full thrust endurance²</dt>
+                    <dd>{stats.fullEndurance.toFixed(1)} s</dd>
+                  </div>
+                  <div>
+                    <dt>Peak forward acceleration³</dt>
+                    <dd>{stats.acceleration.toFixed(1)}</dd>
+                  </div>
+                  <div>
+                    <dt>Single-side angular acceleration</dt>
+                    <dd>
+                      {((Math.abs(stats.turnRate) * 180) / Math.PI).toFixed(1)}
+                      °/s²
+                    </dd>
+                  </div>
+                {/if}
                 <div>
                   <dt>Side mount angle / arm</dt>
                   <dd>
@@ -442,10 +462,19 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
               </dl>
               <p class="footnote">
                 ¹ Energy/s, near → far, G-class sun.<br>² Full batteries, no
-                solar charging.<br>³ At rest, both controls, world units/s²;
-                full power and all fitted engines active. Instantaneous peak
-                before pulse/charge timing. Intrinsic battery and coil included.
-                More mass slows acceleration and turning.
+                solar charging.<br>
+                {#if ignitionCosts.length}
+                  Fission kicks instead of thrusting continuously. Linked
+                  nozzles commanded together wait until all are ready and the
+                  ship can pay for all of them. Continuous-thrust endurance and
+                  acceleration estimates do not describe this fitting.
+                {:else}
+                  ³ At rest, both controls, world units/s²; full power and all
+                  fitted engines active. Instantaneous peak before charge
+                  timing.
+                {/if}
+                Intrinsic battery and coil included. More mass reduces
+                acceleration and turning.
                 {chosen === "fiddler"
                   ? "Stabilizers provide turning; linked mains add forward speed only."
                   : "The side mounts turn left-engine input clockwise and right-engine input counterclockwise."}

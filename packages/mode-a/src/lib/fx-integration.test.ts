@@ -2,11 +2,8 @@ import { expect, it } from "vitest";
 import { FxBench } from "./fx-bench";
 
 it("effect settings leave an armed mixed workload's simulations identical", () => {
-  const a = new FxBench(),
-    b = new FxBench();
-  a.weapons = b.weapons = true;
-  a.reset();
-  b.reset();
+  const a = new FxBench("weapons"),
+    b = new FxBench("weapons");
   b.enabled = false;
   b.overload = true;
   for (let i = 0; i < 470; i++) {

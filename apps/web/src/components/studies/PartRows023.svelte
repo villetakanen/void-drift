@@ -19,12 +19,12 @@ import {
   isScoredEligible,
   type Loadout,
   LoadoutSchema,
-  PARTS,
   type PartId,
   slotAccepts,
   starterLoadout,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import { LEGACY_PARTS as PARTS } from "../../lib/instrument/legacy-fission";
 import SegmentedControl from "../inputs/SegmentedControl.svelte";
 import Switch from "../inputs/Switch.svelte";
 import PartDrawing from "./PartDrawing.svelte";

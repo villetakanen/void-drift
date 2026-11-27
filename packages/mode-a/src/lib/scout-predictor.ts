@@ -48,6 +48,8 @@ export function scoutFlightProfile(
   loadout: Loadout,
   ion: AssembledIonSettings,
 ): ScoutFlightProfile {
+  if (loadout.side === "fusion" || loadout.aft.includes("fusion"))
+    throw new Error("The Scout predictor does not support Fission fittings");
   const known = resolved.get(loadout);
   if (known?.ion === ion) return known.profile;
   const key = JSON.stringify(loadout);

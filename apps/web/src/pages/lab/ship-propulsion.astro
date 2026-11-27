@@ -10,6 +10,7 @@ import LabLayout from "../../layouts/LabLayout.astro";
 
 const chassisIds = ["scout", "wasp", "fighter", "corvette", "fiddler"] as const;
 const engines = EngineIdSchema.options;
+const fissionEngine = PARTS.fusion;
 const hullBases = chassisIds.map((id) => ({
   name: id[0].toUpperCase() + id.slice(1),
   base: CHASSIS[id].baseSpeed,
@@ -37,7 +38,7 @@ const examples = chassisIds.map((chassis) => {
 const ionDraw = engines
   .flatMap((id) => {
     const part = PARTS[id];
-    return part.ion
+    return part.response !== "paid-ignition" && part.ion
       ? [{ name: part.name, strength: part.ion.strength, draw: part.draw }]
       : [];
   })
@@ -78,8 +79,8 @@ const mixedParts = mixedStats.engineBreakdown
       </p>
       <p>
         Each physical main engine contributes a fixed scalar. Its angle, thrust
-        strength, pulse timing, charge, linkage and power state do not change V.
-        Fitted inactive engines still count. Empty slots, equipment and
+        strength, ignition timing, charge, linkage and power state do not change
+        V. Fitted inactive engines still count. Empty slots, equipment and
         stabilizers contribute zero.
       </p>
       <div class="tables">
@@ -166,9 +167,9 @@ const mixedParts = mixedStats.engineBreakdown
     </section>
 
     <section>
-      <h2>How forward thrust fades</h2>
+      <h2>How continuous forward thrust fades</h2>
       <p>
-        For straight forward thrust below V, acceleration follows
+        For straight, continuous forward thrust below V, acceleration follows
         <code>a = a0 × max(0, 1 − speed / V)</code>, where a0 is the available
         forward acceleration at rest. Remaining forward thrust is:
       </p>
@@ -203,13 +204,34 @@ const mixedParts = mixedStats.engineBreakdown
         continuous engine delivery, the analytical reference is
         <code>v(t) = V × (1 − exp(−a0 × t / V))</code>;
         <code>t95 = −ln(0.05) × V / a0</code>. Fixed-step flight approaches this
-        curve within numerical tolerance. Pulse, charge, variable power and
-        turning do not meet those assumptions.
+        curve within numerical tolerance. Fission kicks, charge delays, variable
+        power and turning do not meet those assumptions.
       </p>
       <p>
         Braking and transverse steering remain available. Existing speed above V
         is retained; propulsion does not clip it back. Gravity can add
         overspeed. Stabilizers do not affect V.
+      </p>
+    </section>
+
+    <section>
+      <h2>Fission ignition</h2>
+      <p>
+        Fission costs
+        <strong
+          >{fissionEngine.energyPerIgnition}
+          E per ignition per nozzle</strong
+        >, not energy per second. A held command can fire again after
+        {fissionEngine.recoveryTicks}
+        simulation ticks if the kick can contribute and the energy is available.
+        Linked nozzles commanded together wait until all are ready and the ship
+        can pay the combined cost.
+      </p>
+      <p>
+        The final forward kick is clipped to the ceiling, not tapered like
+        continuous thrust. A partial kick still pays full price; a withheld kick
+        costs nothing. At or above the ceiling, a kick may redirect or brake
+        without increasing speed.
       </p>
     </section>
 

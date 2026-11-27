@@ -62,6 +62,7 @@ let {
   wreckSpin,
   backgroundMode = "production",
   onTargetHull,
+  onFission,
   fixedBurn = false,
   screenReadout,
 }: {
@@ -102,6 +103,7 @@ let {
   wreckSpin?: unknown;
   backgroundMode?: "production" | "historical";
   onTargetHull?: (hull: { current: number; maximum: number } | null) => void;
+  onFission?: (events: FlightScene["fission"] | null) => void;
   fixedBurn?: boolean;
   screenReadout?: Snippet;
 } = $props();
@@ -126,7 +128,10 @@ const activeParsed = $derived(
 );
 const activeDoc = $derived(activeParsed?.success ? activeParsed.data : null);
 $effect(() => {
-  if (!activeDoc) onTargetHull?.(null);
+  if (!activeDoc) {
+    onTargetHull?.(null);
+    onFission?.(null);
+  }
 });
 const stagingKey = $derived(
   JSON.stringify({
@@ -269,6 +274,7 @@ onMount(() => {
       if (drawn.view !== view) scene.restart(burn, view);
       scene.seek(burn, tick, Infinity);
       onTargetHull?.(scene.targetHull(0));
+      onFission?.(scene.fission);
       const centre = scene.skyCamera;
       skyX = centre.x;
       skyY = centre.y;

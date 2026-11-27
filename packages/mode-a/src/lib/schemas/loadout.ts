@@ -46,47 +46,71 @@ export const PartIdSchema = z.enum([
 export type PartId = z.infer<typeof PartIdSchema>;
 /** One and a half stabilizer outlets: a third of a light ion. */
 const SERVICE_ION_STRENGTH = 1.5 * STABILIZER_STRENGTH;
-export const PartSchema = z
-  .object({
-    id: PartIdSchema,
-    releaseClass: ReleaseClassSchema,
-    description: z.string().max(220).default(""),
-    fluff: z.string().max(80).default(""),
-    solarMultiplier: z.number().nonnegative().default(0),
-    capacity: z.number().nonnegative().default(0),
-    name: z.string(),
-    category: z.enum(["G", "U", "E"]),
-    mass: z.number().positive(),
-    thrust: z.number().nonnegative(),
-    speedContribution: z.number().finite().nonnegative().default(0),
-    limit: z.number().nonnegative(),
-    draw: z.number().nonnegative(),
-    response: z.enum(["steady", "pulse", "delayed"]).default("steady"),
-    chargeSeconds: z.number().nonnegative().default(0),
-    pulsePeriod: z.number().positive().default(0.45),
-    pulseOn: z.number().positive().default(0.18),
-    /**
-     * Where the part's art sits along its slot's axis, in part units (+x
-     * forward). Applies on every hull.
-     */
-    mount: z.number().finite().default(0),
-    /** Made for testing: its art carries the testing-only marking. */
-    testingOnly: z.boolean().default(false),
-    /**
-     * Present on the ion engines, one family: strength is thrust as a multiple
-     * of the light ion's; beam is the plume's proportions and ink.
-     */
-    ion: z
-      .object({ strength: z.number().positive(), beam: BeamSchema })
-      .optional(),
-  })
-  .refine(
-    (part) =>
-      !part.ion || (part.category === "E" && part.response === "steady"),
-    {
-      message: "Ion engines are steady engines",
-    },
-  );
+const PartBaseSchema = z.object({
+  id: PartIdSchema,
+  releaseClass: ReleaseClassSchema,
+  description: z.string().max(220).default(""),
+  fluff: z.string().max(80).default(""),
+  solarMultiplier: z.number().nonnegative().default(0),
+  capacity: z.number().nonnegative().default(0),
+  name: z.string(),
+  category: z.enum(["G", "U", "E"]),
+  mass: z.number().finite().positive(),
+  speedContribution: z.number().finite().nonnegative().default(0),
+  /** Part art position along the slot axis (+x forward), on every hull. */
+  mount: z.number().finite().default(0),
+  /** Made for testing: its art carries the testing-only marking. */
+  testingOnly: z.boolean().default(false),
+});
+export const PartSchema = PartBaseSchema.extend({
+  thrust: z.number().nonnegative(),
+  limit: z.number().nonnegative(),
+  draw: z.number().nonnegative(),
+  response: z.enum(["steady", "pulse", "delayed"]).default("steady"),
+  chargeSeconds: z.number().nonnegative().default(0),
+  pulsePeriod: z.number().positive().default(0.45),
+  pulseOn: z.number().positive().default(0.18),
+  /**
+   * Present on the ion engines, one family: strength is thrust as a multiple
+   * of the light ion's; beam is the plume's proportions and ink.
+   */
+  ion: z
+    .object({ strength: z.number().positive(), beam: BeamSchema })
+    .optional(),
+}).refine(
+  (part) => !part.ion || (part.category === "E" && part.response === "steady"),
+  {
+    message: "Ion engines are steady engines",
+  },
+);
+export const PaidIgnitionPartSchema = PartBaseSchema.extend({
+  id: EngineIdSchema.extract(["fusion"]),
+  releaseClass: z.literal("preview"),
+  category: z.literal("E"),
+  response: z.literal("paid-ignition"),
+  /** Momentum delivered by one firing nozzle, before the ceiling limits it. */
+  impulse: z.number().finite().positive(),
+  /** Fixed simulation ticks from ignition until the next eligible ignition. */
+  recoveryTicks: z.number().int().positive(),
+  energyPerIgnition: z.number().finite().positive(),
+}).strict();
+export type PaidIgnitionPart = z.infer<typeof PaidIgnitionPartSchema>;
+
+const FISSION_SPEED_CONTRIBUTION = 42;
+export const FISSION_PAID_IGNITION = PaidIgnitionPartSchema.parse({
+  id: "fusion",
+  releaseClass: "preview",
+  name: "Fission",
+  description: `+${FISSION_SPEED_CONTRIBUTION} u/s to ship cruise ceiling.`,
+  category: "E",
+  mass: 17,
+  speedContribution: FISSION_SPEED_CONTRIBUTION,
+  response: "paid-ignition",
+  impulse: 5928,
+  recoveryTicks: 16,
+  energyPerIgnition: 0.5,
+});
+
 export const SlotTypeSchema = z.enum([
   "engine",
   "weapon",
@@ -378,20 +402,7 @@ export const PARTS = {
       beam: { length: 0.7, width: 0.7, ink: "112,255,226" },
     },
   }),
-  fusion: PartSchema.parse({
-    id: "fusion",
-    releaseClass: "preview",
-    name: "Fission",
-    description: "+17 u/s to ship cruise ceiling.",
-    category: "E",
-    mass: 16,
-    thrust: 48000,
-    speedContribution: 17,
-    limit: 550,
-    draw: 3,
-    response: "pulse",
-    chargeSeconds: 0,
-  }),
+  fusion: FISSION_PAID_IGNITION,
   plasma: PartSchema.parse({
     id: "plasma",
     releaseClass: "scored",
@@ -407,15 +418,23 @@ export const PARTS = {
     chargeSeconds: 0.2,
   }),
 };
+/** Historical instruments can override Fission with their continuous pulse model. */
+export type FlightParts = Omit<typeof PARTS, "fusion"> & {
+  fusion: PaidIgnitionPart | z.infer<typeof PartSchema>;
+};
+export function continuousThrust(part: FlightParts[PartId]) {
+  return part.response === "paid-ignition" ? 0 : part.thrust;
+}
+export function partIon(part: FlightParts[PartId]) {
+  return part.response === "paid-ignition" ? undefined : part.ion;
+}
 /** A part's ion strength: its thrust as a multiple of the light ion's; 0 for parts outside the ion family. */
 export function ionStrength(id: string) {
-  return (
-    (PARTS as Record<string, z.infer<typeof PartSchema>>)[id]?.ion?.strength ??
-    0
-  );
+  const part = (PARTS as Partial<Record<string, FlightParts[PartId]>>)[id];
+  return (part && partIon(part)?.strength) ?? 0;
 }
 function ionEngine(id: PartId) {
-  const ion = PARTS[id].ion;
+  const ion = partIon(PARTS[id]);
   if (!ion) throw new Error(`${id} is not an ion engine`);
   return ion;
 }
@@ -534,7 +553,7 @@ export function isScoredEligible(build: Loadout): boolean {
     fittedParts(build).every((id) => PARTS[id].releaseClass === "scored")
   );
 }
-export function buildStats(build: Loadout, parts: typeof PARTS = PARTS) {
+export function buildStats(build: Loadout, parts: FlightParts = PARTS) {
   const chassis = CHASSIS[build.chassis];
   const isWasp = build.chassis === "wasp";
   const lhi = lhiStabilizers(build.chassis);
@@ -550,7 +569,7 @@ export function buildStats(build: Loadout, parts: typeof PARTS = PARTS) {
     mass += parts[id].mass;
     capacity += parts[id].capacity;
     coils += parts[id].solarMultiplier;
-    engineDraw += parts[id].draw;
+    if (parts[id].response !== "paid-ignition") engineDraw += parts[id].draw;
     if (parts[id].category === "E") {
       installedEngineContribution += parts[id].speedContribution;
       engineCounts.set(id, (engineCounts.get(id) ?? 0) + 1);
@@ -566,16 +585,17 @@ export function buildStats(build: Loadout, parts: typeof PARTS = PARTS) {
   const side = parts[build.side];
   const angle = (chassis.angle * Math.PI) / 180;
   const aftThrust = build.aft.reduce(
-    (sum, id) => sum + (id ? parts[id].thrust : 0),
+    (sum, id) => sum + (id ? continuousThrust(parts[id]) : 0),
     0,
   );
+  const sideThrust = continuousThrust(side);
   const acceleration = isWasp
-    ? side.thrust / mass
-    : (2 * side.thrust * Math.cos(angle) + aftThrust) / mass;
+    ? sideThrust / mass
+    : (2 * sideThrust * Math.cos(angle) + aftThrust) / mass;
   const turnRate = lhi
     ? (PARTS.ion.thrust * STABILIZER_STRENGTH * lhi.coupledLever) /
       (mass * lhi.inertiaPerMass)
-    : (side.thrust *
+    : (sideThrust *
         (Math.cos(angle) * chassis.arm + Math.sin(angle) * chassis.sideX)) /
       (mass * stabilizerMount(build.chassis).inertiaPerMass);
   return {

@@ -3,19 +3,23 @@ import {
   clearFlightLayer,
   FLIGHT_LAYERS,
   type FlightLayerCanvases,
+  FX_WORKLOADS,
   FxBench,
+  type FxWorkload,
   presentFlightFx,
   STEP,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import FlightLayers from "../FlightLayers.svelte";
+import SegmentedControl from "../inputs/SegmentedControl.svelte";
 import Switch from "../inputs/Switch.svelte";
 
 let { label = "Arcade FX instrument" }: { label?: string } = $props();
 const WIDTH = 1920;
 const HEIGHT = 1080;
 let canvases = $state<FlightLayerCanvases>({});
-let weapons = $state(false);
+const workloads = Object.keys(FX_WORKLOADS) as FxWorkload[];
+let workload = $state<FxWorkload>("baseline");
 let running = $state(true),
   enabled = $state(true),
   overload = $state(false),
@@ -31,14 +35,21 @@ let p50 = $state(0),
   frame50 = $state(0),
   frame95 = $state(0),
   frameMax = $state(0),
+  frameStalls = $state(0),
   samples = $state(0);
+let ignitions = $state(0),
+  ignitionSamples = $state(0),
+  ignitionP95 = $state(0),
+  ignitionFrame95 = $state(0);
 let reset = () => {},
-  burst = () => {};
-let setWeapons = (checked: boolean) => {
-  weapons = checked;
-};
+  burst = () => {},
+  setWorkload = (_label: string) => {};
 onMount(() => {
-  movingCamera = new URL(location.href).searchParams.get("camera") === "moving";
+  const params = new URL(location.href).searchParams;
+  movingCamera = params.get("camera") === "moving";
+  workload =
+    workloads.find((key) => key === params.get("workload")) ??
+    (params.get("weapons") === "1" ? "weapons" : "baseline");
   const world = canvases.world?.getContext("2d");
   const fx = canvases.fx?.getContext("2d");
   const lfx = canvases.lfx?.getContext("2d");
@@ -49,25 +60,33 @@ onMount(() => {
     canvas.width = WIDTH * layer.resolution;
     canvas.height = HEIGHT * layer.resolution;
   }
-  const bench = new FxBench();
-  weapons = new URL(location.href).searchParams.get("weapons") === "1";
-  bench.weapons = weapons;
-  bench.reset();
+  const bench = new FxBench(workload);
   let last = performance.now(),
     carry = 0,
-    frame = 0;
-  const costs: number[] = [],
-    intervals: number[] = [];
+    frame = 0,
+    previousIgnition = false;
+  const window: {
+    cost: number;
+    interval: number;
+    ignition: boolean;
+    afterIgnition: boolean;
+  }[] = [];
+  const quantile = (values: number[], q: number) =>
+    values[Math.min(values.length - 1, Math.floor(values.length * q))] ?? 0;
   reset = () => {
-    bench.reset();
+    bench.reset(workload);
+    last = performance.now();
     carry = 0;
-    costs.length = intervals.length = 0;
-    samples = 0;
+    previousIgnition = false;
+    window.length = 0;
+    samples = p50 = p95 = max = frame50 = frame95 = frameMax = frameStalls = 0;
+    ignitions = ignitionSamples = ignitionP95 = ignitionFrame95 = 0;
   };
   burst = () => bench.burst();
-  setWeapons = (checked: boolean) => {
-    weapons = checked;
-    bench.weapons = weapons;
+  setWorkload = (label) => {
+    const next = workloads.find((key) => FX_WORKLOADS[key] === label);
+    if (!next || next === workload) return;
+    workload = next;
     reset();
   };
   const draw = (now: number) => {
@@ -75,11 +94,13 @@ onMount(() => {
     last = now;
     bench.overload = overload;
     bench.enabled = enabled;
+    let fired = 0;
     const start = performance.now();
     if (running) {
       carry += Math.min(0.1, elapsed / 1000);
       while (carry >= STEP) {
         bench.step();
+        fired += bench.ignitionCount;
         carry -= STEP;
       }
     } else carry = 0;
@@ -108,24 +129,43 @@ onMount(() => {
     fx.restore();
     lfx.restore();
     if (running) {
-      costs.push(update + after - before);
-      intervals.push(elapsed);
+      window.push({
+        cost: update + after - before,
+        interval: elapsed,
+        ignition: fired > 0,
+        afterIgnition: previousIgnition,
+      });
+      ignitions += fired;
       samples++;
-      if (costs.length > 600) {
-        costs.shift();
-        intervals.shift();
-      }
+      if (window.length > 600) window.shift();
       if (samples % 30 === 0) {
-        const sorted = costs.toSorted((a, b) => a - b),
-          frames = intervals.toSorted((a, b) => a - b);
-        p50 = sorted[Math.floor(sorted.length * 0.5)];
-        p95 = sorted[Math.floor(sorted.length * 0.95)];
-        max = sorted[sorted.length - 1];
-        frame50 = frames[Math.floor(frames.length * 0.5)];
-        frame95 = frames[Math.floor(frames.length * 0.95)];
-        frameMax = frames[frames.length - 1];
+        const costs = window.map(({ cost }) => cost).sort((a, b) => a - b);
+        const frames = window
+          .map(({ interval }) => interval)
+          .sort((a, b) => a - b);
+        const ignitionFrames = window.filter(({ ignition }) => ignition);
+        p50 = quantile(costs, 0.5);
+        p95 = quantile(costs, 0.95);
+        max = quantile(costs, 1);
+        frame50 = quantile(frames, 0.5);
+        frame95 = quantile(frames, 0.95);
+        frameMax = quantile(frames, 1);
+        frameStalls = frames.filter((interval) => interval > 33.34).length;
+        ignitionSamples = ignitionFrames.length;
+        ignitionP95 = quantile(
+          ignitionFrames.map(({ cost }) => cost).sort((a, b) => a - b),
+          0.95,
+        );
+        ignitionFrame95 = quantile(
+          window
+            .filter(({ afterIgnition }) => afterIgnition)
+            .map(({ interval }) => interval)
+            .sort((a, b) => a - b),
+          0.95,
+        );
       }
     }
+    previousIgnition = fired > 0;
     ticks = bench.ticks;
     marks = bench.fx.pass.budget.decoration;
     essential = bench.fx.pass.budget.essential;
@@ -142,7 +182,12 @@ const controlId = $props.id();
   class="fx-bench"
   aria-label={label}
   data-ticks={ticks}
-  data-weapons={weapons}
+  data-workload={workload}
+  data-weapons={workload === "weapons"}
+  data-ignitions={ignitions}
+  data-ignition-samples={ignitionSamples}
+  data-ignition-p95={ignitionP95}
+  data-ignition-frame-p95={ignitionFrame95}
   data-camera={movingCamera ? "moving" : "fixed"}
   data-marks={marks}
   data-essential={essential}
@@ -155,15 +200,14 @@ const controlId = $props.id();
   data-frame-p50={frame50}
   data-frame-max={frameMax}
   data-frame-p95={frame95}
+  data-frame-stalls={frameStalls}
 >
   <div class="controls">
-    <label for={`${controlId}-0`} class="setting">
-      Weapons
-      <Switch
-        id={`${controlId}-0`}
-        bind:checked={() => weapons, (checked) => setWeapons(checked)}
-      />
-    </label>
+    <SegmentedControl
+      label="FX workload"
+      options={Object.values(FX_WORKLOADS)}
+      bind:value={() => FX_WORKLOADS[workload], (value) => setWorkload(value)}
+    />
     <button
       type="button"
       class="btn btn-primary"
@@ -195,13 +239,39 @@ const controlId = $props.id();
     />
   </div>
   <p>
-    6 ships · 24 main engines · 12 collectors · 2 stations · 16 missiles · 12
-    fires
+    6 ships ·
+    {workload === "weapons"
+      ? "16 main engines · 8 aft cannon mounts · 8 collectors"
+      : "24 main engines · 12 collectors"}
+    · 2 stations · 16 missiles · 12 fires
+  </p>
+  <p>
+    {#if workload === "baseline"}
+      Ion and Plasma with no weapons.
+    {:else if workload === "mixed"}
+      Each hull burns Ion and Plasma alongside one Fission nozzle.
+    {:else if workload === "fission-heavy"}
+      Four hulls synchronize up to 16 Fission nozzles beside Ion and Plasma.
+    {:else}
+      Alternating lasers and twin cannons, with point-defence turrets and
+      collectors.
+    {/if}
   </p>
   <p>
     Update + FX submission: {p50.toFixed(2)} ms median · {p95.toFixed(2)} ms p95
-    · {max.toFixed(2)} ms max. Frame p95: {frame95.toFixed(2)} ms.
+    · {max.toFixed(2)} ms max. Frame interval: {frame50.toFixed(2)} ms median ·
+    {frame95.toFixed(2)}
+    ms p95 · {frameMax.toFixed(2)} ms max · {frameStalls} over 33.34 ms.
   </p>
+  {#if workload === "mixed" || workload === "fission-heavy"}
+    <p>
+      Ignition frames: {ignitionSamples} in the rolling window ·
+      {ignitionP95.toFixed(2)}
+      ms update + submission p95 ·
+      {ignitionFrame95.toFixed(2)}
+      ms following frame interval p95.
+    </p>
+  {/if}
   <p>
     {essential}
     activation cues · {marks}/1024 decorative marks · {particles}/256 sparks ·
@@ -211,10 +281,12 @@ const controlId = $props.id();
   <p class="note">
     Six independent flight simulations, repeating every eight seconds with local
     lane wraps to keep every ship in view. This fixture isolates planetary
-    collection from the central star. Station, missile and fire activity
-    demonstrates shared effects; it does not add combat gameplay. Timing
-    includes simulation updates and FX submission; browser raster/compositing
-    needs separate profiling.
+    collection from the central star. Station, missile and fire activity adds
+    shared effects without adding combat gameplay. Weapons is a separate run
+    with alternating fragment targets and refreshed ship resources to sustain
+    firing. Timing summarizes up to 600 frames and includes simulation updates
+    and FX submission, not browser raster or compositing. An ignition frame
+    advanced at least one paid ignition; the interval ends at the next callback.
   </p>
 </section>
 <style>

@@ -10,7 +10,13 @@ import {
   Vec2,
 } from "@void-drift/core";
 import type { z } from "zod";
-import { applyBuildEngines, buildDrain, solarCharge } from "./build-flight";
+import {
+  applyBuildEngines,
+  buildDrain,
+  buyFissionIgnition,
+  type FissionTick,
+  solarCharge,
+} from "./build-flight";
 import { buildCollisionRadius, buildPlumeEmitters } from "./build-renderer";
 import {
   EnemyCapabilitiesSchema,
@@ -31,6 +37,7 @@ import {
 import {
   buildStats,
   defaultLoadout,
+  type FlightParts,
   LIFE_SUPPORT_DRAIN,
   type Loadout,
   LoadoutSchema,
@@ -44,6 +51,7 @@ export const GAUNTLET_SHIP_CONTACT = { restitution: 0.25, damage: 5 } as const;
 export interface GauntletActor {
   id: z.infer<typeof GauntletActorIdSchema>;
   objective: EnemyObjective;
+  fissionReadyAt: FissionTick["readyAt"];
   readonly stats: ReturnType<typeof buildStats>;
   allegiance: "hostile";
   lifecycle: GauntletLifecycle;
@@ -85,9 +93,10 @@ export function stepMountedActor(
   ion: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
   profile = { thrustMultiplier: 1, turnMultiplier: 1, hullMultiplier: 1 },
   practice = false,
-  parts: typeof PARTS = PARTS,
+  parts: FlightParts = PARTS,
   advancePlanets = true,
-  stats = buildStats(actor.loadout),
+  stats = buildStats(actor.loadout, parts),
+  fission?: FissionTick,
 ): MountedStepResult {
   const distance = Math.hypot(
     actor.ship.pos.x - star.pos.x,
@@ -124,6 +133,7 @@ export function stepMountedActor(
       ion,
       1,
       stats.mass,
+      parts,
     ) -
       LIFE_SUPPORT_DRAIN) *
       dt,
@@ -142,8 +152,20 @@ export function stepMountedActor(
     actor.angularMotion,
     ion,
     parts,
-    parts === PARTS ? stats : undefined,
+    stats,
   );
+  if (fission)
+    buyFissionIgnition(
+      actor.ship,
+      actor.loadout,
+      input,
+      actor.resources,
+      actor.angularMotion,
+      ion,
+      parts,
+      stats,
+      fission,
+    );
   updateShip(
     actor.ship,
     { leftThruster: false, rightThruster: false, fire: false },
@@ -201,6 +223,7 @@ export function createPirate(
   return {
     id: GauntletActorIdSchema.parse(id),
     objective: "pursue",
+    fissionReadyAt: {},
     get stats() {
       return scoutFlightProfile(this.loadout, ion).stats;
     },
@@ -239,6 +262,7 @@ export function stepGauntletActor(
   star: Star,
   planets: Planet[],
   ion: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
+  fission?: Omit<FissionTick, "readyAt">,
 ) {
   stepMountedActor(
     actor,
@@ -252,6 +276,7 @@ export function stepGauntletActor(
     PARTS,
     false,
     scoutFlightProfile(actor.loadout, ion).stats,
+    fission && { ...fission, readyAt: actor.fissionReadyAt },
   );
 }
 
