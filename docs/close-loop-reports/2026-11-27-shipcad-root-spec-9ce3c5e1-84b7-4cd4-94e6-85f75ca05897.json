@@ -1,0 +1,30 @@
+{
+  "schema_version": 2,
+  "run_id": "9ce3c5e1-84b7-4cd4-94e6-85f75ca05897",
+  "recorded_at": "2026-11-27T20:15:24Z",
+  "loop": "Drafting, reviewing and refining the ShipCAD app root spec.",
+  "worked": [
+    "Two read-only architect reviews caught concrete gaps in SVG input safety, cockpit identity, local versus portable state, handoff, and game bundle isolation.",
+    "The spec stayed within the requested line budget and passed the spec check after the user clarified ownership and verified the result."
+  ],
+  "issues": [
+    {
+      "area": "context",
+      "observation": "I treated the /lab/ URL prefix as evidence that the Game Dev Lab hosted ShipCAD, then dropped the prefix when app ownership was corrected.",
+      "effect": "The user had to clarify ownership and URL conventions separately.",
+      "interpretation": "I conflated the route namespace with both app ownership and the Astro host boundary."
+    },
+    {
+      "area": "project",
+      "observation": "The physical layout and Design System dependency were not explicit at first; I then suggested a separate UI package before the user chose one ShipCAD package.",
+      "effect": "The architecture took additional turns to settle, and Design System extraction remains separate from this spec.",
+      "interpretation": "A table of concrete paths and dependency directions earlier would have exposed the missing decisions sooner."
+    },
+    {
+      "area": "context",
+      "observation": "The user considered most scenarios better suited to child specs, but provisionally approved them while those specs do not exist.",
+      "effect": "The root keeps those scenarios for now; their placement should be revisited when child specs exist.",
+      "interpretation": "I prioritized preserving draft behavior over keeping every scenario strictly at app level."
+    }
+  ]
+}

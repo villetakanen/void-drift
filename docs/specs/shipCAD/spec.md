@@ -1,105 +1,100 @@
 ---
 generated:
   by: openai-codex/gpt-6.2-sol
-  at: "2026-11-27T19:58:04Z"
-verified: []
+  at: "2026-11-27T20:13:13Z"
+verified:
+  - by: human:ville-takanen
+    at: "2026-11-27T20:14:53Z"
 ---
 
 # ShipCAD
 
 ## Context
 
-Void Drift ship designers need to author low-poly hulls, judge their silhouettes at game scale, and hand off the artwork for integration without changing the game from the editor.
+Void Drift ship designers need to author low-poly hulls, judge them at game scale, and hand off the artwork without changing the game from the editor.
 
 ## Blueprint
 
-ShipCAD turns a layered hull draft into an editable SVG master and a separate, reviewable game integration brief.
+ShipCAD is a sibling app to the [Game Dev Lab](../lab/spec.md). It authors, inspects and hands off ship hull artwork; it does not design standalone parts, fit loadouts or tune flight.
 
 ### Architecture
 
 ```mermaid
 flowchart LR
-    Lab["Lab · /lab/ship-cad"] -->|uses| CAD["@void-drift/ship-cad"]
+    subgraph ShipCAD["packages/ship-cad"]
+        Editor["Svelte editor entry point"] --> CAD["Plain TypeScript CAD logic"]
+    end
+    Route["apps/web · /lab/ship-cad"] -->|mounts| Editor
+    Editor -->|composes shared UI| DS["Design system"]
+    Editor <-->|saves and restores workspace| Local["Browser-local storage"]
     CAD -->|reads production references| Mode["@void-drift/mode-a"]
-    CAD -->|uses shared primitives| Core["@void-drift/core"]
-    Mode -->|uses| Core
-    CAD <-->|saves and restores active draft| Local["Browser-local storage"]
     CAD <-->|exports and imports| SVG["Self-contained SVG master"]
     CAD -->|exports| Brief["Markdown integration brief"]
-    SVG --> Handoff["Reviewed source integration"]
-    Brief --> Handoff
 ```
 
-| Owner | Responsibility |
-| --- | --- |
-| [Lab](../lab/spec.md) route in `apps/web` | Editor workflow and controls, using shared Lab surfaces at widths of 1280 CSS px and up. |
-| `packages/ship-cad` | Authoring document, geometry and lighting, CAD-only colormaps, and the file boundary. Validate external document data with Zod before using it as editor state. |
-| `packages/mode-a` | Canonical fleet art, cockpit references and flight scale; owns any ship subsequently integrated into the game. |
+| Part | Location | Responsibility |
+| --- | --- | --- |
+| Astro shell | `apps/web/src/pages/lab/ship-cad.astro` | Serves `/lab/ship-cad` and mounts the browser editor. The `/lab/` prefix is shared by sibling apps; ShipCAD does not use the Game Dev Lab layout or the game shell. |
+| Svelte editor | `packages/ship-cad/src/editor/` | Owns editing and browser-local workspace state at widths of 1280 CSS px and up. |
+| CAD logic | `packages/ship-cad/src/lib/` | Owns hull geometry, artwork colormaps, validation and file exchange. Does not import Svelte or Astro. |
+| [Design system](../factory/design-system/spec.md) | Shared UI boundary, independent of the game engine and Astro host | Owns the tokens, surfaces and controls ShipCAD composes. |
+| Game library | `packages/mode-a` | Owns production fleet art, cockpit references, flight scale and any ship later integrated into the game. |
+
+`apps/web` declares `@void-drift/ship-cad` as a `workspace:*` dependency and mounts its public editor entry point from the ShipCAD route. Both the editor and CAD logic live in that one pnpm workspace package. ShipCAD has no separate deployment.
 
 ### Constraints
 
 | Boundary | Rule |
 | --- | --- |
-| Scope | Author and inspect ship hulls, not standalone parts, loadouts or flight behaviour. Sketch underlays and fleet references are authoring aids, not ship artwork. |
-| Coordinates | The editor is bow-up: `x` increases to starboard, `y` aft, and `z` above the hull plane. Handoff uses `gameX = -y`, `gameY = x`, with one CAD unit per game ship unit before flight scaling. |
-| Runtime isolation | Game routes and packages do not import or ship ShipCAD code or colormap tables. Integrating a ship is a source change, not a runtime SVG import. |
+| SVG import | Restore hull state only from supported metadata validated with Zod. Redraw from that state; never mount imported SVG markup in the editor. |
+| Portability | The SVG master carries the editable hull and its rendered artwork. The reference sketch and its calibration stay in the local workspace. |
+| Runtime isolation | Game routes and packages do not import ShipCAD code or colormap tables, and player-facing bundles do not ship either. Game integration is a reviewed source change, not a runtime import. |
+| UI dependencies | ShipCAD does not import from `apps/web`. Reuse Design System primitives through a shared UI boundary; do not copy them into ShipCAD or add Design System code to `packages/core`. |
 
 ## Scenarios
 
 ```gherkin
 Feature: ShipCAD
 
-  Scenario: Author a layered hull from a sketch
-    Given I open ShipCAD in the Lab at a supported viewport width
-    When I place a PNG or JPEG reference behind the bow-up grid and edit triangular faces in the object stack
-    Then I can adjust the reference scale and opacity without changing the hull
-    And the stack order controls overlap between objects
-    And mean vertex height controls triangle order within an object
+  Scenario: Author a hull from a sketch
+    Given I have a reference sketch behind the bow-up grid
+    When I edit a hull made of layered triangular objects
+    Then I can mirror individual objects across the centreline
+    And ShipCAD shades their faces automatically rather than asking me to paint each face
+    And the sketch is visible for tracing but is not part of the hull
 
-  Scenario: Shape a symmetric hull with asymmetric lighting
-    Given a hull object has Mirror X enabled and an off-centre object has it disabled
-    When I raise a centreline ridge on the hull
-    Then the hull faces mirror across x = 0 and meet at the shared centreline
-    And the off-centre object has no generated mirror
-    And each face is shaded from its own 3D normal and elevation
-    And every face uses one of the 11 discrete shades of its object's ship, weapon or equipment LCH colormap
-    And I cannot override an individual face's shade
+  Scenario: Place a production cockpit
+    Given I am editing a layered hull
+    When I add an Aegis, Daehan or LHI cockpit
+    Then it appears above the hull at its production size and orientation
+    And the LHI option uses the Wasp cockpit only
+    And I can move or remove the cockpit but cannot scale or rotate it
 
-  Scenario: Place a manufacturer cockpit
-    Given the hull has overlapping objects
-    When I add and move an Aegis, Daehan or LHI cockpit
-    Then it remains above all hull objects at its production size and orientation
-    And I can change only its position or remove it after placement
-
-  Scenario: Compare the draft with the fleet
+  Scenario: Inspect the hull beside the fleet
     Given I am editing a hull
     When I change its geometry
-    Then I see the updated hull at native scale and at the current production flight scale
-    And I can compare it with production fleet silhouettes at a matching scale
+    Then the native and production flight-scale previews update
+    And I can compare the hull with production fleet silhouettes at matching scale
 
-  Scenario: Resume the active draft locally
-    Given my active working draft has autosaved in this browser
+  Scenario: Resume work in the same browser
+    Given my workspace has autosaved with a reference sketch
     When I reload ShipCAD in the same browser
-    Then the editor restores that draft without an account or a file import
-    And SVG export remains the way to make a portable master
+    Then the active hull, sketch and its calibration return without a file import
 
-  Scenario: Round-trip the SVG master
-    Given I have a hull with multiple objects and a placed cockpit
-    When I export its SVG master and later import that file
-    Then the exported SVG shows the resolved artwork without ShipCAD or external assets
-    And its embedded document restores the editable geometry, object order, colormaps, mirror settings and cockpit placements
-    And sketch underlays and fleet references do not appear in the exported artwork
+  Scenario: Reopen a portable master
+    Given I exported an SVG master from a draft with a reference sketch
+    When I open the SVG outside ShipCAD and import it into a fresh ShipCAD workspace
+    Then it shows the artwork in a standalone SVG viewer
+    And ShipCAD restores the editable hull without the reference sketch or its calibration
 
-  Scenario: Reject an invalid project file
+  Scenario: Reject a file that cannot restore a hull
     Given I have a working draft open
     When I import an SVG with missing, invalid or unsupported ShipCAD metadata
-    Then ShipCAD reports the import problem and leaves the draft unchanged
-    And the imported SVG markup is not mounted in the editor
+    Then ShipCAD reports the import problem and leaves my draft unchanged
 
-  Scenario: Hand off a hull without publishing it
-    Given I have a hull ready for integration review
-    When I export the Markdown brief alongside its SVG master
-    Then the brief describes the hull dimensions, resolved facets in game coordinates and draw order, and cockpit placements
-    And it leaves flight tuning, loadout and release decisions to the people integrating the ship
-    And exporting does not change the game or add a playable ship
+  Scenario: Hand off without publishing
+    Given my hull is ready for review
+    When I export its SVG master and Markdown integration brief from the same draft
+    Then both describe the same hull for reviewed source integration
+    And exporting does not change the game or register a playable ship
 ```
