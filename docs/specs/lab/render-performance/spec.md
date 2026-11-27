@@ -1,206 +1,85 @@
 ---
-
-title: "Spec: Render performance bench"
-status: draft
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-21T18:41:41+02:00"
-verified: [{ by: "codex/gpt-6", at: "2026-11-20T22:56:46+02:00" }, { by: "codex/gpt-6", at: "2026-11-21T18:48:57+02:00" }]
-
+  by: "openai-codex/gpt-6.2-astra"
+  at: "2026-11-27T06:54:13Z"
+verified:
+  - by: human:ville-takanen
+    at: "2026-11-27T06:55:43Z"
 ---
 
-# Spec: Render performance bench
+# Render performance bench
+
+## Context
+
+Designers hold a frame to see what happens to a flash or trail under different FX treatments. Engineers run the same scene to distinguish the cost of presentation from the cost of painting more emitters. Tools navigation and the [Lab](../spec.md) index lead to `/lab/render-performance`.
 
 ## Blueprint
 
-### Context
-
-The Render performance bench at `/lab/render-performance` measures overlapping
-production rendering. The [Render model](../render-model/spec.md) is its visual
-reference. The bench runs a rendering fixture without simulation, gravity,
-encounters, or gameplay controls. Hi-Fi Lo-Fi light, CSS composition and
-production emission budgets remain intact. It targets Lab viewports at least
-1280 CSS pixels wide.
+The bench scripts production drawing on a fixed stage without running flight simulation, gravity or encounters. Its controls change the comparison, not engine balance, gameplay availability or production allowances.
 
 ### Architecture
 
-The bench composes `FlightLayers.svelte`: one World canvas, one FX canvas and
-one LFX canvas, with the Deck represented by ordinary DOM above the canvas
-stack. The shared host supplies the production [FX glow](../../game/render/fx.md#low-res-css-glow)
-between FX and LFX. Alternative treatments use the production host with explicit
-presentation overrides. One
-animation clock and one production `FxSurface` serve the entire scene, including
-its scene-wide budget and bounded reusable history buffers. Scenario instances
-hold emitter state only. Shared fixture logic in
-[`render-model-fixture.ts`](../../../../apps/web/src/components/lab/render-model-fixture.ts)
-supplies production Wasp geometry, mounts, direction-correct plumes and
-horizontal ion beam drawing to both instruments. The [render
-contract](../../game/render/spec.md) and [effects
-contract](../../factory/effects/spec.md) own rendering semantics.
+The [shared render fixture](../../../../apps/web/src/components/lab/render-model-fixture.ts) owns the rotating hull, mount geometry, direction-correct stabilizers and synchronized horizontal ion beams. The hull turns in place; the beams cross the centre and both sides of its sweep so a live flash and its lingering dispersal can be seen together.
 
-#### Fixture and layers
+The [bench](../../../../apps/web/src/components/lab/RenderPerformanceBench.svelte) places one centred fixture or a 5×5 grid on the same stage. All layers use the same cell transforms; backing sizes follow production layer scales, not device pixel ratio. The baseline shows ion alone in one cell and alternating ion and plasma plumes in the grid. At either density, engine selection compares sustained plumes with discrete bursts, including synchronized Fission ignition. The [effects spec](../../factory/effects/spec.md#constraints) owns the reference workloads and whole-scene budgets.
 
-The stage and each layer's backing dimensions stay fixed at 1920×1080 times the
-production layer resolution, independent of workload and device pixel ratio.
-All layers use identical cell transforms. One scenario uses the workbench's
-7.5× sample scale at the stage centre; 25 scenarios use a 5×5 grid at 1.5×,
-with fixed cell centres. The smaller scenario scale fits five cells per axis;
-the canvas resolution and CSS stage size do not change with the workload.
-
-#### Behavior
-
-- Default workload: 25 stationary Wasps rotating at the production assembled
-  ion turn rate, alternating continuous rear ion and plasma plumes, with
-  direction-correct stabilizer plumes. The single scenario uses ion. Each
-  scenario has three fixed horizontal right-pointing ion beams: centre, above
-  and below the hull sweep. All begin synchronized, using the production 3 Hz
-  cadence, 80 ms immediate LFX flash and persistent FX dispersal.
-- World blends normally. FX uses Screen and defaults to the shared Low-res
-  CSS glow. Its filter selector offers None, Blur 2px, Distort 2px,
-  Turbulent Bloom, Low-res glow and Low-res CSS glow. Distort uses the Render
-  model's static seeded SVG turbulence/displacement at 2 CSS pixels. Turbulent Bloom uses the same
-  shared filter definition as the Render model. It preserves the source and
-  screens an RGB-attenuated copy with 12 CSS px glow, 16 CSS px distortion and
-  90% strength. Its three values
-  are included in copied results. LFX uses Hard light without a filter. FX
-  history fades toward black with elapsed scene time, with no periodic cleanup
-  or residue threshold.
-- Low-res glow and Low-res CSS glow use the shared
-  [Lab glow treatments](../render-model/spec.md#lab-glow-treatments). The glow
-  backing stays fixed with the FX backing. The one downsample draw is inside
-  the measured JavaScript update and Canvas submission window, following the
-  FX draw. Selecting a glow treatment while paused copies the held FX image.
-- Controls are workload (1 or 25), Run, Pause, Reset, FX filter, hardware
-  label and Copy results. There are no editor controls or budget overrides.
-  The hardware label is metadata for identifying a copied run; editing it does
-  not reset measurements.
-- The initial scene is painted and paused with the production FX presentation
-  default. Run has one active animation-frame chain; repeated Run cannot create
-  another. Pause freezes emission, rotation, pulse phase and decay. Hidden
-  documents suspend the same clock, excluding hidden time without catch-up on
-  return. Unmount cancels the loop and removes listeners.
-- Reset clears history, emitter state, clock and measurements while retaining
-  workload, filter and hardware label. Workload changes reset the scene and
-  all measurements, retaining running state. Filter changes retain the scene
-  and reset measurements. Resume and visibility return restart warm-up and
-  rolling timing continuity so inactive intervals never become frame samples.
-
-#### Measurements
-
-Visible measurements refresh at a bounded UI rate, without pixel readback or
-synchronous GPU work in the measured path. The first two active seconds after
-measurement reset or resumption are warm-up and are excluded. Timing uses a
-rolling ten-second active-time window:
-
-- FPS is the rate of animation-frame callbacks, calculated from measured
-  callback intervals. It is not proof of GPU completion.
-- Median and p95 frame intervals use the actual callback timestamps, without
-  clamping slow frames. JavaScript update/drawing-submission median and p95 use
-  `performance.now()` around scene update and Canvas submissions, excluding
-  summary calculation. This does not include complete GPU/compositor cost.
-- Attempted, accepted and dropped stamps are counted at the actual shared
-  budget's `take` boundary, including reserved source/decorative allowances.
-  The identity attempted = accepted + dropped holds. Totals and elapsed
-  measured time accumulate only in measured active intervals, separately from
-  rolling timing statistics. Limits are the unchanged production defaults.
-- Copy results provides a selectable text fallback and includes workload,
-  measured elapsed time, sample/window information, viewport and stage CSS
-  size, every backing resolution, DPR, browser user-agent without
-  fingerprinting, hardware label, blend/filter settings, timing statistics,
-  and stamp totals. For either low-res glow treatment, results also give the
-  glow backing resolution, blend, opacity and CSS filter. Geometry and
-  environment changes restart measurement to prevent mixed summaries.
-- Results explicitly require a visible ordinary browser on the target
-  hardware. Automated/headless runs establish correctness only. One machine
-  cannot establish a universal result. Low-res glow and Low-res CSS glow are
-  available for comparison. The bench opens with production Low-res CSS glow.
+One clock and one production [FX surface](../../../../packages/core/src/lib/effects/fx-surface.ts) serve all cells, with shared bounded history and per-instance emitter state. [FlightLayers](../../../../apps/web/src/components/FlightLayers.svelte) composes World, Screen-blended FX, optional history-free glow, unfiltered Hard light LFX and the DOM Deck. The selector compares untreated FX, blur, distortion, Turbulent Bloom and the two [low-resolution glow treatments](../render-model/spec.md#lab-glow-treatments), with Low-res CSS glow selected initially.
 
 ### Constraints
 
-- The bench uses the shared production fixture, rendering layers, effects
-  surface, unchanged emission budgets and, until the tester selects another
-  filter, the shared production presentation defaults.
-- Workload changes affect scenario count and cell placement; stage and backing
-  dimensions remain fixed.
-- Measured callback and JavaScript/Canvas submission times describe browser
-  work and do not establish GPU completion or universal performance.
-- Visual-browser measurements, correctness checks and visual judgement are
-  distinct forms of evidence.
+The [metrics module](../../../../apps/web/src/components/lab/render-performance-metrics.ts) owns warm-up, the bounded rolling window and summary calculations. Callback FPS and median/p95 intervals use unclamped animation-frame timestamps. Median/p95 submission times cover synchronous JavaScript update and Canvas drawing together, excluding summary calculation. The readout refreshes separately from drawing, without pixel readback or waiting for GPU completion.
 
-## Contract
-
-### Definition of Done
-
-- Tools navigation and the Lab index link the dedicated URL; the Lab spec
-  links this living spec.
-- Both workloads draw the real shared fixture using three layer
-  canvases (World, FX and LFX), one scene surface, one clock and fixed backing
-  sizes. An additional glow canvas appears only with a low-res glow treatment.
-- Shared transforms align hulls, plumes and all three beams per scenario;
-  production timing and default layer presentation are preserved.
-- Pause, reset, repeated Run, background suspension and unmount obey lifecycle.
-- Warm-up and inactive intervals are excluded; workload and filter changes
-  reset measurements; slow callbacks remain represented and timing storage is
-  bounded. Hardware-label edits leave measurements intact.
-- Stamp reports count real accepted and rejected production budget requests,
-  including saturation, without increasing limits or thinning the workload.
-- Copyable results include reproducibility context and timing limitations,
-  name the selected filter and give the glow backing resolution, blend,
-  opacity and CSS filter for both low-res glow treatments.
-- Correctness checks, visible-browser measurements and visual judgement are
-  reported separately; affected shared consumers are exercised.
-
-### Regression guardrails
-
-- No per-cell canvases, history surfaces, frame loops or independent recipes.
-  The glow canvas is one stage-wide canvas holding no history.
-- No gameplay/tuning changes, new dependencies or silent performance
-  adaptations.
-- No GPU-completion or universal performance claim from callback measurements.
-- Changing the hardware label leaves the current scene and measurements intact;
-  the current label is used in copied results.
-
-### Scenarios
+## Scenarios
 
 ```gherkin
-Scenario: Compare scene density
-  Given the default 25-scenario workload after warm-up
-  When the tester selects 1 scenario
-  Then stage and backing dimensions stay unchanged
-  And scene history and measurements restart using the same effect recipe
+Feature: Render performance bench
 
-Scenario Outline: Measure either low-res glow treatment
-  Given the running benchmark has completed warm-up with Turbulent Bloom selected
-  When the tester selects <treatment>
-  Then the scene is retained and measurements restart
-  And the glow canvas is drawn once per frame inside the measured update window
-  And copied results name <treatment> with its glow backing resolution, Screen blend, 90% opacity and <glow CSS filter>
-  When the tester selects Turbulent Bloom again
-  Then the bench returns to three layer canvases
+  Scenario: Compare engine bursts under load
+    Given the default baseline grid has completed warm-up
+    When I change the engine profile or scenario count
+    Then history, emitters, clock and measurements restart without changing running state
+    And the CSS stage size, backing dimensions and allowances stay fixed
+    And the selected burst still fires at full density
 
-  Examples:
-    | treatment        | glow CSS filter |
-    | Low-res glow     | none            |
-    | Low-res CSS glow | blur(12px)      |
+  Scenario: Pause during a synchronized flash
+    Given a visible running flash
+    When I pause or hide the document
+    Then pose, phase, emission and decay hold
+    When visible running resumes
+    Then a single frame chain advances without catch-up or an inactive sample
+    And warm-up and the rolling window start again while cumulative measured time and stamp totals survive
+    And repeated Run creates no additional chain
+    When I leave the bench
+    Then the frame loop and listeners are removed
 
-Scenario: Hold and resume a burst
-  Given a running synchronized flash
-  When Pause is selected or the document becomes hidden
-  Then hull pose, pulse phase and history remain frozen
-  When running resumes visibly
-  Then time continues without an inactive interval or catch-up burst
-  And warm-up excludes resumption effects from timing summaries
+  Scenario: Reset a run
+    Given a configured scene with accumulated light
+    When I reset
+    Then history, emitters, clock and measurements restart with count, profile, filter and hardware label retained
 
-Scenario: Saturate the shared budget
-  Given enough simultaneous stamp requests to exhaust the production allowance
-  When the shared surface emits
-  Then rejected requests appear in the dropped count
-  And attempted equals accepted plus dropped
-  And neither production limits nor the workload changes
+  Scenario: Compare presentation on a held frame
+    Given a paused flash with Turbulent Bloom selected
+    When I select either low-resolution glow treatment
+    Then the glow canvas copies the held FX at its own backing scale without advancing the scene
+    And measurements restart as for any treatment change
+    When I run the scene
+    Then one downsample per frame follows FX drawing inside the measured submission interval
+    When I return to Turbulent Bloom
+    Then only the three painted layer canvases remain
 
-Scenario: Identify a run with a hardware label
-  Given a running benchmark with measured samples
-  When the tester edits the hardware label
-  Then the scene and measurements remain unchanged
-  And copied results include the current hardware label
+  Scenario: Saturate the shared surface
+    Given simultaneous source and decorative requests exceed the production allowance
+    When the surface admits or drops each request during measurement
+    Then attempted stamps equal accepted plus dropped at that boundary
+    And neither workload nor allowance adapts
+
+  Scenario: Identify a measurement
+    Given a geometry or environment change restarts measurement
+    When I edit only the hardware label
+    Then scene and samples are retained
+    When I copy results
+    Then selectable fallback text identifies the label, count, engine profile, timing statistics, rolling span, sample count, cumulative measured active time and stamp totals
+    And it identifies viewport, CSS stage and all backing sizes including glow, DPR, browser user-agent without fingerprinting, blend, filter and treatment parameters
+    And it describes visible callback and submission timings on this hardware, not GPU completion or universal performance
+    And headless correctness checks and visual judgement remain separate from ordinary-browser measurements
 ```

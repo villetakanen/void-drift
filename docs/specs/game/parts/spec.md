@@ -1,39 +1,53 @@
 ---
 generated:
   by: "openai-codex/gpt-6.2-sol"
-  at: "2026-11-26T13:20:07Z"
+  at: "2026-11-27T07:19:32Z"
 verified:
   - by: "human:ville-takanen"
-    at: "2026-11-26T13:21:53Z"
+    at: "2026-11-27T06:26:42Z"
 ---
 
 # Parts
 
 ## Context
 
-Pilots fit engines, weapons and support equipment to choose how their ship flies, fights and gathers energy.
+A part is an engine, weapon or piece of support equipment that a pilot fits to a ship’s slot. By choosing parts, the pilot trades mass and energy for propulsion, firepower, storage or collection.
 
 ## Blueprint
 
+A slot accepts a part by category. Every fitted part adds its mass and the capabilities defined for that part.
+
 ### Architecture
 
-[`PARTS`](../../../../packages/mode-a/src/lib/schemas/loadout.ts) is the sole parts catalog for flight, screens, specs and tests. Stable IDs keep saved fittings loadable. `PartSchema` validates each entry’s name, description, fluff, category, mass, sanctioning (`releaseClass`) and kind-specific values. Each part is sanctioned or unsanctioned under the [Playground rules](../experimental/spec.md).
-
-[Ships](../ships/spec.md) own slots, energy and derived ship figures. Each slot has one type and each part one category (engine, weapon or support). The [Hangar](../hangar/spec.md) offers only parts accepted by `slotAccepts`. `LoadoutSchema` uses the same rule to reject incompatible saved fittings.
+| Source | What it defines |
+| --- | --- |
+| [Parts catalog and loadout schema](../../../../packages/mode-a/src/lib/schemas/loadout.ts) | `PARTS` is the single catalog for flight, screens, specs and tests. `PartSchema` validates names, descriptions, fluff, category, mass, release class and kind-specific values. Stable IDs keep compatible saved fittings loadable, including `fusion` for the [Fission engine](../fission-engine/spec.md). |
+| `slotAccepts` in the loadout schema | One slot type and one part category determine compatibility for both [Hangar](../hangar/spec.md) choices and saved-fitting validation. |
+| [Ships](../ships/spec.md) and [Playground](../experimental/spec.md) | Ships defines slots, energy and fitted ship figures; Playground defines sanctioning. |
+| [Part figures](../../../../packages/mode-a/src/lib/part-figures.ts) | Card figures derive from the same part data and rules as flight. |
 
 ### Constraints
 
-**Fitting.** Every fitted part contributes its mass. Storage increases capacity, and a run starts at full capacity. Collectors add energy up to capacity under their own collection conditions.
+Storage increases the capacity available at the start of a full-energy run. Collectors add energy only under their collection conditions and never above capacity.
 
-**Part cards.** Show the catalog name and approved fluff, falling back to the technical description for unsanctioned parts. Sanctioned fluff uses practical, affectionate pilot humour, omits numeric specifications and fits two lines on a 300-pixel card. Existing unsanctioned prose stays as written.
+**Part cards.** A card shows the catalog name and approved fluff, falling back to the technical description for unsanctioned parts. Sanctioned fluff uses practical, affectionate pilot humour, omits numeric specifications and fits two lines on a 300-pixel card. Existing unsanctioned prose stays as written.
 
-Show mass first. `partFigures` derives up to three further figures from flight data and rules. Engines show thrust, draw and cruise contribution. Weapons show damage range per second, sustained draw and reach, except the plasma rifle shows mass alone. Storage shows capacity. Collectors show rate and condition using catalog solar multipliers or the shared gravity collection rule. Glyphs are provisional.
+Mass comes first. The card shows at most three further figures; their glyphs are provisional.
 
-**Engines.** Engines add thrust and cruise speed and draw power while firing. Response can be steady, pulsed or charged. A charged engine supplies neither thrust nor steering until input has been held for its charge length. Release or power loss resets the charge.
+| Part | Figures after mass |
+| --- | --- |
+| Engine with continuous draw | Thrust, energy per second while operating and cruise contribution. |
+| Fission | Impulse and energy cost per ignition per nozzle, and cruise contribution. |
+| Weapon other than the plasma rifle | Damage range per second, sustained draw and reach. |
+| Plasma rifle | None. |
+| Storage | Capacity. |
+| Collector | Rate and condition, from catalog solar multipliers or the shared gravity collection rule. |
+
+**Engines.** Engines contribute propulsion and cruise speed and consume power when operating. A charged engine supplies neither thrust nor steering until input has been held for its charge length. Release or power loss resets the charge. [Fission](../fission-engine/spec.md) applies impulse and spends energy only on paid ignition. Its recovery is measured in fixed simulation ticks, not as a pulse duration or continuous draw.
 
 Ion engines share one form, beam and steady response. At equal ship mass, acceleration from rest scales with catalog ion strength relative to the light ion. Each entry supplies its own draw, form proportions and plume length, width and ink. Missing ion values fail type checking. Adding a family member requires only catalog data and art. Flight, plume drawing and engine lists read the family from the catalog without part-ID checks. [Ion beam drawing](../../../../packages/core/src/lib/effects/ion-beam.ts) builds one cached stamp per style and renders its specified dimensions and ink.
 
-**Artwork.** Each new part ships with an SVG master, drawing artefacts derived from it (pose faces, stamps, nozzle and mount geometry), and a design-system page showing master and renderings together. Existing art gains a master and those artefacts and renderings when it changes. Engine masters at `packages/mode-a/src/lib/art/engines/<id>.svg` are converted by `scripts/engine-art-from-svg.mjs`. `engine-masters.test.ts` checks parity. The card, [ship drawing](../../../../packages/mode-a/src/lib/build-renderer.ts) and plume geometry use the same [engine art](../../../../packages/mode-a/src/lib/engine-art.ts), with catalog, two side-lit and aft poses.
+**Artwork.** Each new part ships with an SVG master, drawing artefacts derived from it (pose faces, stamps, nozzle and mount geometry), and a design-system page showing master and renderings together. Existing art gains a master and those artefacts and renderings when it changes. The [engine art converter](../../../../scripts/engine-art-from-svg.mjs) reads [engine masters](../../../../packages/mode-a/src/lib/art/engines/) by part ID; the [master parity test](../../../../packages/mode-a/src/lib/engine-masters.test.ts) checks the result. The card, [ship drawing](../../../../packages/mode-a/src/lib/build-renderer.ts) and plume geometry use the same [engine art](../../../../packages/mode-a/src/lib/engine-art.ts), with catalog, two side-lit and aft poses.
 
 The card centres the art in its own frame. On any hull the part’s mount point offsets that frame along the slot axis, plus any hull adjustment. Plumes start at the drawn nozzle.
 
@@ -53,6 +67,16 @@ The player’s energy emergency is active only with at least one functional weap
 
 ```gherkin
 Feature: Parts
+
+  Scenario: An incompatible saved part
+    Given a saved fitting places a part in a slot that does not accept its category
+    When the fitting is validated
+    Then the fitting is rejected
+
+  Scenario: Releasing a charged engine before it is ready
+    Given the pilot has held a charged engine’s input for less than its charge length
+    When the pilot releases the input and presses it again
+    Then the engine supplies neither thrust nor steering until the full charge length has elapsed again
 
   Scenario: The first mount changes what the next can afford
     Given a ready defence weapon and a ready gun each need 0.2 for a shot

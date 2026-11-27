@@ -1,368 +1,89 @@
 ---
-
 title: "Spec: Motion instrument"
 status: draft
 generated:
-  by: "codex/gpt-6.2"
-  at: "2026-11-21T19:22:52+00:00"
+  by: "openai-codex/gpt-6.2-astra"
+  at: "2026-11-27T06:36:37Z"
 verified:
-- by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:33:38+02:00"
-
+  - by: "human:ville-takanen"
+    at: "2026-11-27T06:38:42Z"
 ---
 
-# Spec: Motion instrument
+# Motion instrument
+
+## Context
+
+The Motion instrument lets a designer compare what ships do under the same thruster commands. The paths show *where* the ships diverge; measurements on a common timeline show *when* their speed or turning begins to differ. By holding the burn and starting conditions fixed, the designer can investigate a fitting or adjust one shared engine property without having to reproduce a manoeuvre by hand.
 
 ## Blueprint
 
-### Context
-
-The Motion instrument makes the consequences of motion rules and settings visible
-through simulated paths and measurements. It supports investigations of the rules
-and small adjustments to their values under controlled conditions.
-
-An agent configures each experiment, including its fixed conditions and the
-variables available for the game designer to adjust. A Lab room can provide an
-ongoing tuning environment; a design study can contain several independently
-configured experiments addressing different comparisons.
-
-Interactive instances support investigation. Written findings and captured images
-record observed results; an instance is retained when continued interaction serves
-the study. Study evidence practices belong to the design-study skill.
+Each experiment states its comparison conditions and exposes only the variables the designer can change. A [Lab](../spec.md) room provides an ongoing tuning bench; a study can embed independent experiments with different controls.
 
 ### Architecture
 
-#### Shared instrument and configured uses
+| Question | Owner |
+| --- | --- |
+| What can the agent configure and the designer export? | [`InstrumentConfig` and `serialize`](../../../../apps/web/src/lib/instrument/config.ts) define Ship tuning's validated document and JSON export. Each labelled vehicle uses the game's [`LoadoutSchema`](../../../../packages/mode-a/src/lib/schemas/loadout.ts). The [starting document](../../../../apps/web/src/lib/instrument/starter.ts) belongs to the Lab use at `/lab/instrument`. |
+| What commands do the ships receive? | [Burn programs](../../../../apps/web/src/lib/instrument/burns.ts) own the repeatable input sequences and their timing. Experiments select a program rather than scripting inputs. |
+| What moves the ships? | [Trajectory calculation](../../../../apps/web/src/lib/instrument/calculate.ts) samples the game's [`applyBuildEngines`](../../../../packages/mode-a/src/lib/build-flight.ts) with shared experiment values and the fitted ship's cruise ceiling. [Gravity tuning](../gravity-tuning/spec.md) supplies its own starting conditions, well, contact response and measurements. |
+| How does a study use the screen? | [`InstrumentEmbed`](../../../../apps/web/src/components/lab/instrument/InstrumentEmbed.astro) hosts Ship tuning in a full-window band. A configured use can supply its own pane to [`ShipTuning`](../../../../apps/web/src/components/lab/instrument/ShipTuning.svelte) inside the shared [`InstrumentBand`](../../../../apps/web/src/components/lab/instrument/InstrumentBand.astro). |
 
-The shared instrument owns experiment configuration, the distinction between fixed
-and adjustable variables, simulation, and the presentation of paths and measurements.
-Each configured use selects its ships, motion rules, environment, burn program,
-measurements and exposed controls from the supported capabilities. Its restrictions
-apply to that use rather than defining every Motion instrument instance.
+#### Comparing and reading paths
 
-Simulations use the current production laws, math and libraries with the
-experiment's configured values. Production changes also affect embedded instances;
-historical examples may change or become incompatible. Written findings and captured
-images preserve historical results. The instrument does not maintain old simulation
-versions to keep previous examples working.
+Hull, equipment and motion-rule definitions apply experiment-wide. Vehicles differ through their hull and mounted equipment, not private overrides. Without tuning overrides they use current game values. Identical fittings under identical conditions give identical results. In a gravity comparison a shadow repeats its source's fitting, settings, burn and starting state with only gravity omitted.
 
-#### Shared properties and comparison conditions
+Ordinary Ship tuning starts at rest at the origin, without gravity or power limits. It compares speed, acceleration and turn acceleration without changing part mass or chassis values. Its paths answer a question about those conditions, not necessarily about resource-limited flight.
 
-Hull and equipment properties and motion-rule settings belong to the experiment,
-not individual ships. Every ship uses the same definitions for the same hull and
-equipment. Configured tuning values apply consistently to all ships that use them;
-vehicles differ through their hull and mounted equipment, not per-vehicle property
-overrides.
+The [shared screen](../../../../apps/web/src/components/lab/instrument/MotionInstrumentScreen.svelte) fits the path and burn beside stacked time graphs and their cursor. A labelled track keeps one colour across all views. Each graph derives its scale from the data, with a symmetric axis for signed measures; studies do not set competing scales. Moving the cursor, fitting all paths or dragging the fixed-scale path view changes only the reading, not the samples. The [parameter side sheet](../../factory/design-system/side-sheet/spec.md) holds adjustments and Copy JSON without permanently reducing the plot area; `/lab/ds/instrument-parts` presents the instrument components.
 
-Experimental conditions may differ explicitly between comparison runs. A no-gravity
-shadow uses the same hull, mounted equipment, properties, motion settings, burn and
-starting state as its source ship, with gravity omitted. This difference in conditions
-does not give the shadow different hull or equipment properties.
+#### Energy comparisons
 
-#### Export and acceptance
+| Comparison | What the designer reads | Relationship to motion |
+| --- | --- | --- |
+| Optional energy analysis in Ship or Gravity tuning | Collection, consumption, signed net power and cumulative battery change along each track. Battery change starts at zero and integrates net power without clamping; it is not state of charge. | The budget describes the path, not the reverse. Editing it changes neither propulsion, gravity nor contact. Capacity and starvation are excluded. |
+| Opt-in paid ignition trace | Successful ignition dots on the speed, turn and battery timeline for ion and Fission fittings, including side, single aft and paired aft arrangements. | This no-gravity comparison uses [game-owned Fission impulse, recovery and per-nozzle payment](../../game/fission-engine/spec.md), not pulse-duration or duty-cycle tuning. A full starting battery and steady 3 E/s supply are stated experimental conditions, not flight solar charging. |
 
-An exported configuration captures the experiment's exact current values for
-sharing in the conversation with the agent. Exporting does not approve those
-settings or apply them to the game. Acceptance is recorded separately in the
-study or an explicit designer decision.
+The [energy schema and calculation](../../../../apps/web/src/lib/instrument/energy.ts) use production collection fields and falloff. Overlapping fields add according to each ship's inherent and fitted collectors. Field boundaries appear independently of gravity boundaries. The [energy pane](../../../../apps/web/src/components/lab/instrument/EnergyPanel.svelte) supports adding, editing and removing fields and adjusting shared life-support and light-ion draw without changing other engine costs. Valid edits are part of the exported document; invalid edits report issues and keep the last valid document. Switching analysis off removes its configuration and restores the three motion graphs.
 
-The agent supplies the starting configuration through the Lab page or study.
-The designer adjusts the exposed controls and exports values for discussion;
-there is no designer-facing configuration import workflow.
-
-#### Ship tuning configuration
-
-The following document, burns and calculation describe Ship tuning. Gravity tuning's
-configuration and measurements are defined in [its spec](../gravity-tuning/spec.md).
-
-#### Inputs and outputs
-
-- Input: an agent-supplied configuration document, parsed by `InstrumentConfig` in
-  `apps/web/src/lib/instrument/config.ts`. Anything else is rejected with its
-  issues listed in place of the view.
-- Output: the same document, edited in the pane, as JSON (Copy JSON), with empty
-  change groups left out (`serialize` in the same file).
-
-#### Configuration document
-
-```json
-{
-  "version": 1,
-  "burn": "course",
-  "properties": { "plasma": { "thrust": 46000 } },
-  "vehicles": [
-    {
-      "label": "Plasma aft",
-      "loadout": {
-        "version": 2,
-        "chassis": "balanced",
-        "side": "ion",
-        "stabilizers": true,
-        "hull": [null, null],
-        "aft": ["plasma", "plasma"]
-      }
-    }
-  ]
-}
-```
-
-- `vehicles`: one to six. Each is a game loadout (`LoadoutSchema` in
-  `packages/mode-a`) with a label. `properties` is a sparse, experiment-wide
-  override object; per-vehicle changes are rejected. A document without overrides uses the current
-  production ship and engine values. Its paths reflect the configured experimental
-  conditions, including starting state, burn inputs, gravity and power supply.
-- Shared engine tuning values in `properties`: ion exposes `acceleration` and
-  `maxTurn`; internal `fusion` (displayed as Fission) and plasma expose `thrust`,
-  `speedContribution`, `chargeSeconds`, `pulsePeriod` and `pulseOn`. Hull bases
-  and engine contributions come from shared production definitions. Per-vehicle
-  overrides and obsolete `maxSpeed`, `bonus`, `falloff` and `limit` ceilings are
-  rejected by the strict schema.
-- `burn`: one of the instrument's fixed programs; studies never write inputs.
-
-#### Burns (`apps/web/src/lib/instrument/burns.ts`)
-
-All are 14 s at 60 Hz.
-
-| Id       | Label | Program                                                          |
-| -------- | ----- | ---------------------------------------------------------------- |
-| `course` | B1    | One input per second: LR LR – L – LR – R – R – LR LR LR          |
-| `turn`   | B2    | 6 s LR, 2 s L, 1 s coast, 5 s LR                                 |
-| `weave`  | B3    | LR, L, R repeating; each round's steps 0.3 s longer; cut at 14 s |
-
-#### Calculation (`apps/web/src/lib/instrument/calculate.ts`)
-
-Each vehicle runs on the burn through the production `applyBuildEngines`
-function, using the experiment’s shared part and ion values, from rest at the
-origin. Speed,
-acceleration (differenced over 6 ticks) and turn acceleration derive from the
-samples. Not included: gravity, power limits, and changes to part mass or chassis
-values. A difference shown by the instrument may therefore not appear in flight.
-Every assembled impulse uses `buildStats`' ship-wide powered cruise ceiling.
-Gravity tuning uses this same production model with its own gravity configuration.
-
-#### Shared screen and Ship tuning views
-
-The layout is shared; the measurements and default controls below are Ship tuning’s.
-Gravity tuning supplies its own measurements and controls.
-
-One 1440 × 900 logical screen, scaled to fit its container, on the console
-(elevation 1). Two 672px columns in a 32px margin, 32px apart; no header or footer.
-
-- Left: the path pane (672 × 672) and, 24px below, the burn row (44px).
-- Right: the time graph three times (speed, acceleration, turn acceleration;
-  672 × 208, 24px apart) and, 24px below, the time slider (44px), whose knob runs
-  along the graphs' time axis.
-- Below both, 24px down: the legend, naming every vehicle in its colour.
-- The shared [parameter side sheet](../../factory/design-system/side-sheet/spec.md)
-  sits unscaled on the container. Default content: the experiment’s shared
-  tuning values and Copy JSON for exporting the current settings.
-
-Every graph scales its value axis to its data: a nice tick step for about five
-ticks, the top one step above the peak, symmetric about zero for turn
-acceleration. Values are compared by reading the axes. Diagrams are displays
-(elevation 2) on the console with every label outside the data; a vehicle keeps
-one colour in every diagram; inline gaps are grid-sized. The path pane switches
-between fitting all paths and a default scale (0.2 px/u) that pans by dragging.
-
-Reading controls—such as the time cursor, path scale and panning—change the
-presentation only. They preserve the experiment's settings and calculated paths
-and measurements. The time cursor selects a point in the existing results.
-
-#### Components
-
-| Component                                | Path                                      | Reference page            |
-| ---------------------------------------- | ----------------------------------------- | ------------------------- |
-| `ShipTuning`                             | `apps/web/src/components/lab/instrument/` | `/lab/instrument`         |
-| `InstrumentEmbed` (study pages)          | same folder                               | used in the design record |
-| `MotionInstrumentScreen` (shared screen) | same folder                               | `/lab/instrument`         |
-| `PathPane`, `TimeGraph`, `BurnRow`, `Legend`, `SideSheet` | same folder | `/lab/ds/instrument-parts` |
-| `SegmentedControl`                       | `apps/web/src/components/inputs/`         | `/lab/ds/choices`         |
-| `RingSlider`                             | `apps/web/src/components/inputs/`         | `/lab/ds/slider`          |
-| Elevation and display tokens             | `packages/core/src/lib/styles/tokens.css` | `/lab/surfaces`           |
-
-#### Using it
-
-- In a study page: `<InstrumentEmbed config={document} />` from
-  `components/lab/instrument/InstrumentEmbed.astro`. It takes the full window and
-  snaps into place, through the shared `InstrumentBand.astro` in the same folder,
-  which the Flight scene instrument's embed uses too. A study that needs its own
-  pane content writes a Svelte wrapper around `ShipTuning` and places it inside
-  `<InstrumentBand>`.
-- In the Lab: `/lab/instrument` opens with the starting document
-  (`apps/web/src/lib/instrument/starter.ts`), supplied by the page.
-- Custom pane content: pass a `pane` snippet to `ShipTuning`; it receives the
-  parsed document.
-
-
-#### Solar charging measurements
-
-The Suns study’s linear charging comparison uses the shared Motion instrument
-path pane, burn programs, time cursor and graphs. Graph measures include gross
-`collection`, `consumption` and signed `netPower`, in energy units per second.
-They retain the shared automatic scales and per-track colours. The configured
-study supplies traces; adding these measures does not change production charging.
-The study labels its candidate law, reference loadout, starting states, sampling,
-contact termination and omitted resource/damage feedback. The break-even readout accompanies the shared time graphs.
-
-The Suns energy-budget comparison additionally supplies signed `batteryChange`
-(E), starting at zero and integrating net power at 60 Hz. This is an unclamped
-energy delta, not state of charge. The shared screen supports a fourth graph
-with the same cursor and track colours; existing three-graph uses retain their
-layout. Energy values display two decimal places.
-
-The study exposes life-support draw, ion power draw and peak solar collection,
-with a reset to the study’s explicitly selected budget (7.5 E/s peak,
-0.8 E/s life support, 1.0 E/s ion draw). Ion draw scales main-engine
-and ion-stabilizer costs together without changing propulsion. Budget edits
-preserve paths, burn, field geometry and motion rules. Changing the burn remains
-an explicit change of flight scenario. Capacity and starvation are excluded.
-
-The Suns study places all three energy sliders, reset and break-even readouts
-in the existing hamburger overlay pane. Closing the pane leaves the full path
-and graph display unobstructed and preserves all settings. There is no separate
-distance-curve panel or persistent controls strip.
-
-#### Shared collection-field configuration
-
-Both Ship tuning and Gravity tuning accept optional `energy` configuration. It
-contains up to twelve collection `fields`, each with a finite x/y centre,
-independent positive `reach`, nonnegative `shoulder` and `peak`, and
-`outerFraction` in [0, 1]. Shoulder must be strictly inside reach. These values
-reuse the production `EnergyFieldShape` and reach validation; `fieldRate` is the
-same plateau/linear law used by production solar collection. Exact edge values
-are included; supply is zero outside reach. Each field scales by the vehicle's
-inherent plus fitted collectors; overlapping fields add.
-
-The energy pane enables analysis and edits field geometry, budget, add/remove
-and export through each instrument's existing document. Invalid edits preserve
-the previous document and report validation errors. Life support and Light ion
-draw are experiment-wide; other engine families keep their costs. Energy feedback
-is explicitly `excluded`: edits cannot change motion, gravity, contact, capacity
-or starvation. These are analytical paths, not a resource-limited playthrough.
-
-Enabled energy analysis shows collection, consumption, signed net power and
-cumulative battery change on the same time cursor and per-track colours. Battery
-change integrates the sampled net rate at 60 Hz from zero without clamping.
-Collection boundaries draw alongside independently configured gravity boundaries.
-Disabling energy restores the original three motion graphs. Inspection and export
-do not mutate production values. The historical Suns fixture retains its earlier
-candidate profiles and omitted feedback as labelled experiment evidence.
-
-Energy analysis uses the shared Switch to create or remove its validated configuration; burn and scale choices use SegmentedControl.
+The [Suns charging comparison](../../../../apps/web/src/components/studies/suns/ChargingStudy.svelte) uses the same path, burn, graphs and cursor with its own [candidate profiles and budget](../../../../apps/web/src/components/studies/suns/charging.ts). It identifies the reference fitting, start, sampling, contact termination and omitted feedback. Its overlay groups the budget adjustments, reset and break-even reading; closing it preserves the settings. Changing ion draw affects main engines and stabilizers together without changing their propulsion. Changing the burn, unlike editing the budget, changes the flight being measured.
 
 ### Constraints
 
-- Shared controls and visual tokens follow the [choice-control contract](../../factory/design-system/choices/spec.md).
-- Configured properties apply experiment-wide through production simulation.
-- Inspection and export preserve production settings and fixed experiment conditions.
-- The Lab supports viewports at least 1280px wide.
+- The agent supplies the initial document. The designer adjusts exposed controls and copies the current JSON for discussion; there is no designer-facing import. Export omits empty override groups and neither approves settings nor applies them to the game.
+- Live instances follow current production laws under the configured conditions. Written findings and captures preserve historical observations; embedded experiments do not pin old simulation versions.
+- The screen follows the Lab viewport minimum of 1280px and the shared [choice controls](../../factory/design-system/choices/spec.md) for analysis, burn and scale.
 
-## Contract
-
-### Definition of Done
-
-- The designer can export current values; the pane has no configuration-import
-  control. Agent-supplied configurations remain schema-validated.
-- Moving the time cursor or changing the path view updates the presentation
-  while preserving experiment settings and calculated paths and measurements.
-- Export contains the experiment's current configured values and leaves game
-  values unchanged.
-- Every Ship tuning burn is exactly 840 ticks (unit test).
-- The configuration schema and controls express tuning values at experiment
-  scope rather than as per-vehicle property overrides. Update validation and export
-  together; reject invalid loadouts, unknown tuning fields and unknown burns.
-- A ship and its no-gravity shadow use identical hull and equipment properties,
-  motion settings, burn and starting state; gravity is their only condition difference.
-- Ships with the same hull and equipment in the same mounts produce identical
-  paths and measurements under identical starting conditions, burn inputs,
-  environment and motion settings.
-- Simulation uses the current production functions with the experiment’s
-  configured values; verify this independently of historical study calculations.
-- Multiple instances in one study have independent configurations and results;
-  editing an exposed variable preserves fixed conditions and other instances.
-- `/lab/instrument` renders the starting document with three vehicles in the
-  legend and three graphs.
-- Switching the burn redraws every view and changes the document.
-- The pane opens from the menu button, moves focus to its close button, and
-  closes on Escape with focus returned.
-- An edited value updates the graphs and the document.
-- Each reference page renders its components.
-
-### Regression guardrails
-
-- Configured uses supply experiment conditions and exposed controls through the
-  shared instrument’s supported capabilities; simulation uses production code.
-- Configured hull and equipment properties apply consistently across the experiment;
-  comparison conditions cannot introduce per-vehicle property overrides.
-- The game's part and ion definitions are never changed by a document.
-- The instrument's scales come from the data and the fixed rules above, never from
-  a study.
-- Elements keep the 4px vertical rhythm; inline widths follow content.
-
-### Scenarios
+## Scenarios
 
 ```gherkin
-Scenario: Compare a ship with its no-gravity shadow
-  Given a ship and a shadow with the same hull and mounted equipment
-  And both use the same production properties, motion settings and burn inputs
-  And both start from the same position, heading and velocity
-  When the instrument simulates the ship with gravity
-  And simulates its shadow without gravity
-  Then both retain identical hull and equipment properties
-  And gravity is the only difference in their simulation conditions
+Feature: Motion instrument
 
-Scenario: Inspect results without changing the experiment
-  Given a calculated motion experiment
-  When the designer moves the time cursor or changes the path view
-  Then the presentation updates
-  And the experiment settings remain unchanged
-  And the calculated paths and measurements remain unchanged
+  Scenario: Reject an invalid starting experiment
+    Given a supplied loadout has the wrong number of aft slots
+    When the designer opens the experiment
+    Then schema issues appear instead of a plotted comparison
 
-Scenario: Export an experiment's settings
-  Given the designer has adjusted an experiment
-  When they export its configuration
-  Then the export contains the current configured values
-  And exporting does not apply those values to the game
+  Scenario: Change the burn in one of two embedded experiments
+    Given a study has two independently configured experiments
+    When the designer selects another burn in the first
+    Then its input lanes, paths, measurements and exported burn reflect that program
+    And its fixed conditions and the second experiment remain unchanged
 
-Scenario: Independent experiments within one design study
-  Given a study contains two Motion instrument instances
-  And each has its own configured conditions and adjustable variables
-  When the designer changes an exposed variable in the first instance
-  Then its paths and measurements are recalculated
-  And its fixed conditions remain unchanged
-  And the second instance's configuration and results remain unchanged
+  Scenario: Inspect a point without changing the experiment
+    Given the designer has adjusted a shared engine setting
+    When they close the pane with Escape and move the time cursor
+    Then focus returns to the menu button on dismissal
+    And the cursor reads the existing paths with the adjusted setting intact
 
-Scenario: Simulate using production behavior
-  Given an experiment with configured ships, inputs and environment
-  When the Motion instrument calculates paths and measurements
-  Then it uses the current production simulation functions
-  And applies the experiment's configured values
+  Scenario: Inspect an energy deficit without enabling paid ignition
+    Given a ship crosses a region where consumption exceeds collection
+    When the designer enables ordinary energy analysis
+    Then cumulative battery change falls through that region
+    And the ship follows the same path as before
 
-Scenario: Identical ships produce identical paths
-  Given two ships with the same hull and equipment in the same mounts
-  And identical starting conditions, burn inputs, environment and motion settings
-  When the Motion instrument simulates them
-  Then their paths and measurements are identical
-
-Scenario: Switching the burn
-  Given the instrument shows B1
-  When the designer selects B2
-  Then the lanes show 6 s both, 2 s left, 1 s coast, 5 s both
-  And every path and graph is recalculated on that burn
-
-Scenario: An invalid agent-supplied configuration
-  Given an agent-supplied configuration whose loadout has the wrong number of aft slots
-  When the instrument receives it
-  Then it lists the schema's issues instead of drawing
-```
-
-
-```gherkin
-Scenario: Enable energy analysis through the shared setting control
-  Given a Motion instrument with energy analysis disabled
-  When I turn on Energy analysis
-  Then its validated default configuration is created and the energy graphs appear
-  When I turn it off
-  Then the configuration is removed and the three motion graphs return
-  And motion settings remain unchanged
+  Scenario: A linked fitting cannot pay for both nozzles
+    Given the designer selects the paid ignition comparison
+    And the linked pair can afford only one nozzle when commanded together
+    When the designer inspects that command on the timeline
+    Then neither nozzle has an ignition dot or an ignition debit
 ```
